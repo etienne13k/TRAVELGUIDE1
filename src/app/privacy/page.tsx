@@ -11,7 +11,7 @@ const SECTIONS_FR = [
     title: "1. Qui sommes-nous ?",
     body: `TravelGuide AI est un service de génération de guides de voyage personnalisés par intelligence artificielle, édité par NanoCorp.
 
-**Contact :** privacy@travelguide-ai.com
+**Contact :** travel-guide@nanocorp.app
 **Site :** https://travelguide-ai.com
 
 Pour toute question relative à vos données personnelles, écrivez-nous directement à l'adresse ci-dessus.`,
@@ -126,7 +126,7 @@ Aucun autre tiers n'a accès à vos données personnelles.`,
 - **Droit d'opposition** : vous opposer à certains traitements (ex. newsletter)
 - **Droit à la limitation** : restreindre le traitement dans certains cas
 
-**Pour exercer vos droits :** Contactez-nous à privacy@travelguide-ai.com avec une preuve d'identité. Nous répondons sous 30 jours.
+**Pour exercer vos droits :** Contactez-nous à travel-guide@nanocorp.app avec une preuve d'identité. Nous répondons sous 30 jours.
 
 En cas de litige, vous pouvez également saisir la **CNIL** : [cnil.fr](https://www.cnil.fr)`,
   },
@@ -142,7 +142,7 @@ Aucun cookie publicitaire ou de tracking tiers n'est déposé sur votre navigate
   {
     id: "contact",
     title: "10. Contact & mise à jour",
-    body: `**Contact DPO / Privacy :** privacy@travelguide-ai.com
+    body: `**Contact DPO / Privacy :** travel-guide@nanocorp.app
 
 Cette politique peut être mise à jour. La date de dernière modification est indiquée en haut de page. En cas de modification substantielle, vous serez informé par e-mail.
 
@@ -150,52 +150,8 @@ Cette politique peut être mise à jour. La date de dernière modification est i
   },
 ];
 
-const FAQ_DATA = [
-  {
-    q: "Mes données sont-elles en sécurité ?",
-    a: "Oui. Vos données sont stockées sur Supabase (infrastructure AWS, datacenter européen), avec chiffrement en transit (HTTPS/TLS) et au repos. Vos mots de passe ne sont jamais stockés en clair — ils sont hachés avec bcrypt avant stockage. Nous ne pouvons pas accéder à votre mot de passe.",
-  },
-  {
-    q: "Qui a accès à mes données ?",
-    a: "Seuls nos prestataires techniques ont accès à certaines données dans le cadre strict de leur mission : Supabase (hébergement BDD), Stripe (paiement), Twilio (SMS OTP), Anthropic/Claude (génération du guide — données questionnaire uniquement), PostHog (analytics anonymisés), Vercel (hébergement web). Aucun annonceur, aucun revendeur de données n'y a accès.",
-  },
-  {
-    q: "L'IA garde-t-elle mes informations ?",
-    a: "Non. Dans le cadre des API commerciales d'Anthropic (Claude AI), les données soumises ne sont pas utilisées pour entraîner les modèles. Les données de votre questionnaire sont transmises ponctuellement pour générer votre guide, puis le traitement s'arrête. Aucune donnée sensible (email, téléphone, paiement) n'est transmise à l'IA.",
-  },
-  {
-    q: "Mon adresse e-mail sera-t-elle revendue ?",
-    a: "Jamais. Votre e-mail est utilisé uniquement pour vous livrer votre guide, confirmer votre commande et vous contacter en cas de problème. Si vous vous inscrivez à la newsletter, vous pouvez vous désinscrire à tout moment d'un simple clic.",
-  },
-  {
-    q: "À quoi sert mon numéro de téléphone ?",
-    a: "Uniquement pour la vérification de votre identité par SMS (code à 6 chiffres). Cette vérification vous permet de débloquer le code promo WELCOME (-40%). Votre numéro n'est pas utilisé à des fins commerciales, pas revendu et pas partagé avec des tiers non mentionnés.",
-  },
-  {
-    q: "Quelles données l'IA utilise-t-elle pour créer mon guide ?",
-    a: "Uniquement vos réponses au questionnaire de voyage : destination, dates, style de voyage, budget, intérêts, préférences alimentaires, etc. Ces données ne sont pas sensibles. Votre nom, email, téléphone et données bancaires ne sont jamais transmis à l'IA.",
-  },
-  {
-    q: "Puis-je supprimer mon compte et mes données ?",
-    a: "Oui. Envoyez une demande à privacy@travelguide-ai.com. Nous procédons à la suppression complète de vos données dans un délai de 30 jours. Seules certaines données comptables (liées aux paiements Stripe) sont conservées pour obligation légale.",
-  },
-  {
-    q: "Comment fonctionne le paiement ? Est-ce sécurisé ?",
-    a: "Les paiements sont traités exclusivement par Stripe, leader mondial du paiement en ligne (certifié PCI-DSS niveau 1). Nous ne voyons jamais votre numéro de carte bancaire — seul Stripe y a accès.",
-  },
-  {
-    q: "Mon guide PDF est-il stocké quelque part ?",
-    a: "Votre guide généré est stocké dans votre espace compte pour vous permettre de le retélécharger. Vous pouvez demander sa suppression à tout moment.",
-  },
-  {
-    q: "Comment me désinscrire de la newsletter ?",
-    a: "Chaque e-mail de newsletter contient un lien de désinscription en bas de message. Un clic suffit. Vous pouvez aussi nous écrire à privacy@travelguide-ai.com.",
-  },
-];
-
 export default function PrivacyPage() {
   const [lang, setLang] = useState<Lang>("fr");
-  const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [activeSection, setActiveSection] = useState<string>("qui");
 
   return (
@@ -238,7 +194,7 @@ export default function PrivacyPage() {
             <span className="text-xs font-bold text-[#425C47] uppercase tracking-wide">RGPD conforme · Juin 2026</span>
           </div>
           <h1 className="text-3xl sm:text-4xl font-bold text-[#425C47] mb-3" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
-            Confidentialité & FAQ
+            Politique de Confidentialité
           </h1>
           <p className="text-[#425C47]/60 max-w-xl mx-auto text-base">
             Transparent sur ce que nous faisons de vos données. Aucune surprise, aucune revente.
@@ -259,33 +215,6 @@ export default function PrivacyPage() {
             </div>
           ))}
         </div>
-
-        {/* FAQ */}
-        <section className="mb-16">
-          <h2 className="text-2xl font-bold text-[#425C47] mb-2" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
-            Questions fréquentes
-          </h2>
-          <p className="text-sm text-[#425C47]/55 mb-6">Tout ce que vous voulez savoir sur la sécurité et l&apos;utilisation de vos données.</p>
-          <div className="space-y-2">
-            {FAQ_DATA.map((item, i) => (
-              <div key={i} className="rounded-2xl border border-gray-100 overflow-hidden shadow-sm">
-                <button
-                  type="button"
-                  onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                  className="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-[#F5F7F5] transition-colors"
-                >
-                  <span className="font-semibold text-[#425C47] text-sm pr-4">{item.q}</span>
-                  <span className={`text-[#C9A84C] text-lg font-bold flex-shrink-0 transition-transform duration-200 ${openFaq === i ? "rotate-45" : ""}`}>+</span>
-                </button>
-                {openFaq === i && (
-                  <div className="px-5 pb-5 text-sm text-[#425C47]/75 leading-relaxed border-t border-gray-100 pt-4 bg-white">
-                    {item.a}
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        </section>
 
         {/* Politique complète */}
         <div className="grid lg:grid-cols-[220px_1fr] gap-8">
@@ -373,7 +302,7 @@ export default function PrivacyPage() {
 
         {/* Footer */}
         <div className="mt-16 pt-8 border-t border-gray-100 text-center text-xs text-[#425C47]/40">
-          <p>© 2026 TravelGuide AI · <a href="mailto:privacy@travelguide-ai.com" className="underline hover:text-[#425C47]">privacy@travelguide-ai.com</a></p>
+          <p>© 2026 TravelGuide AI · <a href="mailto:travel-guide@nanocorp.app" className="underline hover:text-[#425C47]">travel-guide@nanocorp.app</a></p>
           <p className="mt-1">Pour exercer vos droits RGPD, contactez-nous. Nous répondons sous 30 jours.</p>
         </div>
       </main>
