@@ -155,7 +155,7 @@ const translations = {
     hero_card_more: "+ 4 jours supplémentaires…",
     hero_card_delivery: "Livraison 48h",
     nav_account_label: "Mon compte",
-    hero_badge_ai: "Propulsé par Claude AI",
+    hero_badge_ai: "Propulsé par IA entraînée",
     hero_badge_delivery: "Livraison",
     hero_badge_custom: "Personnalisé",
     hero_badge_rating: "Satisfaction",
@@ -169,7 +169,7 @@ const translations = {
     example_cover_days_label: "jours",
     example_cover_travelers_label: "voyageurs",
     example_cover_budget_label: "budget/j",
-    example_cover_generated: "Généré le 08/06/2026 · PDF · IA Claude",
+    example_cover_generated: "Généré le 08/06/2026 · PDF · IA entraînée",
     example_day_mono: "JOUR 3 — PROGRAMME DÉTAILLÉ",
     example_day_desc: "Culture jeune, shopping & coucher de soleil urbain",
     example_day_items: [
@@ -317,7 +317,7 @@ const translations = {
     hero_card_more: "+ 4 more days…",
     hero_card_delivery: "Delivery 24h",
     nav_account_label: "My account",
-    hero_badge_ai: "Powered by Claude AI",
+    hero_badge_ai: "Powered by trained AI",
     hero_badge_delivery: "Delivery",
     hero_badge_custom: "Personalized",
     hero_badge_rating: "Rating",
@@ -331,7 +331,7 @@ const translations = {
     example_cover_days_label: "days",
     example_cover_travelers_label: "travelers",
     example_cover_budget_label: "budget/d",
-    example_cover_generated: "Generated 08/06/2026 · PDF · Claude AI",
+    example_cover_generated: "Generated 08/06/2026 · PDF · IA entraînée",
     example_day_mono: "DAY 3 — DETAILED SCHEDULE",
     example_day_desc: "Youth culture, shopping & urban sunset",
     example_day_items: [
@@ -577,7 +577,7 @@ export default function Home() {
                 <div className="border-t border-[#425C47]/8 pt-4 flex items-center justify-between text-[10px] text-[#425C47]/40 font-mono">
                   <span>📄 PDF</span>
                   <span>✈️ {tx.hero_card_delivery}</span>
-                  <span>🤖 IA Claude</span>
+                  <span>🤖 IA entraînée</span>
                 </div>
               </div>
               <div className="absolute -top-3 -right-3 bg-[#C9A84C] text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg">

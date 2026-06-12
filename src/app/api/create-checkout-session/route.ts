@@ -256,7 +256,7 @@ export async function POST(req: NextRequest) {
     appliedPromo = { code: normalizedPromoCode, promotionCodeId };
   }
 
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "https://spiregg.nanocorp.app";
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "https://travel-guide.nanocorp.app";
   const cancelUrl = items.length === 1
     ? `${baseUrl}/questionnaire?plan=${items[0].planKey}`
     : `${baseUrl}/cart`;
@@ -267,7 +267,7 @@ export async function POST(req: NextRequest) {
       price_data: {
         currency: "eur",
         product_data: {
-          name: `Guide Spiregg – ${item.destination || "Destination personnalisée"} ${PLANS[item.planKey].label}`,
+          name: `Guide TravelGuide AI – ${item.destination || "Destination personnalisée"} ${PLANS[item.planKey].label}`,
         },
         unit_amount: item.amount,
       },

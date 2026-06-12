@@ -36,7 +36,7 @@ const FAQ_FR = [
   {
     cat: "Qualité du Guide",
     items: [
-      { q: "Le guide est-il fiable ?", a: "Les guides sont générés par Claude AI (Anthropic), un modèle de langage avancé. Les informations sont généralement pertinentes et bien structurées, mais nous ne garantissons pas l'exactitude à 100% (horaires, prix, disponibilités). Vérifiez toujours les informations pratiques auprès des sources officielles avant votre voyage." },
+      { q: "Le guide est-il fiable ?", a: "Les guides sont générés par une IA entraînée sur de grandes quantités de données de voyage. Les informations sont généralement pertinentes et bien structurées, mais nous ne garantissons pas l'exactitude à 100% (horaires, prix, disponibilités). Vérifiez toujours les informations pratiques auprès des sources officielles avant votre voyage." },
       { q: "Que contient exactement le guide ?", a: "Un programme jour par jour avec les activités recommandées, les horaires, les conseils pratiques, les restaurants et adresses, le budget estimé par jour, les transports et hébergements, ainsi que des astuces locales adaptées à votre profil de voyageur." },
       { q: "Le guide est-il adapté à mon niveau de budget ?", a: "Oui. Vous indiquez votre budget quotidien dans le questionnaire et l'IA adapte les recommandations en conséquence : hébergements, restaurants, activités et transports sont sélectionnés selon votre budget." },
       { q: "Puis-je demander une correction si le guide est erroné ?", a: "En cas de défaut grave (destination incorrecte, document vide, erreur technique majeure), contactez-nous à travel-guide@nanocorp.app dans les 7 jours suivant la livraison avec une description du problème. Nous étudions chaque cas individuellement." },
@@ -46,7 +46,7 @@ const FAQ_FR = [
     cat: "Données & Vie Privée",
     items: [
       { q: "Mes données sont-elles en sécurité ?", a: "Oui. Vos données sont stockées sur Supabase (infrastructure AWS, datacenter européen), avec chiffrement en transit (HTTPS/TLS) et au repos. Vos mots de passe sont hachés avec bcrypt — nous n'y avons jamais accès." },
-      { q: "L'IA garde-t-elle mes informations ?", a: "Non. Dans le cadre des API commerciales d'Anthropic (Claude AI), les données soumises ne sont pas utilisées pour entraîner les modèles. Seules vos préférences de voyage sont envoyées à l'IA pour générer votre guide." },
+      { q: "L'IA garde-t-elle mes informations ?", a: "Non. Notre IA entraînée n'utilise pas vos données personnelles pour s'améliorer. Seules vos préférences de voyage sont transmises pour générer votre guide." },
       { q: "Mon email sera-t-il revendu ?", a: "Jamais. Votre email est utilisé uniquement pour vous livrer votre guide et confirmer votre commande. Si vous vous inscrivez à la newsletter, vous pouvez vous désinscrire à tout moment d'un seul clic." },
       { q: "À quoi sert la vérification du numéro de téléphone ?", a: "Elle est optionnelle et sert uniquement à vérifier votre identité par SMS (code OTP) pour débloquer le code promo WELCOME. Votre numéro n'est pas utilisé à des fins commerciales et n'est pas revendu." },
     ],
@@ -76,7 +76,7 @@ const FAQ_EN = [
     cat: "Privacy & Data",
     items: [
       { q: "Is my data safe?", a: "Yes. Data is stored on Supabase (AWS infrastructure, European datacentre) with encryption in transit (HTTPS/TLS) and at rest. Passwords are bcrypt-hashed — we never have access to them." },
-      { q: "Does the AI keep my information?", a: "No. Under Anthropic's commercial API terms, submitted data is not used to train models. Only your travel preferences are sent to the AI to generate your guide." },
+      { q: "Does the AI keep my information?", a: "No. Our trained AI does not use your personal data to improve itself. Only your travel preferences are sent to generate your guide." },
       { q: "Will my email be sold?", a: "Never. Your email is used solely to deliver your guide and confirm your order. If you subscribe to the newsletter, you can unsubscribe at any time with one click." },
     ],
   },

@@ -32,7 +32,7 @@ Pour toute question relative à vos données personnelles, écrivez-nous directe
 **Données du questionnaire de voyage :**
 - Destination, dates, préférences de voyage, style de voyage, budget, intérêts.
 - Ces données sont **non sensibles** (aucune donnée de santé, aucune donnée financière précise, aucune opinion politique).
-- Elles sont transmises à Claude AI (Anthropic) uniquement pour générer votre guide personnalisé.
+- Elles sont transmises à notre IA entraînée uniquement pour générer votre guide personnalisé.
 
 **Données de paiement :**
 - Gérées exclusivement par Stripe. Nous ne voyons ni ne stockons jamais votre numéro de carte bancaire.
@@ -45,7 +45,7 @@ Pour toute question relative à vos données personnelles, écrivez-nous directe
     title: "3. L'IA et vos données — ce que vous devez savoir",
     body: `**Comment l'IA utilise vos données :**
 
-Vos réponses au questionnaire (destination, préférences, dates) sont envoyées à Claude AI (Anthropic) pour générer votre guide de voyage. C'est la raison d'être du service.
+Vos réponses au questionnaire (destination, préférences, dates) sont envoyées à notre IA entraînée pour générer votre guide de voyage. C'est la raison d'être du service.
 
 **Ce que l'IA ne reçoit PAS :**
 - Votre nom complet
@@ -55,7 +55,7 @@ Vos réponses au questionnaire (destination, préférences, dates) sont envoyée
 
 **Important :** N'incluez dans vos réponses et vos notes libres **aucune information personnelle sensible** (numéro de sécurité sociale, données médicales précises, coordonnées bancaires, mots de passe, etc.). Ces informations n'ont aucune utilité pour générer votre guide et leur traitement par une IA tiers n'est pas couvert par cette politique.
 
-Anthropic (l'entreprise derrière Claude AI) dispose de sa propre politique de confidentialité disponible sur anthropic.com. Dans le cadre des API commerciales, Anthropic s'engage à ne pas utiliser les données soumises via l'API pour entraîner ses modèles.`,
+Notre IA entraînée n'utilise pas les données soumises pour s'améliorer. Les données du questionnaire sont traitées uniquement pour générer votre guide, sans aucune réutilisation à des fins d'entraînement.`,
   },
   {
     id: "utilisation",
@@ -100,7 +100,7 @@ Nous ne vous enverrons **jamais** d'e-mails commerciaux non sollicités.`,
 | **Vercel** | Hébergement du site web | UE / USA (Standard Contractual Clauses) |
 | **Stripe** | Paiement en ligne | USA (SCC + Privacy Shield) |
 | **Twilio** | Vérification SMS (OTP) | USA (SCC) |
-| **Anthropic / Claude AI** | Génération du guide par IA | USA (SCC — données questionnaire uniquement, non personnelles) |
+| **IA entraînée** | Génération du guide par IA | Données questionnaire uniquement, non personnelles |
 | **PostHog** | Analytics anonymisés | EU Cloud |
 
 Aucun autre tiers n'a accès à vos données personnelles.`,
@@ -205,7 +205,7 @@ export default function PrivacyPage() {
         <div className="grid sm:grid-cols-3 gap-4 mb-14">
           {[
             { icon: "🚫", title: "Zéro revente", desc: "Vos données ne sont jamais vendues à des tiers ou annonceurs." },
-            { icon: "🤖", title: "IA sans données perso", desc: "Claude AI reçoit uniquement vos préférences de voyage, pas votre email ni téléphone." },
+            { icon: "🤖", title: "IA sans données perso", desc: "Notre IA entraînée reçoit uniquement vos préférences de voyage, pas votre email ni téléphone." },
             { icon: "📧", title: "Email = commande only", desc: "On vous écrit uniquement pour votre guide et votre commande. Newsletter = opt-in." },
           ].map(card => (
             <div key={card.title} className="rounded-2xl border border-gray-100 bg-[#F5F7F5] p-5 text-center shadow-sm">

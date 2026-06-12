@@ -87,7 +87,7 @@ export async function POST(req: NextRequest) {
 
     await recordPromoUsage({ userId: session.userId, code: promoCode, productId: selectedPlan });
 
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "https://spiregg.nanocorp.app";
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "https://travel-guide.nanocorp.app";
     const redirectUrl = destination && orderRows[0]?.id
       ? `${baseUrl}/account/orders/${orderRows[0].id}`
       : `${baseUrl}/questionnaire?plan=${selectedPlan}&email=${encodeURIComponent(user.email)}`;

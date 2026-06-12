@@ -126,7 +126,7 @@ Toute demande de remboursement doit être adressée par email à ${CONTACT} avec
         id: "art8",
         title: "Article 8 — Limitation de Responsabilité — Contenu IA",
         body: `**8.1 Nature du contenu généré**
-Les guides TravelGuide AI sont générés automatiquement par un système d'intelligence artificielle (Claude AI, Anthropic) et ne sont pas rédigés, relus ni vérifiés par un expert humain, un guide professionnel ou un agent de voyage agréé.
+Les guides TravelGuide AI sont générés automatiquement par un système d'intelligence artificielle entraînée et ne sont pas rédigés, relus ni vérifiés par un expert humain, un guide professionnel ou un agent de voyage agréé.
 
 **8.2 Absence de garantie sur l'exactitude**
 Le Vendeur ne garantit pas l'exactitude, l'exhaustivité, l'actualité ni la pertinence des informations contenues dans les guides, notamment :
@@ -313,7 +313,7 @@ This checkbox is mandatory. The waiver is recorded with a timestamp and IP addre
       {
         id: "s8",
         title: "8. AI Content — Liability Disclaimer",
-        body: `Travel guides are generated entirely by an AI system (Claude AI, Anthropic) and are not written, reviewed or verified by any human expert, professional guide or licensed travel agent.
+        body: `Travel guides are generated entirely by a trained AI system and are not written, reviewed or verified by any human expert, professional guide or licensed travel agent.
 
 The Seller makes **no warranty** on the accuracy, completeness, currency or relevance of information, including opening hours, prices, availability, entry requirements (visas, vaccinations) or safety conditions.
 
