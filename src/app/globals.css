@@ -37,10 +37,22 @@ input, textarea, select {
 
 body {
   background-color: #FDFCFA;
-  background-image: radial-gradient(circle, rgba(155,135,100,0.10) 1px, transparent 1px);
-  background-size: 22px 22px;
+  background-image: radial-gradient(circle, rgba(201,168,76,0.13) 1px, transparent 1px);
+  background-size: 24px 24px;
   color: #425C47;
   font-family: var(--font-dm-sans), system-ui, sans-serif;
+}
+
+.bg-pattern {
+  background-color: #ffffff;
+  background-image: radial-gradient(circle, rgba(201,168,76,0.10) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.bg-pattern-light {
+  background-color: #F5F7F5;
+  background-image: radial-gradient(circle, rgba(201,168,76,0.10) 1px, transparent 1px);
+  background-size: 24px 24px;
 }
 
 .hero-bg {

@@ -644,7 +644,7 @@ export default function Home() {
       </section>
 
       {/* PRICING */}
-      <section className="scroll-mt-28 py-14 sm:py-24 px-4 sm:px-6 bg-[#F5F7F5]" id="pricing">
+      <section className="scroll-mt-28 py-14 sm:py-24 px-4 sm:px-6 bg-pattern-light" id="pricing">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2
@@ -778,7 +778,7 @@ export default function Home() {
       </section>
 
       {/* VISUAL EXAMPLES */}
-      <section className="py-14 sm:py-24 px-4 sm:px-6 bg-white">
+      <section className="py-14 sm:py-24 px-4 sm:px-6 bg-pattern">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2
@@ -1035,7 +1035,7 @@ export default function Home() {
       </section>
 
       {/* FOOTER */}
-      <footer className="py-8 px-6 border-t border-gray-100 bg-white">
+      <footer className="py-8 px-6 border-t border-gray-100 bg-pattern">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-[#425C47]/45">
           <span
             className="font-bold text-[#425C47] text-base"
