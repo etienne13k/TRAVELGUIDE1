@@ -23,7 +23,7 @@ const PLANS: Record<PlanKey, { name: string; duration: string; oldPrice: string;
   "3j":    { name: "Guide Express",  duration: "3 jours",  oldPrice: "5€",  price: "3€",  priceN: 3  },
   "7j":    { name: "Guide Complet",  duration: "7 jours",  oldPrice: "10€", price: "7€",  priceN: 7  },
   "14j":   { name: "Guide Immersif", duration: "14 jours", oldPrice: "18€", price: "12€", priceN: 12 },
-  "1mois": { name: "Guide de Vie",   duration: "1 mois",   oldPrice: "30€", price: "20€", priceN: 20 },
+  "1mois": { name: "Guide de Vie",   duration: "1 mois",   oldPrice: "25€", price: "18€", priceN: 18 },
 };
 
 const DESTINATIONS = [

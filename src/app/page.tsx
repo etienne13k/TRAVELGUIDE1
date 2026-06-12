@@ -111,9 +111,9 @@ const translations = {
       {
         name: "Guide de Vie",
         duration: "1 mois",
-        price: "20€",
-        oldPrice: "30€",
-        savings: "Économisez 10€",
+        price: "18€",
+        oldPrice: "25€",
+        savings: "Économisez 7€",
         desc: "Pour digital nomads et globe-trotters.",
         inherited: "Tout le plan 14 jours +",
         features: [
@@ -273,9 +273,9 @@ const translations = {
       {
         name: "Life Guide",
         duration: "1 month",
-        price: "€20",
-        oldPrice: "€30",
-        savings: "Save €10",
+        price: "€18",
+        oldPrice: "€25",
+        savings: "Save €7",
         desc: "For digital nomads and globe-trotters.",
         inherited: "Everything in 14 days +",
         features: [
