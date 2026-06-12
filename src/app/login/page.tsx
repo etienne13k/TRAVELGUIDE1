@@ -2,9 +2,11 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import LangToggle from "@/components/LangToggle";
 
 export default function LoginPage() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -25,9 +27,7 @@ export default function LoginPage() {
         setError(data.error || "Erreur de connexion");
       } else {
         window.posthog?.capture("login_completed");
-        const params = new URLSearchParams(window.location.search);
-        const redirect = params.get("redirect") || "/account";
-        window.location.href = redirect;
+        router.push("/account");
       }
     } catch {
       setError("Erreur réseau");
