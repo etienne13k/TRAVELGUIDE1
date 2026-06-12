@@ -75,7 +75,7 @@ export default function ContactPage() {
 
             <div className="space-y-5">
               {[
-                { icon: "📧", title: "Email direct", desc: "spiregg@nanocorp.app" },
+                { icon: "📧", title: "Email direct", desc: "travel-guide@nanocorp.app" },
                 { icon: "⏱️", title: "Délai de réponse", desc: "Généralement sous 24h en semaine" },
                 { icon: "🔒", title: "Confidentialité", desc: "Vos données ne sont jamais revendues" },
               ].map(item => (
