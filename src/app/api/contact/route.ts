@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getPool } from "@/lib/db";
+import { Resend } from "resend";
+
+const CONTACT_EMAIL = "travel-guide@nanocorp.app";
 
 export async function POST(req: NextRequest) {
   try {
@@ -15,7 +18,6 @@ export async function POST(req: NextRequest) {
 
     const pool = getPool();
 
-    // Créer la table si elle n'existe pas encore
     await pool.query(`
       CREATE TABLE IF NOT EXISTS contact_messages (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -33,6 +35,30 @@ export async function POST(req: NextRequest) {
        VALUES ($1, $2, $3, $4)`,
       [firstName.trim(), lastName.trim(), email.trim().toLowerCase(), message.trim()]
     );
+
+    if (process.env.RESEND_API_KEY) {
+      const resend = new Resend(process.env.RESEND_API_KEY);
+      await resend.emails.send({
+        from: "TravelGuide AI <guides@travelguide.ai>",
+        to: CONTACT_EMAIL,
+        replyTo: email.trim(),
+        subject: `[Contact] ${firstName} ${lastName} — ${email}`,
+        html: `
+          <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
+            <h2 style="color: #425C47;">Nouveau message de contact</h2>
+            <table style="width: 100%; border-collapse: collapse; margin-bottom: 16px;">
+              <tr><td style="padding: 8px; font-weight: bold; color: #425C47; width: 120px;">Prénom</td><td style="padding: 8px;">${firstName.trim()}</td></tr>
+              <tr style="background: #f5f7f5;"><td style="padding: 8px; font-weight: bold; color: #425C47;">Nom</td><td style="padding: 8px;">${lastName.trim()}</td></tr>
+              <tr><td style="padding: 8px; font-weight: bold; color: #425C47;">Email</td><td style="padding: 8px;"><a href="mailto:${email.trim()}">${email.trim()}</a></td></tr>
+            </table>
+            <div style="background: #f5f7f5; border-left: 4px solid #C9A84C; padding: 16px; border-radius: 4px;">
+              <p style="margin: 0; white-space: pre-wrap; color: #425C47;">${message.trim().replace(/</g, "&lt;").replace(/>/g, "&gt;")}</p>
+            </div>
+            <p style="margin-top: 24px; font-size: 12px; color: #999;">Message reçu depuis travel-guide.nanocorp.app · Répondez directement à cet email pour contacter l'expéditeur.</p>
+          </div>
+        `,
+      });
+    }
 
     return NextResponse.json({ success: true });
   } catch (error) {

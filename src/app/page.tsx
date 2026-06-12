@@ -19,14 +19,14 @@ const translations = {
   fr: {
     banner_messages: [
       "🏷️ -40% sur votre premier guide avec le code WELCOME",
-      "✈️ Jusqu'à 10€ économisés · Livraison 24h · Sans abonnement",
+      "✈️ Jusqu'à 10€ économisés · Livraison 48h · Sans abonnement",
       "🌍 Paris · Tokyo · Bali · Bangkok · New York · et bien plus",
     ],
     nav_cta: "Créer mon guide",
     hero_title: "TravelGuide AI",
     hero_sub: "Votre guide de voyage personnalisé, généré par IA et livré en PDF",
     hero_cta: "Créer mon guide",
-    hero_sub_cta: "À partir de 3€ · Sans abonnement · Livraison sous 24h",
+    hero_sub_cta: "À partir de 3€ · Sans abonnement · Livraison sous 48h",
     how_title: "Comment ça marche",
     how_steps: [
       {
@@ -153,7 +153,7 @@ const translations = {
       { day: "J3", title: "Harajuku & Shibuya", sub: "Takeshita St. + Carrefour légendaire", color: "#425B48" },
     ],
     hero_card_more: "+ 4 jours supplémentaires…",
-    hero_card_delivery: "Livraison 24h",
+    hero_card_delivery: "Livraison 48h",
     nav_account_label: "Mon compte",
     hero_badge_ai: "Propulsé par Claude AI",
     hero_badge_delivery: "Livraison",
@@ -182,14 +182,14 @@ const translations = {
   en: {
     banner_messages: [
       "🏷️ -40% on your first guide with code WELCOME",
-      "✈️ Save up to €10 · 24h delivery · No subscription",
+      "✈️ Save up to €10 · 48h delivery · No subscription",
       "🌍 Paris · Tokyo · Bali · Bangkok · New York · and much more",
     ],
     nav_cta: "Create my guide",
     hero_title: "TravelGuide AI",
     hero_sub: "Your AI-Powered Travel Guide, Delivered as PDF",
     hero_cta: "Create my guide",
-    hero_sub_cta: "From €3 · No subscription · Delivered in 24h",
+    hero_sub_cta: "From €3 · No subscription · Delivered in 48h",
     how_title: "How it works",
     how_steps: [
       {
@@ -208,7 +208,7 @@ const translations = {
         icon: "📩",
         n: "03",
         title: "Receive your guide",
-        desc: "Professional PDF delivered to your inbox within 24h. Ready to explore.",
+        desc: "Professional PDF delivered to your inbox within 48h. Ready to explore.",
       },
     ],
     pricing_title: "Choose your adventure",
@@ -514,7 +514,7 @@ export default function Home() {
             {/* Trust badges */}
             <div className="flex items-center gap-4 sm:gap-6 mt-8 sm:mt-10">
               {[
-                { val: "24h", label: tx.hero_badge_delivery },
+                { val: "48h", label: tx.hero_badge_delivery },
                 { val: "100%", label: tx.hero_badge_custom },
                 { val: "4.9★", label: tx.hero_badge_rating },
               ].map((b, i) => (

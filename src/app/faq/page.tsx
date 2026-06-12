@@ -10,7 +10,7 @@ const FAQ_FR = [
     cat: "Commande & Livraison",
     items: [
       { q: "Comment fonctionne TravelGuide AI ?", a: "Vous sélectionnez une offre, renseignez un questionnaire sur votre voyage (destination, dates, budget, préférences) et notre IA génère automatiquement un guide personnalisé en PDF, livré dans votre espace client et par email sous quelques minutes." },
-      { q: "Combien de temps pour recevoir mon guide ?", a: "En général quelques minutes après la validation du questionnaire. Le délai maximum garanti est de 24 heures ouvrées. Si vous ne recevez rien au-delà, contactez-nous à travel-guide@nanocorp.app." },
+      { q: "Combien de temps pour recevoir mon guide ?", a: "En général quelques minutes après la validation du questionnaire. Le délai maximum garanti est de 48 heures ouvrées. Si vous ne recevez rien au-delà, contactez-nous à travel-guide@nanocorp.app." },
       { q: "Mon guide est-il vraiment personnalisé ?", a: "Oui. Chaque guide est généré à partir de vos réponses spécifiques : destination exacte, dates, style de voyage, budget quotidien, intérêts (culture, gastronomie, nature…), préférences alimentaires, etc. Deux guides pour la même destination sont différents selon les profils." },
       { q: "Sous quel format reçois-je mon guide ?", a: "Votre guide est livré en PDF, téléchargeable depuis votre espace client et envoyé à l'email fourni lors de la commande. Vous pouvez le re-télécharger à tout moment depuis votre compte." },
       { q: "Puis-je commander plusieurs guides ?", a: "Oui, sans limite. Chaque commande génère un guide indépendant. Vous pouvez commander des guides pour différentes destinations, différentes durées ou différents voyageurs." },
@@ -22,7 +22,7 @@ const FAQ_FR = [
       { q: "Quelles sont les offres disponibles ?", a: "Nous proposons 4 offres : Guide 3 jours (3€), Guide 7 jours (7€), Guide 14 jours (12€) et Guide 1 mois (18€). Tous les prix sont en TTC, TVA non applicable (micro-entreprise)." },
       { q: "Comment fonctionne le code promo WELCOME ?", a: "Le code WELCOME offre -40% sur votre première commande. Pour l'activer, vérifiez votre numéro de téléphone dans votre espace compte — cela débloque automatiquement le code. Il est valable une seule fois par compte." },
       { q: "Le paiement est-il sécurisé ?", a: "Oui. Les paiements sont traités exclusivement par Stripe, certifié PCI-DSS niveau 1 (le standard de sécurité le plus élevé pour les paiements en ligne). Nous ne voyons jamais votre numéro de carte bancaire." },
-      { q: "Puis-je me faire rembourser ?", a: "Si votre guide n'est pas livré dans les 24 heures, vous avez droit à un remboursement intégral. Une fois le guide livré, le remboursement n'est pas possible (contenu numérique à exécution immédiate), sauf défaut grave signalé dans les 7 jours. Consultez nos CGV pour tous les détails." },
+      { q: "Puis-je me faire rembourser ?", a: "Si votre guide n'est pas livré dans les 48 heures, vous avez droit à un remboursement intégral. Une fois le guide livré, le remboursement n'est pas possible (contenu numérique à exécution immédiate), sauf défaut grave signalé dans les 7 jours. Consultez nos CGV pour tous les détails." },
     ],
   },
   {
@@ -69,7 +69,7 @@ const FAQ_EN = [
       { q: "What plans are available?", a: "We offer 4 plans: 3-day guide (€3), 7-day guide (€7), 14-day guide (€12) and 1-month guide (€18). All prices are all-inclusive." },
       { q: "How does the WELCOME promo code work?", a: "The WELCOME code gives -40% off your first order. To activate it, verify your phone number in your account — this automatically unlocks the code. Valid once per account." },
       { q: "Is payment secure?", a: "Yes. Payments are processed exclusively by Stripe, PCI-DSS level 1 certified. We never see your card number." },
-      { q: "Can I get a refund?", a: "If your guide is not delivered within 24 hours, you are entitled to a full refund. Once delivered, refunds are not possible (immediate digital content), except for serious defects reported within 7 days. See our Terms of Sale for full details." },
+      { q: "Can I get a refund?", a: "If your guide is not delivered within 48 hours, you are entitled to a full refund. Once delivered, refunds are not possible (immediate digital content), except for serious defects reported within 7 days. See our Terms of Sale for full details." },
     ],
   },
   {
@@ -161,7 +161,7 @@ export default function FAQPage() {
             {lang === "fr" ? "Vous n'avez pas trouvé votre réponse ?" : "Didn't find your answer?"}
           </h3>
           <p className="text-white/70 text-sm mb-5">
-            {lang === "fr" ? "Notre équipe répond sous 24h." : "Our team replies within 24 hours."}
+            {lang === "fr" ? "Notre équipe répond sous 48h." : "Our team replies within 48 hours."}
           </p>
           <Link
             href="/contact"

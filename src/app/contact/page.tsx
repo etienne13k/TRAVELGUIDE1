@@ -64,7 +64,7 @@ export default function ContactPage() {
           <div>
             <div className="inline-flex items-center gap-2 bg-[#425C47]/8 border border-[#425C47]/15 rounded-full px-4 py-1.5 mb-6">
               <span className="w-2 h-2 bg-[#425C47] rounded-full animate-pulse" />
-              <span className="text-xs font-bold text-[#425C47] uppercase tracking-wide">On vous répond sous 24h</span>
+              <span className="text-xs font-bold text-[#425C47] uppercase tracking-wide">On vous répond sous 48h</span>
             </div>
             <h1 className="text-3xl sm:text-4xl font-bold text-[#425C47] mb-4" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
               Une question ?<br />On est là. ✈️
@@ -76,7 +76,7 @@ export default function ContactPage() {
             <div className="space-y-5">
               {[
                 { icon: "📧", title: "Email direct", desc: "travel-guide@nanocorp.app" },
-                { icon: "⏱️", title: "Délai de réponse", desc: "Généralement sous 24h en semaine" },
+                { icon: "⏱️", title: "Délai de réponse", desc: "Généralement sous 48h en semaine" },
                 { icon: "🔒", title: "Confidentialité", desc: "Vos données ne sont jamais revendues" },
               ].map(item => (
                 <div key={item.title} className="flex items-start gap-4">
@@ -101,7 +101,7 @@ export default function ContactPage() {
                   Message envoyé !
                 </h2>
                 <p className="text-[#425C47]/60 text-sm mb-6">
-                  Nous avons bien reçu votre message et vous répondrons sous 24h.
+                  Nous avons bien reçu votre message et vous répondrons sous 48h.
                 </p>
                 <button
                   type="button"
