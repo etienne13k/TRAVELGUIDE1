@@ -1,24 +1,39 @@
 import type { NextConfig } from "next";
 
+const serverOnlyPackages = [
+  'pg',
+  'pg-native',
+  'pg-cloudflare',
+  'pdfkit',
+  'twilio',
+  'bcryptjs',
+];
+
 const nextConfig: NextConfig = {
-  serverExternalPackages: ['pg', 'pdfkit'],
+  serverExternalPackages: serverOnlyPackages,
   typescript: { ignoreBuildErrors: true },
   eslint: { ignoreDuringBuilds: true },
-  webpack: (config) => {
-    config.externals = [
-      ...(Array.isArray(config.externals) ? config.externals : []),
-      'pg',
-      'pg-native',
-      'pdfkit',
-    ];
-    config.resolve.fallback = {
-      ...config.resolve.fallback,
-      pg: false,
-      'pg-native': false,
-      fs: false,
-      net: false,
-      tls: false,
-    };
+  webpack: (config, { isServer }) => {
+    if (isServer) {
+      if (Array.isArray(config.externals)) {
+        config.externals.push(...serverOnlyPackages);
+      }
+    } else {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        pg: false,
+        'pg-native': false,
+        'pg-cloudflare': false,
+        pdfkit: false,
+        fs: false,
+        net: false,
+        tls: false,
+        crypto: false,
+        stream: false,
+        path: false,
+        os: false,
+      };
+    }
     return config;
   },
 };
