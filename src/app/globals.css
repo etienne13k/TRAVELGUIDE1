@@ -1,0 +1,205 @@
+﻿@import "tailwindcss";
+
+@theme inline {
+  --font-display: var(--font-playfair);
+  --font-sans: var(--font-dm-sans);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* ── Newsletter popup ────────────────────────────── */
+@keyframes slide-up {
+  0%   { opacity: 0; transform: translateY(20px) scale(0.97); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.animate-slide-up {
+  animation: slide-up 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* ── Mobile touch & readability ──────────────────── */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Empêche le zoom iOS sur les inputs */
+input, textarea, select {
+  font-size: 16px !important;
+}
+
+@media (min-width: 640px) {
+  input, textarea, select {
+    font-size: inherit !important;
+  }
+}
+
+body {
+  background-color: #FDFCFA;
+  background-image: radial-gradient(circle, rgba(155,135,100,0.10) 1px, transparent 1px);
+  background-size: 22px 22px;
+  color: #425C47;
+  font-family: var(--font-dm-sans), system-ui, sans-serif;
+}
+
+.hero-bg {
+  background-color: #ffffff;
+  background-image:
+    radial-gradient(ellipse 70% 60% at 85% 45%, rgba(201,168,76,0.06) 0%, transparent 70%),
+    radial-gradient(ellipse 50% 40% at 15% 70%, rgba(66,92,71,0.04) 0%, transparent 60%);
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotate(2deg); }
+  50% { transform: translateY(-12px) rotate(2deg); }
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.8); }
+}
+
+@keyframes ticker {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-pulse-dot {
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+
+.animate-ticker {
+  animation: ticker 28s linear infinite;
+  display: flex;
+  width: max-content;
+  will-change: transform;
+}
+
+.banner-ticker-wrap:hover .animate-ticker {
+  animation-play-state: paused;
+}
+
+@keyframes gift-pulse {
+  0%, 100% { transform: scale(1); box-shadow: 0 10px 24px rgba(201, 168, 76, 0.18); }
+  50% { transform: scale(1.06); box-shadow: 0 14px 30px rgba(201, 168, 76, 0.28); }
+}
+
+@keyframes gift-shine {
+  0% { transform: translateX(-140%) rotate(18deg); opacity: 0; }
+  35% { opacity: 0.8; }
+  70%, 100% { transform: translateX(140%) rotate(18deg); opacity: 0; }
+}
+
+@keyframes phone-success {
+  0% { transform: scale(0.98); opacity: 0.6; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.gift-badge {
+  animation: gift-pulse 2.8s ease-in-out infinite;
+  isolation: isolate;
+  overflow: hidden;
+  position: relative;
+}
+
+.gift-badge::after {
+  animation: gift-shine 3.6s ease-in-out infinite;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.85), transparent);
+  content: "";
+  inset: -25% 30%;
+  position: absolute;
+  z-index: -1;
+}
+
+.animate-phone-success {
+  animation: phone-success 320ms ease-out;
+}
+
+/* ── Promo input feedback ────────────────────────── */
+@keyframes input-pulse-success {
+  0%   { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.5); }
+  60%  { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+
+@keyframes checkmark-pop {
+  0%   { opacity: 0; transform: scale(0) rotate(-45deg); }
+  60%  { transform: scale(1.2) rotate(5deg); }
+  100% { opacity: 1; transform: scale(1) rotate(0deg); }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%  { transform: translateX(-5px); }
+  40%  { transform: translateX(5px); }
+  60%  { transform: translateX(-4px); }
+  80%  { transform: translateX(4px); }
+}
+
+.promo-input-valid {
+  border-color: #10b981 !important;
+  animation: input-pulse-success 0.6s ease-out;
+}
+
+.promo-input-invalid {
+  border-color: #ef4444 !important;
+  animation: shake 0.4s ease-out;
+}
+
+.promo-checkmark {
+  animation: checkmark-pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* ── Promo price animation ───────────────────────── */
+@keyframes price-appear {
+  0%   { opacity: 0; transform: translateY(10px) scale(0.85); }
+  65%  { transform: translateY(-2px) scale(1.06); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes badge-pop {
+  0%   { opacity: 0; transform: translateY(6px) scale(0.7); }
+  65%  { transform: scale(1.08); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes strike-in {
+  0%   { width: 0; }
+  100% { width: 100%; }
+}
+
+.promo-new-price {
+  animation: price-appear 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.promo-badge-appear {
+  animation: badge-pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) 0.18s both;
+}
+
+.promo-old-price {
+  position: relative;
+  color: #94a3b8;
+}
+
+.promo-old-price::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  height: 2px;
+  background: #94a3b8;
+  animation: strike-in 0.35s ease-out 0.05s both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gift-badge,
+  .gift-badge::after,
+  .animate-phone-success {
+    animation: none;
+  }
+}

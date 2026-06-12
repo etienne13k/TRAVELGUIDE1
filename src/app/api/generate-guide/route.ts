@@ -1,0 +1,275 @@
+﻿import { NextRequest, NextResponse } from "next/server";
+import OpenAI from "openai";
+import { Resend } from "resend";
+import { createSupabaseServiceRoleClient, type Json } from "@/lib/supabase";
+import { ensureAdminSchema } from "@/lib/admin-db";
+import { buildSystemPrompt, buildUserMessage, getMaxTokens, type GuideInput } from "@/lib/guide-prompt";
+import { generateGuidePDF } from "@/lib/pdf-generator";
+import crypto from "crypto";
+
+export const maxDuration = 60;
+
+async function markOrderError(orderId: string | null, message: string) {
+  if (!orderId) return;
+  const supabase = createSupabaseServiceRoleClient();
+  await supabase.from("orders").update({ status: "error", delivery_error: message }).eq("id", orderId);
+}
+
+async function ensureGuidesTable() {
+  await ensureAdminSchema();
+}
+
+export async function POST(req: NextRequest) {
+  // Validate environment
+  if (!process.env.OPENAI_API_KEY) {
+    return NextResponse.json(
+      { error: "Service temporairement indisponible. Clé API OpenAI non configurée." },
+      { status: 503 }
+    );
+  }
+
+  let input: GuideInput & { orderId?: string };
+  try {
+    input = await req.json();
+  } catch {
+    return NextResponse.json({ error: "Données invalides." }, { status: 400 });
+  }
+
+  // Basic validation
+  if (!input.email || !input.destination || !input.duration) {
+    return NextResponse.json(
+      { error: "Champs obligatoires manquants : email, destination, duration." },
+      { status: 400 }
+    );
+  }
+
+  // Find and update the matching order for this email or explicit admin order id
+  await ensureAdminSchema();
+  const supabase = createSupabaseServiceRoleClient();
+  let orderId: string | null = null;
+  try {
+    if (input.orderId) {
+      const { data: order } = await supabase.from("orders").select("id").eq("id", input.orderId).maybeSingle();
+      orderId = order?.id ?? null;
+    } else {
+      const { data: paymentSessions } = await supabase
+        .from("payment_sessions")
+        .select("session_id")
+        .eq("email", input.email.toLowerCase());
+      const sessionIds = (paymentSessions ?? []).map((session) => session.session_id);
+      if (sessionIds.length > 0) {
+        const { data: order } = await supabase
+          .from("orders")
+          .select("id")
+          .in("session_id", sessionIds)
+          .eq("plan", input.duration)
+          .in("status", ["questionnaire_pending", "questionnaire_completed"])
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .maybeSingle();
+        orderId = order?.id ?? null;
+      }
+    }
+
+    if (orderId) {
+      await supabase
+        .from("orders")
+        .update({
+          status: "generating",
+          destination: input.destination,
+          questionnaire_data: input as unknown as Json,
+          quiz_responses: input as unknown as Json,
+          delivery_error: null,
+        })
+        .eq("id", orderId);
+    }
+  } catch {
+    // Non-fatal: order tracking failure doesn't block guide generation
+  }
+
+  // 1. Generate guide content with OpenAI
+  let guideContent: string;
+  try {
+    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4o",
+      temperature: 0.7,
+      max_tokens: getMaxTokens(input.duration),
+      messages: [
+        { role: "system", content: buildSystemPrompt(input.language === "en" ? "en" : "fr") },
+        { role: "user", content: buildUserMessage(input) },
+      ],
+    });
+    guideContent = completion.choices[0]?.message?.content ?? "";
+    if (!guideContent) throw new Error("OpenAI returned empty content");
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error("[generate-guide] OpenAI error:", message);
+    if (orderId) {
+      await markOrderError(orderId, message).catch(() => undefined);
+    }
+    if (message.includes("timeout") || message.includes("ETIMEDOUT")) {
+      return NextResponse.json(
+        {
+          error:
+            "La génération du guide a pris trop de temps. Veuillez réessayer avec une destination plus courte.",
+        },
+        { status: 504 }
+      );
+    }
+    return NextResponse.json(
+      { error: "Erreur lors de la génération du contenu. Veuillez réessayer." },
+      { status: 500 }
+    );
+  }
+
+  // 2. Generate PDF
+  let pdfBuffer: Buffer;
+  try {
+    pdfBuffer = await generateGuidePDF(input, guideContent);
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error("[generate-guide] PDF error:", message);
+    if (orderId) {
+      await markOrderError(orderId, message).catch(() => undefined);
+    }
+    return NextResponse.json(
+      { error: "Erreur lors de la génération du PDF. Veuillez réessayer." },
+      { status: 500 }
+    );
+  }
+
+  // 3. Store PDF in database
+  let guideId: string;
+  try {
+    await ensureGuidesTable();
+    guideId = crypto.randomUUID();
+    const pdfBase64 = pdfBuffer.toString("base64");
+    const { error } = await supabase.from("guides").insert({
+      id: guideId,
+      email: input.email,
+      destination: input.destination,
+      duration: input.duration,
+      pdf_data: pdfBase64,
+    });
+    if (error) throw error;
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error("[generate-guide] DB error:", message);
+    if (orderId) {
+      await markOrderError(orderId, message).catch(() => undefined);
+    }
+    // Return PDF as base64 in response as fallback
+    return NextResponse.json({
+      guideId: null,
+      pdfBase64: pdfBuffer.toString("base64"),
+      emailSent: false,
+      warning: "PDF généré mais non sauvegardé en base de données.",
+    });
+  }
+
+  // 4. Send email with PDF attachment
+  let emailSent = false;
+  if (process.env.RESEND_API_KEY) {
+    try {
+      const resend = new Resend(process.env.RESEND_API_KEY);
+      const baseUrl =
+        process.env.NEXT_PUBLIC_BASE_URL ?? "https://spiregg.nanocorp.app";
+      const downloadUrl = `${baseUrl}/api/download-guide/${guideId}`;
+
+      await resend.emails.send({
+        from: "TravelGuide AI <guides@travelguide.ai>",
+        to: input.email,
+        subject: `Votre guide de voyage ${input.destination} est prêt ! ✈️`,
+        html: buildEmailHtml(input, downloadUrl),
+        attachments: [
+          {
+            filename: `guide-${input.destination.replace(/[^a-z0-9]/gi, "-").toLowerCase()}.pdf`,
+            content: pdfBuffer.toString("base64"),
+          },
+        ],
+      });
+      emailSent = true;
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err);
+      console.error("[generate-guide] Email error:", message);
+    }
+  }
+
+  // Update order delivery state
+  if (orderId) {
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "https://spiregg.nanocorp.app";
+    const guideDownloadUrl = `${baseUrl}/api/download-guide/${guideId}`;
+    const deliveryStatus = emailSent ? "delivered" : "error";
+    const deliveryError = emailSent ? null : "Email de livraison non envoyé";
+    try {
+      await supabase
+        .from("orders")
+        .update({
+          status: deliveryStatus,
+          guide_url: guideDownloadUrl,
+          pdf_url: guideDownloadUrl,
+          guide_id: guideId,
+          delivered_at: deliveryStatus === "delivered" ? new Date().toISOString() : null,
+          delivery_error: deliveryError,
+        })
+        .eq("id", orderId);
+    } catch {
+      // Non-fatal
+    }
+  }
+
+  return NextResponse.json({
+    guideId,
+    emailSent,
+    destination: input.destination,
+    duration: input.duration,
+  });
+}
+
+function buildEmailHtml(input: GuideInput, downloadUrl: string): string {
+  return `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body { font-family: system-ui, -apple-system, sans-serif; background: #F8F4EF; margin: 0; padding: 0; }
+    .container { max-width: 560px; margin: 0 auto; background: white; }
+    .header { background: #425C47; padding: 40px; text-align: center; }
+    .header h1 { color: white; font-size: 24px; margin: 0 0 8px; }
+    .header p { color: rgba(255,255,255,0.6); font-size: 13px; margin: 0; }
+    .body { padding: 40px; }
+    .body h2 { color: #425C47; font-size: 20px; margin-bottom: 12px; }
+    .body p { color: #4A4A6A; line-height: 1.6; font-size: 14px; }
+    .btn { display: inline-block; background: #425C47; color: white !important; padding: 14px 32px; border-radius: 10px; text-decoration: none; font-weight: bold; font-size: 15px; margin: 20px 0; }
+    .info { background: #F8F4EF; border-radius: 10px; padding: 20px; margin: 20px 0; }
+    .info p { margin: 4px 0; font-size: 13px; }
+    .disclaimer { font-size: 11px; color: #999; line-height: 1.5; border-top: 1px solid #eee; padding-top: 20px; margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>TravelGuide AI</h1>
+      <p>Votre guide de voyage personnalisé est prêt</p>
+    </div>
+    <div class="body">
+      <h2>Votre guide ${input.destination} est prêt ! ✈️</h2>
+      <p>Votre guide de voyage personnalisé a été généré par notre IA. Vous trouverez votre PDF en pièce jointe de cet email.</p>
+      <div class="info">
+        <p><strong>Destination :</strong> ${input.destination}</p>
+        <p><strong>Durée :</strong> ${input.duration}</p>
+        <p><strong>Budget :</strong> ${input.budget}</p>
+      </div>
+      <p>Vous pouvez également télécharger votre guide en cliquant sur le bouton ci-dessous :</p>
+      <a href="${downloadUrl}" class="btn">Télécharger mon guide PDF →</a>
+      <p class="disclaimer">${buildDisclaimer()}</p>
+    </div>
+  </div>
+</body>
+</html>`;
+}
+
+function buildDisclaimer(): string {
+  return "Ce guide a été généré par intelligence artificielle. Les informations fournies sont données à titre indicatif et peuvent ne pas être exactes ou à jour. TravelGuide AI ne saurait être tenu responsable d'éventuelles erreurs ou omissions. Nous vous recommandons de vérifier les horaires, prix et disponibilités directement auprès des établissements avant votre départ.";
+}
