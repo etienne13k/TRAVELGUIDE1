@@ -20,7 +20,7 @@ const translations = {
     banner_messages: [
       "🏷️ -40% sur votre premier guide avec le code WELCOME",
       "✈️ Jusqu'à 10€ économisés · Livraison 24h · Sans abonnement",
-      "🌍 Paris · Tokyo · Bali · Bangkok · New York · et partout dans le monde",
+      "🌍 Paris · Tokyo · Bali · Bangkok · New York · et bien plus",
     ],
     nav_cta: "Créer mon guide",
     hero_title: "TravelGuide AI",
@@ -183,7 +183,7 @@ const translations = {
     banner_messages: [
       "🏷️ -40% on your first guide with code WELCOME",
       "✈️ Save up to €10 · 24h delivery · No subscription",
-      "🌍 Paris · Tokyo · Bali · Bangkok · New York · and anywhere worldwide",
+      "🌍 Paris · Tokyo · Bali · Bangkok · New York · and much more",
     ],
     nav_cta: "Create my guide",
     hero_title: "TravelGuide AI",
@@ -347,6 +347,7 @@ export default function Home() {
   const [lang, setLang] = useState<Lang>("fr");
   const [cartCount, setCartCount] = useState(0);
   const [phoneStatus, setPhoneStatus] = useState<PhoneStatus>({ loggedIn: false, phone: null, phoneVerified: false, welcomeUsed: false });
+  const [exampleExpanded, setExampleExpanded] = useState(false);
   const tx = translations[lang];
 
   useEffect(() => {
@@ -850,8 +851,8 @@ export default function Home() {
               </div>
 
               {/* Timeline scrollable */}
-              <div className="overflow-y-auto max-h-[500px] px-7 py-5 space-y-0">
-                {[
+              <div className="px-7 py-5 space-y-0">
+                {([
                   {
                     time: lang === "fr" ? "9h00" : "9am",
                     label: lang === "fr" ? "Matin" : "Morning",
@@ -929,7 +930,7 @@ export default function Home() {
                     tag: lang === "fr" ? "Soirée" : "Evening",
                     color: "#C9A84C",
                   },
-                ].map((item, idx, arr) => (
+                ] as const).slice(0, exampleExpanded ? 99 : 2).map((item, idx, arr) => (
                   <div key={item.time} className="flex gap-4 py-4 border-b border-gray-50 last:border-0">
                     <div className="flex-shrink-0 w-12 text-right">
                       <div className="font-mono text-[10px] text-[#425C47]/40 mt-1">{item.time}</div>
@@ -954,24 +955,36 @@ export default function Home() {
                   </div>
                 ))}
 
+                {!exampleExpanded && (
+                  <button
+                    onClick={() => setExampleExpanded(true)}
+                    className="w-full mt-2 mb-4 flex items-center justify-center gap-2 rounded-xl border-2 border-dashed border-[#C9A84C]/40 py-3 text-sm font-bold text-[#C9A84C] hover:bg-[#C9A84C]/5 transition-colors"
+                  >
+                    <span className="text-lg leading-none">+</span>
+                    {lang === "fr" ? "Voir les 4 étapes suivantes" : "Show 4 more steps"}
+                  </button>
+                )}
+
                 {/* Budget du jour */}
-                <div className="mt-4 rounded-xl bg-[#425C47] text-white p-4">
-                  <div className="text-[10px] font-mono tracking-widest opacity-60 mb-2">
-                    {lang === "fr" ? "RÉCAPITULATIF JOUR 1" : "DAY 1 SUMMARY"}
+                {exampleExpanded && (
+                  <div className="mt-4 rounded-xl bg-[#425C47] text-white p-4">
+                    <div className="text-[10px] font-mono tracking-widest opacity-60 mb-2">
+                      {lang === "fr" ? "RÉCAPITULATIF JOUR 1" : "DAY 1 SUMMARY"}
+                    </div>
+                    <div className="grid grid-cols-3 gap-3 text-center">
+                      {[
+                        { label: lang === "fr" ? "Budget" : "Budget", val: "~55€" },
+                        { label: lang === "fr" ? "Activités" : "Activities", val: "7" },
+                        { label: lang === "fr" ? "Transport" : "Transport", val: "IC Card" },
+                      ].map(b => (
+                        <div key={b.label} className="bg-white/10 rounded-lg p-2">
+                          <div className="font-bold text-sm text-[#C9A84C]">{b.val}</div>
+                          <div className="text-[9px] opacity-60 uppercase tracking-wide">{b.label}</div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                  <div className="grid grid-cols-3 gap-3 text-center">
-                    {[
-                      { label: lang === "fr" ? "Budget" : "Budget", val: "~55€" },
-                      { label: lang === "fr" ? "Activités" : "Activities", val: "7" },
-                      { label: lang === "fr" ? "Transport" : "Transport", val: "IC Card" },
-                    ].map(b => (
-                      <div key={b.label} className="bg-white/10 rounded-lg p-2">
-                        <div className="font-bold text-sm text-[#C9A84C]">{b.val}</div>
-                        <div className="text-[9px] opacity-60 uppercase tracking-wide">{b.label}</div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                )}
               </div>
             </div>
           </div>
