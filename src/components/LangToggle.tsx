@@ -32,16 +32,16 @@ export default function LangToggle() {
       <button
         onClick={() => { if (lang !== "fr") toggle(); }}
         title="Passer en français"
-        className={`text-xl rounded-md px-2 py-0.5 transition-all ${lang === "fr" ? "bg-[#425C47]/15 shadow-sm" : "opacity-40 hover:opacity-70"}`}
+        className={`rounded-md px-2 py-0.5 transition-all ${lang === "fr" ? "bg-[#425C47]/15 shadow-sm" : "opacity-40 hover:opacity-70"}`}
       >
-        🇫🇷
+        <img src="https://flagcdn.com/w40/fr.png" width="24" height="16" alt="FR" style={{display:"inline",borderRadius:"2px"}} />
       </button>
       <button
         onClick={() => { if (lang !== "en") toggle(); }}
         title="Switch to English"
-        className={`text-xl rounded-md px-2 py-0.5 transition-all ${lang === "en" ? "bg-[#425C47]/15 shadow-sm" : "opacity-40 hover:opacity-70"}`}
+        className={`rounded-md px-2 py-0.5 transition-all ${lang === "en" ? "bg-[#425C47]/15 shadow-sm" : "opacity-40 hover:opacity-70"}`}
       >
-        🇬🇧
+        <img src="https://flagcdn.com/w40/gb.png" width="24" height="16" alt="GB" style={{display:"inline",borderRadius:"2px"}} />
       </button>
     </div>
   );
