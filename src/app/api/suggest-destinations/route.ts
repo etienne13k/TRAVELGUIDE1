@@ -1,10 +1,25 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
+import { Pool } from "pg";
 
 export const maxDuration = 60;
 
+async function getApiKey(): Promise<string | null> {
+  if (process.env.ANTHROPIC_API_KEY) return process.env.ANTHROPIC_API_KEY;
+  if (!process.env.DATABASE_URL) return null;
+  try {
+    const pool = new Pool({ connectionString: process.env.DATABASE_URL, ssl: { rejectUnauthorized: false } });
+    const res = await pool.query("SELECT value FROM app_config WHERE key = 'ANTHROPIC_API_KEY' LIMIT 1");
+    await pool.end();
+    return res.rows[0]?.value ?? null;
+  } catch {
+    return null;
+  }
+}
+
 export async function POST(req: NextRequest) {
-  if (!process.env.ANTHROPIC_API_KEY) {
+  const apiKey = await getApiKey();
+  if (!apiKey) {
     return NextResponse.json({ error: "ANTHROPIC_API_KEY manquante" }, { status: 503 });
   }
 
@@ -16,7 +31,7 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+    const anthropic = new Anthropic({ apiKey });
 
     const msg = await anthropic.messages.create({
       model: "claude-sonnet-4-6",
