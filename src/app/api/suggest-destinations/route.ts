@@ -17,6 +17,27 @@ async function getApiKey(): Promise<string | null> {
   }
 }
 
+function isoToFlag(iso: string): string {
+  const code = iso.toUpperCase().trim();
+  if (code.length !== 2) return "🌍";
+  return String.fromCodePoint(...[...code].map(c => 0x1F1E6 - 65 + c.charCodeAt(0)));
+}
+
+async function fetchWikipediaPhoto(city: string, country: string): Promise<string | null> {
+  const queries = [city, `${city}, ${country}`, country];
+  for (const q of queries) {
+    try {
+      const url = `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(q)}`;
+      const res = await fetch(url, { headers: { "User-Agent": "TravelGuideAI/1.0" }, signal: AbortSignal.timeout(4000) });
+      if (!res.ok) continue;
+      const data = await res.json() as { thumbnail?: { source?: string } };
+      const photo = data.thumbnail?.source;
+      if (photo) return photo;
+    } catch { continue; }
+  }
+  return null;
+}
+
 export async function POST(req: NextRequest) {
   const apiKey = await getApiKey();
   if (!apiKey) {
@@ -48,8 +69,18 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: `JSON introuvable dans: ${text.slice(0, 200)}` }, { status: 500 });
     }
 
-    const suggestions = JSON.parse(match[0]);
-    return NextResponse.json({ suggestions });
+    const suggestions: Array<Record<string, unknown>> = JSON.parse(match[0]);
+
+    // Fetch Wikipedia photos in parallel + generate flag from ISO code
+    const withPhotos = await Promise.all(
+      suggestions.map(async (s) => {
+        const photo = await fetchWikipediaPhoto(String(s.name ?? ""), String(s.country ?? ""));
+        const flag = isoToFlag(String(s.iso ?? ""));
+        return { ...s, photo, flag };
+      })
+    );
+
+    return NextResponse.json({ suggestions: withPhotos });
 
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
@@ -98,7 +129,7 @@ RÈGLES STRICTES DE COHÉRENCE :
 5. Tiens compte du temps de vol acceptable depuis la ville de départ.
 
 Réponds avec exactement ce JSON (3 objets) :
-[{"name":"ville/destination","country":"pays","emoji":"emoji pays ou paysage","tagline":"accroche de 8 mots max","why":"2 phrases expliquant POURQUOI cette destination correspond EXACTEMENT à ce profil","highlights":["atout1 concret","atout2 concret","atout3 concret"]}]
+[{"name":"ville/destination","country":"pays en français","iso":"code ISO 2 lettres du pays (ex: FR, JP, BR, MA, TH)","emoji":"emoji paysage ou activité","tagline":"accroche de 8 mots max","why":"2 phrases expliquant POURQUOI cette destination correspond EXACTEMENT à ce profil","highlights":["atout1 concret","atout2 concret","atout3 concret"]}]
 
 UNIQUEMENT le tableau JSON brut, sans markdown.`;
 }
