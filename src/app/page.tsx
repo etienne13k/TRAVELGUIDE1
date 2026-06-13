@@ -24,7 +24,7 @@ const translations = {
     ],
     nav_cta: "Créer mon guide",
     hero_title: "TravelGuide AI",
-    hero_sub: "Votre guide de voyage personnalisé, généré par IA et livré en PDF",
+    hero_sub: "Vous savez où aller — ou laissez l'IA vous suggérer la destination parfaite. Guide personnalisé, livré en PDF.",
     hero_cta: "Créer mon guide",
     hero_sub_cta: "À partir de 3€ · Sans abonnement · Livraison sous 48h",
     how_title: "Comment ça marche",
@@ -32,8 +32,8 @@ const translations = {
       {
         icon: "✏️",
         n: "01",
-        title: "Remplissez le formulaire",
-        desc: "Destination, durée, style de voyage, budget, centres d'intérêt… 5 minutes pour nous parler de vous.",
+        title: "Dites-nous où partir",
+        desc: "Vous avez déjà une destination ? Parfait. Sinon, laissez l'IA en suggérer une selon vos envies. 5 minutes.",
       },
       {
         icon: "✨",
@@ -135,7 +135,7 @@ const translations = {
       { number: "12 000+", label: "clients satisfaits" },
       { number: "4.9★", label: "note moyenne" },
       { number: "98%", label: "de satisfaction" },
-      { number: "+1000", label: "destinations" },
+      { number: "+2000", label: "destinations" },
     ],
     bottom_title: "Prêt pour votre prochain voyage ?",
     bottom_sub: "Rejoignez des centaines de voyageurs qui ont optimisé leur aventure avec TravelGuide AI.",
@@ -187,7 +187,7 @@ const translations = {
     ],
     nav_cta: "Create my guide",
     hero_title: "TravelGuide AI",
-    hero_sub: "Your AI-Powered Travel Guide, Delivered as PDF",
+    hero_sub: "Know where you're going — or let the AI suggest your perfect destination. Personalised guide, delivered as PDF.",
     hero_cta: "Create my guide",
     hero_sub_cta: "From €3 · No subscription · Delivered in 48h",
     how_title: "How it works",
@@ -195,8 +195,8 @@ const translations = {
       {
         icon: "✏️",
         n: "01",
-        title: "Fill the form",
-        desc: "Destination, duration, travel style, budget, interests… 5 minutes to tell us about you.",
+        title: "Tell us where to go",
+        desc: "Already have a destination? Great. Or let the AI suggest one based on your wishes. 5 minutes.",
       },
       {
         icon: "✨",
@@ -297,7 +297,7 @@ const translations = {
       { number: "12,000+", label: "happy customers" },
       { number: "4.9★", label: "average rating" },
       { number: "98%", label: "satisfaction rate" },
-      { number: "+1000", label: "destinations" },
+      { number: "+2000", label: "destinations" },
     ],
     bottom_title: "Ready for your next journey?",
     bottom_sub: "Join hundreds of travelers who have optimized their adventure with TravelGuide AI.",
@@ -640,6 +640,74 @@ export default function Home() {
                 <p className="text-white/60 leading-relaxed text-sm">{step.desc}</p>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* TWO FLOWS */}
+      <section className="py-14 sm:py-20 px-4 sm:px-6 bg-[#fdf8f0]">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 bg-[#425C47]/8 border border-[#425C47]/15 rounded-full px-4 py-1.5 mb-4">
+              <span className="w-1.5 h-1.5 bg-[#C9A84C] rounded-full animate-pulse" />
+              <span className="text-xs font-bold text-[#425C47] uppercase tracking-widest">
+                {lang === "fr" ? "Deux façons de voyager" : "Two ways to travel"}
+              </span>
+            </div>
+            <h2 className="text-2xl sm:text-4xl font-bold text-[#425C47] mb-3" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
+              {lang === "fr" ? "Votre voyage, votre façon" : "Your trip, your way"}
+            </h2>
+            <p className="text-[#425C47]/60 max-w-lg mx-auto text-sm leading-relaxed">
+              {lang === "fr"
+                ? "Que vous sachiez déjà où aller ou non, TravelGuide AI s'adapte à vous."
+                : "Whether you know where to go or not, TravelGuide AI adapts to you."}
+            </p>
+          </div>
+          <div className="grid sm:grid-cols-2 gap-6">
+            {/* Q1 */}
+            <div className="rounded-3xl border-2 border-[#425C47]/15 bg-white p-8 hover:border-[#425C47] hover:shadow-xl transition-all duration-300 group">
+              <div className="w-14 h-14 rounded-2xl bg-[#425C47]/8 flex items-center justify-center text-2xl mb-5 group-hover:bg-[#425C47]/15 transition-colors">📍</div>
+              <h3 className="text-xl font-bold text-[#425C47] mb-2" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
+                {lang === "fr" ? "J'ai ma destination" : "I know where I'm going"}
+              </h3>
+              <p className="text-[#425C47]/60 text-sm leading-relaxed mb-5">
+                {lang === "fr"
+                  ? "Vous savez exactement où aller. L'IA crée un programme sur mesure : itinéraire jour par jour, restaurants, activités, budget, transports — tout adapté à votre profil."
+                  : "You know exactly where to go. The AI creates a tailor-made programme: day-by-day itinerary, restaurants, activities, budget, transport — all adapted to your profile."}
+              </p>
+              <ul className="space-y-1.5 mb-6 text-sm text-[#425C47]/70">
+                {(lang === "fr"
+                  ? ["+ 2 000 destinations disponibles","Programme adapté à votre budget","Conseils restaurants & hébergements","Itinéraire selon votre rythme"]
+                  : ["2,000+ destinations available","Programme tailored to your budget","Restaurant & accommodation tips","Itinerary matching your pace"]
+                ).map(f => <li key={f} className="flex items-center gap-2"><span className="text-[#C9A84C] font-bold text-xs">✓</span>{f}</li>)}
+              </ul>
+              <a href={`/questionnaire?lang=${lang}`}
+                className="inline-flex items-center gap-2 bg-[#425C47] text-white font-semibold px-5 py-2.5 rounded-full text-sm hover:bg-[#2e4133] transition-all hover:scale-105">
+                {lang === "fr" ? "Choisir ma destination →" : "Choose my destination →"}
+              </a>
+            </div>
+            {/* Q2 */}
+            <div className="rounded-3xl border-2 border-[#C9A84C]/30 bg-[#fffdf8] p-8 hover:border-[#C9A84C] hover:shadow-xl transition-all duration-300 group">
+              <div className="w-14 h-14 rounded-2xl bg-[#C9A84C]/10 flex items-center justify-center text-2xl mb-5 group-hover:bg-[#C9A84C]/20 transition-colors">🌍</div>
+              <h3 className="text-xl font-bold text-[#425C47] mb-2" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
+                {lang === "fr" ? "Où partir ?" : "Where should I go?"}
+              </h3>
+              <p className="text-[#425C47]/60 text-sm leading-relaxed mb-5">
+                {lang === "fr"
+                  ? "Vous n'avez pas encore choisi. Décrivez vos envies — climat, ambiance, budget, durée — et l'IA vous suggère les meilleures destinations, puis crée le guide complet."
+                  : "You haven't decided yet. Describe your wishes — climate, mood, budget, duration — and the AI suggests the best destinations, then creates the full guide."}
+              </p>
+              <ul className="space-y-1.5 mb-6 text-sm text-[#425C47]/70">
+                {(lang === "fr"
+                  ? ["Suggestions personnalisées par IA","Filtres : plage, montagne, ville, aventure…","Budget, durée de vol, langues parlées","Un lieu ou road trip — vous choisissez"]
+                  : ["AI-powered personalised suggestions","Filters: beach, mountain, city, adventure…","Budget, flight time, languages spoken","One place or road trip — your choice"]
+                ).map(f => <li key={f} className="flex items-center gap-2"><span className="text-[#C9A84C] font-bold text-xs">✓</span>{f}</li>)}
+              </ul>
+              <a href={`/questionnaire?lang=${lang}`}
+                className="inline-flex items-center gap-2 bg-[#C9A84C] text-white font-semibold px-5 py-2.5 rounded-full text-sm hover:bg-[#B8962E] transition-all hover:scale-105">
+                {lang === "fr" ? "Trouver ma destination →" : "Find my destination →"}
+              </a>
+            </div>
           </div>
         </div>
       </section>
