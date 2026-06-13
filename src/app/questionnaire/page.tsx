@@ -372,7 +372,9 @@ interface Answers {
 interface DestinationSuggestion {
   name: string;
   country: string;
+  flag: string;
   emoji: string;
+  photo: string | null;
   tagline: string;
   why: string;
   highlights: string[];
@@ -1402,22 +1404,26 @@ function QuestionnaireContent() {
                 onClick={()=>{setAnswers(p=>({...p,destination:`${s.name}, ${s.country}`}));setDiscoverPhase("form");setStep(3);window.scrollTo({top:0,behavior:"smooth"});}}
                 className="w-full text-left bg-white rounded-3xl border-2 border-[#e8e0d4] overflow-hidden shadow-sm hover:border-[#c9a84c] hover:shadow-xl transition-all duration-200 group">
                 {/* Photo header */}
-                <div className="relative h-44 sm:h-52 w-full bg-[#e8e0d4] overflow-hidden">
-                  <img
-                    src={`https://source.unsplash.com/800x400/?${encodeURIComponent(s.name+","+s.country+",travel")}`}
-                    alt={s.name}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    onError={e=>{(e.target as HTMLImageElement).style.display="none";}}
-                    loading="lazy"
-                  />
+                <div className="relative h-44 sm:h-52 w-full overflow-hidden" style={{background:"linear-gradient(135deg,#425B48,#2e4133)"}}>
+                  {s.photo && (
+                    <img
+                      src={s.photo}
+                      alt={s.name}
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      loading="lazy"
+                    />
+                  )}
                   {/* Gradient overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent"/>
-                  {/* Emoji + name overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"/>
+                  {/* Flag + name overlay */}
                   <div className="absolute bottom-0 left-0 right-0 p-4 flex items-end justify-between">
                     <div>
-                      <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#c9a84c] mb-0.5">{s.country}</p>
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-2xl">{s.flag || s.emoji}</span>
+                        <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#c9a84c]">{s.country}</p>
+                      </div>
                       <h3 className="text-2xl font-bold text-white drop-shadow-md" style={{fontFamily:"var(--font-playfair),Georgia,serif"}}>
-                        {s.emoji} {s.name}
+                        {s.name}
                       </h3>
                     </div>
                     <span className="text-white/80 text-2xl font-bold group-hover:translate-x-1 transition-transform">→</span>
