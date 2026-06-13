@@ -667,6 +667,7 @@ function QuestionnaireContent() {
   const [isEditingCartItem, setIsEditingCartItem] = useState(false);
   const [discoverPhase, setDiscoverPhase] = useState<"form"|"loading"|"results"|"error">("form");
   const [suggestions, setSuggestions] = useState<DestinationSuggestion[]>([]);
+  const [suggestError, setSuggestError] = useState<string>("");
 
   const plan = selectedPlanKey ? PLANS[selectedPlanKey] : null;
 
@@ -773,9 +774,9 @@ function QuestionnaireContent() {
           .then(r=>r.json())
           .then(data=>{
             if (data.suggestions&&data.suggestions.length>0){setSuggestions(data.suggestions);setDiscoverPhase("results");}
-            else setDiscoverPhase("error");
+            else{setSuggestError(data.error||data.raw||"Réponse vide");setDiscoverPhase("error");}
           })
-          .catch(()=>setDiscoverPhase("error"));
+          .catch(e=>{setSuggestError(String(e));setDiscoverPhase("error");});
         return;
       }
     }
@@ -1281,7 +1282,8 @@ function QuestionnaireContent() {
             <div className="text-5xl">😕</div>
             <div>
               <h2 className="text-xl font-bold text-[#425B48] mb-2" style={{fontFamily:"var(--font-playfair),Georgia,serif"}}>Une erreur est survenue</h2>
-              <p className="text-[#64748b] text-sm mb-5">L&apos;IA n&apos;a pas pu générer les suggestions. Réessayez.</p>
+              <p className="text-[#64748b] text-sm mb-2">L&apos;IA n&apos;a pas pu générer les suggestions. Réessayez.</p>
+              {suggestError&&<p className="text-xs text-red-400 mb-4 font-mono bg-red-50 px-3 py-2 rounded-xl">{suggestError}</p>}
               <button type="button" onClick={()=>{setDiscoverPhase("loading");fetch("/api/suggest-destinations",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(answers)}).then(r=>r.json()).then(data=>{if(data.suggestions?.length>0){setSuggestions(data.suggestions);setDiscoverPhase("results");}else setDiscoverPhase("error");}).catch(()=>setDiscoverPhase("error"));}}
                 className="bg-[#425B48] text-white font-bold px-6 py-3 rounded-xl hover:bg-[#344a39] transition-all text-sm">
                 Réessayer →
