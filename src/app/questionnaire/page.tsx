@@ -228,12 +228,10 @@ const INTERESTS: Opt[] = [
   { id: "gastronomy",   emoji: "🍽️", label: "Gastronomie" },
   { id: "shopping",     emoji: "🛍️", label: "Shopping & marchés" },
   { id: "nightlife",    emoji: "🎉", label: "Vie nocturne" },
-  { id: "wellness",     emoji: "🧘", label: "Bien-être & spa" },
   { id: "art",          emoji: "🎨", label: "Art & musées" },
   { id: "photography",  emoji: "📸", label: "Photographie" },
-  { id: "water_sports", emoji: "🏄", label: "Sports nautiques" },
-  { id: "hiking",       emoji: "🥾", label: "Randonnée" },
   { id: "architecture", emoji: "🏙️", label: "Architecture" },
+  { id: "sport",        emoji: "🏅", label: "Sport & activités" },
 ];
 
 const SPORTS: Opt[] = [
@@ -819,7 +817,7 @@ function QuestionnaireContent() {
     window.scrollTo({top:0,behavior:"smooth"});
   }
 
-  const showSports = answers.interests.some(i=>["adventure","water_sports","hiking"].includes(i));
+  const showSports = answers.interests.some(i=>["adventure","sport"].includes(i));
   const tripDuration = (()=>{
     if (answers.arrival_date&&answers.departure_date){const d=countInclusiveDays(answers.arrival_date,answers.departure_date);if(d>0)return `${d} jour${d>1?"s":""}`;}
     return plan?.duration??"durée à choisir";
