@@ -771,9 +771,12 @@ function QuestionnaireContent() {
         window.scrollTo({top:0,behavior:"smooth"});
         setDiscoverPhase("loading");
         fetch("/api/suggest-destinations",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(answers)})
-          .then(r=>r.json())
+          .then(r=>{
+            if(!r.ok) return r.text().then(t=>{throw new Error(`HTTP ${r.status}: ${t.slice(0,300)}`);});
+            return r.json();
+          })
           .then(data=>{
-            if (data.suggestions&&data.suggestions.length>0){setSuggestions(data.suggestions);setDiscoverPhase("results");}
+            if(data.suggestions?.length>0){setSuggestions(data.suggestions);setDiscoverPhase("results");}
             else{setSuggestError(data.error||data.raw||"Réponse vide");setDiscoverPhase("error");}
           })
           .catch(e=>{setSuggestError(String(e));setDiscoverPhase("error");});
@@ -1280,11 +1283,26 @@ function QuestionnaireContent() {
         {step===2&&answers.flow==="discover"&&discoverPhase==="error"&&(
           <div className="flex flex-col items-center justify-center py-20 gap-5 text-center">
             <div className="text-5xl">😕</div>
-            <div>
+            <div className="w-full max-w-md mx-auto">
               <h2 className="text-xl font-bold text-[#425B48] mb-2" style={{fontFamily:"var(--font-playfair),Georgia,serif"}}>Une erreur est survenue</h2>
-              <p className="text-[#64748b] text-sm mb-2">L&apos;IA n&apos;a pas pu générer les suggestions. Réessayez.</p>
-              {suggestError&&<p className="text-xs text-red-400 mb-4 font-mono bg-red-50 px-3 py-2 rounded-xl">{suggestError}</p>}
-              <button type="button" onClick={()=>{setDiscoverPhase("loading");fetch("/api/suggest-destinations",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(answers)}).then(r=>r.json()).then(data=>{if(data.suggestions?.length>0){setSuggestions(data.suggestions);setDiscoverPhase("results");}else setDiscoverPhase("error");}).catch(()=>setDiscoverPhase("error"));}}
+              <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 mb-4 text-left">
+                <p className="text-xs font-bold text-red-600 mb-1">Détail de l&apos;erreur :</p>
+                <p className="text-xs text-red-500 font-mono break-all">{suggestError || "(aucun message — timeout probable)"}</p>
+              </div>
+              <button type="button" onClick={()=>{
+                setSuggestError("");
+                setDiscoverPhase("loading");
+                fetch("/api/suggest-destinations",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(answers)})
+                  .then(r=>{
+                    if(!r.ok) return r.text().then(t=>{throw new Error(`HTTP ${r.status}: ${t.slice(0,200)}`);});
+                    return r.json();
+                  })
+                  .then(data=>{
+                    if(data.suggestions?.length>0){setSuggestions(data.suggestions);setDiscoverPhase("results");}
+                    else{setSuggestError(data.error||data.raw||"Réponse vide");setDiscoverPhase("error");}
+                  })
+                  .catch(e=>{setSuggestError(String(e));setDiscoverPhase("error");});
+              }}
                 className="bg-[#425B48] text-white font-bold px-6 py-3 rounded-xl hover:bg-[#344a39] transition-all text-sm">
                 Réessayer →
               </button>
