@@ -20,7 +20,7 @@ export async function GET() {
 
   return NextResponse.json({
     ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY ? "OK (len=" + process.env.ANTHROPIC_API_KEY.length + ")" : "MISSING",
-    DATABASE_URL: process.env.DATABASE_URL ? "OK" : "MISSING",
+    DATABASE_URL_host: process.env.DATABASE_URL ? (() => { try { return new URL(process.env.DATABASE_URL!).hostname; } catch { return "parse_error"; } })() : "MISSING",
     db_anthropic_key: dbKey,
     timestamp: new Date().toISOString(),
   });
