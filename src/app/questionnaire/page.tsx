@@ -1435,18 +1435,14 @@ function QuestionnaireContent() {
                 onClick={()=>{setAnswers(p=>({...p,destination:`${s.name}, ${s.country}`}));setDiscoverPhase("form");setStep(3);window.scrollTo({top:0,behavior:"smooth"});}}
                 className="w-full text-left bg-white rounded-3xl border-2 border-[#e8e0d4] overflow-hidden shadow-sm hover:border-[#c9a84c] hover:shadow-xl transition-all duration-200 group">
                 {/* Card header */}
-                <div className="relative h-44 sm:h-52 w-full flex flex-col items-center justify-center" style={{background:"linear-gradient(135deg,#2e4133,#425B48,#3a5240)"}}>
-                  {/* Big flag emoji */}
-                  <span className="text-7xl sm:text-8xl drop-shadow-lg select-none">{getFlag(s)}</span>
-                  {/* Bottom overlay */}
-                  <div className="absolute bottom-0 left-0 right-0 p-4 flex items-end justify-between">
+                <div className="relative h-44 sm:h-52 w-full flex items-center justify-center bg-[#f5f0e8]">
+                  <span className="text-[120px] sm:text-[140px] leading-none select-none">{getFlag(s)}</span>
+                  <div className="absolute bottom-0 left-0 right-0 px-4 pb-3 flex items-end justify-between">
                     <div>
                       <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#c9a84c] mb-0.5">{s.country}</p>
-                      <h3 className="text-2xl font-bold text-white drop-shadow-md" style={{fontFamily:"var(--font-playfair),Georgia,serif"}}>
-                        {s.name}
-                      </h3>
+                      <h3 className="text-xl font-bold text-[#2e2e2e]" style={{fontFamily:"var(--font-playfair),Georgia,serif"}}>{s.name}</h3>
                     </div>
-                    <span className="text-white/80 text-2xl font-bold group-hover:translate-x-1 transition-transform">→</span>
+                    <span className="text-[#425C47] text-xl font-bold group-hover:translate-x-1 transition-transform">→</span>
                   </div>
                 </div>
                 {/* Card body */}
