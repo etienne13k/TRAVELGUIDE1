@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 
-export const maxDuration = 30;
+export const maxDuration = 60;
 
 export async function POST(req: NextRequest) {
   if (!process.env.ANTHROPIC_API_KEY) {
@@ -19,9 +19,8 @@ export async function POST(req: NextRequest) {
 
   const response = await anthropic.messages.create({
     model: "claude-opus-4-8",
-    max_tokens: 1200,
-    thinking: { type: "adaptive" },
-    system: `Tu es un expert en voyages avec 20 ans d'expérience. Tu proposes des destinations parfaitement adaptées aux envies du voyageur. Tu réponds UNIQUEMENT en JSON valide, sans texte avant ou après.`,
+    max_tokens: 3000,
+    system: `Tu es un expert en voyages avec 20 ans d'expérience. Tu proposes des destinations parfaitement adaptées aux envies du voyageur. Tu réponds UNIQUEMENT en JSON valide, sans texte avant ou après. Pas de markdown, pas de \`\`\`json, juste le tableau JSON brut.`,
     messages: [{ role: "user", content: buildPrompt(answers) }],
   });
 
