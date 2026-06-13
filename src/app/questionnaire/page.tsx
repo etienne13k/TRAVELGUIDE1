@@ -369,6 +369,15 @@ interface Answers {
   language: Lang;
 }
 
+interface DestinationSuggestion {
+  name: string;
+  country: string;
+  emoji: string;
+  tagline: string;
+  why: string;
+  highlights: string[];
+}
+
 const EMPTY: Answers = {
   flow: "", destination: "", departure_city: "",
   arrival_date: "", departure_date: "", travel_dates: "", dates_flexible: "",
@@ -658,6 +667,8 @@ function QuestionnaireContent() {
   const [termsError, setTermsError] = useState<string|null>(null);
   const [cartNotice, setCartNotice] = useState<string|null>(null);
   const [isEditingCartItem, setIsEditingCartItem] = useState(false);
+  const [discoverPhase, setDiscoverPhase] = useState<"form"|"loading"|"results">("form");
+  const [suggestions, setSuggestions] = useState<DestinationSuggestion[]>([]);
 
   const plan = selectedPlanKey ? PLANS[selectedPlanKey] : null;
 
@@ -757,6 +768,15 @@ function QuestionnaireContent() {
         return;
       }
       setStep2Errors({});
+      if (answers.flow==="discover") {
+        window.scrollTo({top:0,behavior:"smooth"});
+        setDiscoverPhase("loading");
+        fetch("/api/suggest-destinations",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(answers)})
+          .then(r=>r.json())
+          .then(data=>{setSuggestions(data.suggestions??[]);setDiscoverPhase("results");})
+          .catch(()=>{setDiscoverPhase("form");setStep(3);window.scrollTo({top:0,behavior:"smooth"});});
+        return;
+      }
     }
     setStep(s=>Math.min(3,s+1));
     window.scrollTo({top:0,behavior:"smooth"});
@@ -1030,7 +1050,7 @@ function QuestionnaireContent() {
         )}
 
         {/* ═══════════ STEP 2 ═══════════ */}
-        {step===2&&(
+        {step===2&&discoverPhase==="form"&&(
           <>
             <div className="mb-2">
               <h1 className="text-2xl sm:text-3xl font-bold text-[#425B48] mb-1" style={{fontFamily:"var(--font-playfair),Georgia,serif"}}>
@@ -1254,6 +1274,75 @@ function QuestionnaireContent() {
           </>
         )}
 
+        {/* ═══════════ DISCOVER — SUGGESTION SCREENS ═══════════ */}
+        {step===2&&answers.flow==="discover"&&discoverPhase==="loading"&&(
+          <div className="flex flex-col items-center justify-center py-24 gap-6">
+            <div className="text-6xl animate-bounce">🌍</div>
+            <div className="text-center">
+              <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#c9a84c] mb-2">IA en action</p>
+              <h2 className="text-2xl font-bold text-[#425B48] mb-3" style={{fontFamily:"var(--font-playfair),Georgia,serif"}}>
+                Analyse de vos envies...
+              </h2>
+              <p className="text-[#64748b] text-sm max-w-sm text-center">
+                Notre IA entraînée sélectionne les 3 destinations qui correspondent le mieux à votre profil.
+              </p>
+            </div>
+            <div className="flex gap-2 mt-2">
+              {[0,1,2].map(i=>(
+                <div key={i} className="w-3 h-3 rounded-full bg-[#c9a84c] animate-bounce" style={{animationDelay:`${i*0.2}s`}}/>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {step===2&&answers.flow==="discover"&&discoverPhase==="results"&&(
+          <div className="space-y-5">
+            <div>
+              <div className="inline-flex items-center gap-2 bg-[#425C47]/8 border border-[#425C47]/15 rounded-full px-4 py-1.5 mb-4">
+                <span>✨</span>
+                <span className="text-xs font-bold text-[#425C47] uppercase tracking-wide">Sélection personnalisée</span>
+              </div>
+              <h2 className="text-2xl sm:text-3xl font-bold text-[#425B48] mb-2" style={{fontFamily:"var(--font-playfair),Georgia,serif"}}>
+                Vos 3 destinations idéales
+              </h2>
+              <p className="text-[#64748b] text-sm">Choisissez la destination qui vous inspire le plus — votre guide sera créé autour d&apos;elle.</p>
+            </div>
+
+            {suggestions.map((s,i)=>(
+              <button key={i} type="button"
+                onClick={()=>{setAnswers(p=>({...p,destination:`${s.name}, ${s.country}`}));setDiscoverPhase("form");setStep(3);window.scrollTo({top:0,behavior:"smooth"});}}
+                className="w-full text-left bg-white rounded-3xl border-2 border-[#e8e0d4] p-6 shadow-sm hover:border-[#c9a84c] hover:shadow-xl transition-all duration-200 group">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex items-center gap-4">
+                    <span className="text-5xl">{s.emoji}</span>
+                    <div>
+                      <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#c9a84c] mb-0.5">{s.country}</p>
+                      <h3 className="text-xl font-bold text-[#425B48]" style={{fontFamily:"var(--font-playfair),Georgia,serif"}}>{s.name}</h3>
+                      <p className="text-sm text-[#64748b] italic mt-0.5">{s.tagline}</p>
+                    </div>
+                  </div>
+                  <span className="text-[#c9a84c] text-2xl font-bold shrink-0 group-hover:translate-x-1 transition-transform mt-1">→</span>
+                </div>
+                <p className="mt-4 text-sm text-[#475569] leading-relaxed">{s.why}</p>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {s.highlights.map((h,j)=>(
+                    <span key={j} className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-[#425B48]/8 text-[#425B48] text-xs font-semibold border border-[#425B48]/15">
+                      ✓ {h}
+                    </span>
+                  ))}
+                </div>
+              </button>
+            ))}
+
+            <div className="pt-2 pb-4">
+              <button type="button" onClick={()=>{setDiscoverPhase("form");window.scrollTo({top:0,behavior:"smooth"});}}
+                className="flex items-center gap-2 text-[#94a3b8] font-semibold text-sm hover:text-[#425B48] transition-colors">
+                ← Modifier mes critères
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* ═══════════ STEP 3 — FINALISER ═══════════ */}
         {step===3&&(
           <>
@@ -1423,7 +1512,7 @@ function QuestionnaireContent() {
               ← Changer de parcours
             </button>
           )}
-          {step<3&&(
+          {step<3&&discoverPhase==="form"&&(
             <button type="button" onClick={goNext}
               className="bg-[#425B48] text-white font-bold px-8 py-3 rounded-xl hover:bg-[#344a39] transition-all hover:scale-[1.02] shadow-md text-sm">
               Suivant →
