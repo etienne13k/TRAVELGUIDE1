@@ -92,9 +92,8 @@ export async function POST(req: NextRequest) {
   try {
     const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
     const response = await anthropic.messages.create({
-      model: "claude-opus-4-8",
+      model: "claude-haiku-4-5",
       max_tokens: getMaxTokens(input.duration),
-      thinking: { type: "adaptive" },
       system: buildSystemPrompt(input.language === "en" ? "en" : "fr"),
       messages: [{ role: "user", content: buildUserMessage(input) }],
     });
