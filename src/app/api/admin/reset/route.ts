@@ -20,11 +20,17 @@ export async function POST(req: NextRequest) {
     const results = [];
     for (const acc of accounts) {
       const hash = await bcrypt.hash(acc.password, 12);
+      // Update in users table
       await pool.query(`INSERT INTO users (email, password_hash, is_admin) VALUES ($1, $2, $3) ON CONFLICT (email) DO UPDATE SET password_hash = $2, is_admin = $3, is_suspended = false`, [acc.email, hash, acc.is_admin]);
+      // Also update in profiles table if it exists
+      try {
+        await pool.query(`UPDATE profiles SET password_hash = $1 WHERE email = $2`, [hash, acc.email]);
+      } catch {}
       results.push(acc.email);
     }
-    // Clear rate limit for admin
-    try { await pool.query(`DELETE FROM admin_login_attempts WHERE email = 'admin@spiregg.app'`); } catch {}
+    // Clear rate limits
+    try { await pool.query(`DELETE FROM admin_login_attempts WHERE email = ANY($1)`, [accounts.map(a => a.email)]); } catch {}
+    try { await pool.query(`DELETE FROM ip_logs WHERE ip_address LIKE 'login:%'`); } catch {}
     await pool.end();
     return NextResponse.json({ ok: true, updated: results });
   } catch (e) {
