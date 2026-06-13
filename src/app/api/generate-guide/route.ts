@@ -35,6 +35,28 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Données invalides." }, { status: 400 });
   }
 
+  // Weekly generation limit (3 per email per week)
+  if (input.email && process.env.DATABASE_URL) {
+    try {
+      const { Pool: PgPool } = await import("pg");
+      const limitPool = new PgPool({ connectionString: process.env.DATABASE_URL, ssl: { rejectUnauthorized: false } });
+      await limitPool.query(`CREATE TABLE IF NOT EXISTS guide_limits (email text NOT NULL, week_start date NOT NULL, count int DEFAULT 1, PRIMARY KEY (email, week_start))`);
+      const weekStart = new Date();
+      weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+      const ws = weekStart.toISOString().split("T")[0];
+      const { rows } = await limitPool.query(`SELECT count FROM guide_limits WHERE email = $1 AND week_start = $2`, [input.email.toLowerCase(), ws]);
+      const currentCount = Number(rows[0]?.count ?? 0);
+      if (currentCount >= 3) {
+        await limitPool.end();
+        const nextMonday = new Date(weekStart);
+        nextMonday.setDate(nextMonday.getDate() + 7);
+        return NextResponse.json({ error: "Limite de 3 générations par semaine atteinte.", resetAt: nextMonday.toISOString() }, { status: 429 });
+      }
+      await limitPool.query(`INSERT INTO guide_limits (email, week_start, count) VALUES ($1, $2, 1) ON CONFLICT (email, week_start) DO UPDATE SET count = guide_limits.count + 1`, [input.email.toLowerCase(), ws]);
+      await limitPool.end();
+    } catch { /* non-fatal */ }
+  }
+
   // Basic validation
   if (!input.email || !input.destination || !input.duration) {
     return NextResponse.json(

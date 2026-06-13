@@ -2,178 +2,382 @@ export interface GuideInput {
   email: string;
   destination: string;
   duration: string;
-  budget: string;
-  style: string[];
-  hebergement: string;
-  regime: string[];
-  compagnie: string;
-  notes?: string;
   language?: "fr" | "en";
+  // Legacy fields (kept for backward compat)
+  budget?: string;
+  style?: string[];
+  hebergement?: string;
+  regime?: string[];
+  compagnie?: string;
+  notes?: string;
+  // Full questionnaire fields
+  departure_city?: string;
+  travel_dates?: string;
+  arrival_date?: string;
+  departure_date?: string;
+  dates_flexible?: string;
+  traveler_type?: string;
+  traveler_adults?: number;
+  traveler_children?: number;
+  budget_amount?: string;
+  budget_currency?: string;
+  budget_scope?: string;
+  activity_pace?: string;
+  authenticity?: string;
+  trip_type?: string;
+  trip_vibe?: string;
+  max_flight_time?: string;
+  accommodations?: string[];
+  transport?: string[];
+  neighborhood_vibe?: string;
+  interests?: string[];
+  sports?: string[];
+  landscape?: string[];
+  climate?: string;
+  already_visited?: string;
+  dream_experience?: string;
+  non_negotiables?: string;
+  things_to_avoid?: string;
+  diet?: string[];
+  allergy_details?: string;
+  language_spoken?: string[];
+  special_occasion?: string;
+  scope_type?: string;
+  country_zones?: string[];
 }
 
-function guideLanguage(language?: string): "fr" | "en" {
-  return language === "en" ? "en" : "fr";
+const BUDGET_LABELS: Record<string, string> = {
+  backpacker: "Petit budget / sac à dos",
+  comfort: "Confort (milieu de gamme)",
+  luxury: "Haut de gamme / luxe",
+};
+
+const PACE_LABELS: Record<string, string> = {
+  packed: "Rythme intense — plusieurs activités par jour",
+  relaxed: "Rythme détendu — 1 à 2 activités par jour",
+  ultra_chill: "Très libre — sans programme fixe",
+};
+
+const TRAVELER_LABELS: Record<string, string> = {
+  solo: "En solo",
+  couple: "En couple",
+  family: "Famille avec enfants",
+  friends: "Groupe d'amis",
+};
+
+const VIBE_LABELS: Record<string, string> = {
+  rest: "Repos & ressourcement",
+  discovery: "Découverte & culture",
+  adventure: "Aventure & adrénaline",
+  party: "Fête & rencontres",
+};
+
+const TRIP_TYPE_LABELS: Record<string, string> = {
+  one_place: "Séjour dans un seul lieu (immersion)",
+  road_trip: "Road trip / plusieurs étapes",
+};
+
+const AUTHENTICITY_LABELS: Record<string, string> = {
+  off_beaten: "Hors des sentiers battus",
+  mixed: "Équilibre classique / local",
+  tourist_spots: "Sites touristiques incontournables",
+};
+
+const ACCOMMODATION_LABELS: Record<string, string> = {
+  hostel: "Auberge de jeunesse",
+  airbnb: "Appartement / Airbnb",
+  hotel_3_4: "Hôtel 3-4 étoiles",
+  boutique: "Boutique hôtel",
+  resort: "Complexe tout compris",
+  camping: "Camping / plein air",
+};
+
+const TRANSPORT_LABELS: Record<string, string> = {
+  public: "Transports en commun",
+  walking: "À pied / vélo",
+  rental: "Voiture de location",
+  taxi: "Taxi / VTC",
+};
+
+const INTEREST_LABELS: Record<string, string> = {
+  culture: "Culture & histoire",
+  nature: "Nature & plein air",
+  adventure: "Aventure & sport",
+  gastronomy: "Gastronomie",
+  shopping: "Shopping & marchés",
+  nightlife: "Vie nocturne",
+  art: "Art & musées",
+  photography: "Photographie",
+  architecture: "Architecture",
+  sport: "Sport & activités",
+};
+
+const SPORT_LABELS: Record<string, string> = {
+  hiking: "Randonnée",
+  climbing: "Escalade",
+  diving: "Plongée",
+  surf: "Surf",
+  ski: "Ski / snowboard",
+  yoga: "Yoga / méditation",
+  mountain_bike: "VTT",
+  paragliding: "Parapente",
+  kayak: "Kayak / canoë",
+};
+
+const DIET_LABELS: Record<string, string> = {
+  vegetarian: "Végétarien",
+  vegan: "Végan",
+  pescatarian: "Pescatarien",
+  gluten_free: "Sans gluten",
+  lactose_free: "Sans lactose",
+  halal: "Halal",
+  kosher: "Casher",
+  none: "Aucune restriction",
+};
+
+function labels(ids: string[] | undefined, map: Record<string, string>): string {
+  if (!ids || ids.length === 0) return "Non précisé";
+  return ids.map((id) => map[id] ?? id).join(", ");
+}
+
+function label(id: string | undefined, map: Record<string, string>): string {
+  if (!id) return "Non précisé";
+  return map[id] ?? id;
 }
 
 export function buildSystemPrompt(language: "fr" | "en" = "fr"): string {
   if (language === "en") {
-    return `You are an expert in creating tailor-made travel guides, with 20 years of travel writing experience for publications such as Condé Nast Traveler, Lonely Planet and National Geographic. You combine the expertise of a professional travel planner, a local guide and a premium lifestyle editor.
+    return `You are a world-class travel writer and planner with 20+ years of experience writing for Condé Nast Traveler, Lonely Planet and National Geographic. You combine deep destination expertise with the precision of a professional travel planner and the warmth of a personal local guide.
 
-Your mission: generate an ultra-personalized, complete and directly usable travel guide based on the client's information. The guide must feel like a paid professional document — structured, practical, warm and immediately actionable.
+Your mission: generate an ultra-personalized, professional-quality travel guide based on detailed traveler preferences. Every single recommendation must be directly justified by the traveler's profile — never generic.
 
-FUNDAMENTAL RULES:
-1. Every section must reflect the client's preferences, budget and lifestyle.
-2. Never propose generic content. Every recommendation must be justified by the form data.
-3. Adapt the tone: relaxed for backpackers, elegant for luxury travelers, adventurous for sports-focused travelers.
-4. Cite indicative prices, real popular addresses and practical details.
-5. For every recommended place, monument, museum, attraction or visit, include usual opening hours when available (for example: "Open Tuesday to Sunday, 9am–6pm"), weekly closing days (for example: "Closed on Mondays") and known annual closure periods (for example: "Closed in August").
-6. If you are not certain about opening hours, closing days or any precise detail, write "To be checked before visiting" and recommend verifying official sources.
+CRITICAL RULES:
+1. Adapt every section to the traveler's budget, style, pace, and group composition.
+2. For solo travelers: tailor all activities and social tips for solo travel. Never suggest activities that require a partner unless offering solo alternatives.
+3. For families: emphasize child-friendly venues, age-appropriate activities, family meals.
+4. Budget coherence: for backpacker budgets, only recommend affordable options. For luxury, recommend premium experiences.
+5. For every place, monument, restaurant or attraction: include usual opening hours, weekly closing days, and known annual closures. If uncertain, write "Check before visiting" and recommend official sources.
+6. Validate that all recommended addresses, places, and hours are realistic and plausible.
 
-OUTPUT FORMAT: Generate the guide as structured text with sections clearly delimited by lines of dashes (────────────────────────────────────────────).
-Use uppercase section titles. Be precise, practical and warm. Write the full guide in English.`;
+OUTPUT FORMAT: Structured text with sections delimited by lines of dashes (────────────────────────────────────────────). Section titles in uppercase. Write in English.`;
   }
 
-  return `Tu es un expert en création de guides de voyage sur mesure, avec 20 ans d'expérience en rédaction travel pour des magazines comme Condé Nast Traveler, Lonely Planet et National Geographic. Tu combines l'expertise d'un planner de voyage professionnel, d'un local guide, et d'un rédacteur lifestyle premium.
+  return `Tu es un rédacteur et planificateur de voyages de classe mondiale, avec 20+ ans d'expérience pour des publications comme Condé Nast Traveler, Lonely Planet et National Geographic. Tu combines une expertise profonde des destinations, la précision d'un planner professionnel, et la chaleur d'un guide local personnel.
 
-Ta mission : générer un guide de voyage ultra-personnalisé, complet et directement utilisable, à partir des informations fournies par le client. Le guide doit avoir la qualité d'un document professionnel payant — structuré, pratique, chaleureux, et immédiatement actionnable.
+Ta mission : générer un guide de voyage ultra-personnalisé, de qualité professionnelle, basé sur un profil voyageur détaillé. Chaque recommandation doit être directement justifiée par le profil du voyageur — jamais générique.
 
-RÈGLES FONDAMENTALES :
-1. Chaque section doit refléter les préférences, le budget et le style de vie du client.
-2. Ne propose jamais de contenu générique. Chaque recommandation doit être justifiée par les données du formulaire.
-3. Adapte le ton : décontracté pour les backpackers, élégant pour le luxe, aventurier pour les sportifs.
-4. Cite des prix indicatifs, des noms d'adresses réels et populaires.
-5. Pour chaque lieu, monument, musée, attraction ou visite recommandé, indique les horaires d'ouverture habituels quand ils sont disponibles (ex : "Ouvert du mardi au dimanche, 9h–18h"), les jours de fermeture hebdomadaire (ex : "Fermé le lundi") et les périodes de fermeture annuelle connues (ex : "Fermé en août").
-6. Si tu n'as pas de certitude sur les horaires, jours de fermeture ou une info précise, indique "À vérifier avant la visite" et recommande de consulter les sources officielles.
+RÈGLES CRITIQUES :
+1. Adapte chaque section au budget, style, rythme et composition du groupe du voyageur.
+2. Pour les voyageurs en solo : adapte toutes les activités et conseils sociaux au voyage solo. Ne propose jamais d'activités nécessitant un partenaire sans alternative solo.
+3. Pour les familles : mets en avant les lieux adaptés aux enfants, activités adaptées à l'âge, repas familiaux.
+4. Cohérence budget : pour les petits budgets, ne recommande que des options abordables. Pour le luxe, propose des expériences premium.
+5. Pour chaque lieu, monument, restaurant ou attraction cité : indique les horaires habituels, jours de fermeture hebdomadaire et périodes de fermeture annuelle connues. En cas d'incertitude, écris "À vérifier avant la visite" et recommande les sources officielles.
+6. Vérifie que toutes les adresses, lieux et horaires recommandés sont réalistes et plausibles.
 
-FORMAT DE SORTIE : Génère le guide en texte structuré avec des sections clairement délimitées par des lignes de tirets (────────────────────────────────────────────).
-Utilise des titres de section en majuscules. Sois précis, pratique et chaleureux.`;
+FORMAT DE SORTIE : Texte structuré avec sections délimitées par des lignes de tirets (────────────────────────────────────────────). Titres de sections en majuscules.`;
 }
 
 export function buildUserMessage(input: GuideInput): string {
-  const language = guideLanguage(input.language);
-  const hasDietRestrictions =
-    input.regime.length > 0 &&
-    !input.regime.includes("Aucune restriction") &&
-    !input.regime.includes("none");
-  const regimeText = hasDietRestrictions
-    ? input.regime.join(", ")
-    : language === "en"
-    ? "No dietary restrictions"
-    : "Aucune restriction alimentaire";
+  const lang = input.language === "en" ? "en" : "fr";
 
-  const styleText = input.style.length > 0 ? input.style.join(", ") : language === "en" ? "General" : "Général";
+  const groupDesc = (() => {
+    const type = label(input.traveler_type, TRAVELER_LABELS);
+    const adults = input.traveler_adults ?? 1;
+    const children = input.traveler_children ?? 0;
+    if (children > 0) return `${type} — ${adults} adulte${adults > 1 ? "s" : ""} + ${children} enfant${children > 1 ? "s" : ""}`;
+    return `${type}${adults > 1 ? ` — ${adults} adultes` : ""}`;
+  })();
 
-  if (language === "en") {
-    return `Generate my personalized travel guide with the following information:
+  const budgetDesc = (() => {
+    const level = label(input.budget, BUDGET_LABELS);
+    if (input.budget_amount) {
+      const scope = input.budget_scope === "per_person" ? "/ personne" : "total";
+      return `${level} — ${input.budget_amount} ${input.budget_currency ?? "€"} ${scope}`;
+    }
+    return level;
+  })();
 
+  const durationLabel = (() => {
+    if (input.duration === "3j") return "3 jours";
+    if (input.duration === "7j") return "7 jours";
+    if (input.duration === "14j") return "14 jours";
+    if (input.duration === "1mois") return "1 mois";
+    return input.duration;
+  })();
+
+  const scopeDesc = (() => {
+    if (input.scope_type === "country") {
+      const zones = input.country_zones?.join(", ");
+      return `Tour du pays / road trip${zones ? ` — zones : ${zones}` : " — tout le pays"}`;
+    }
+    return "Visite de la ville / séjour immersif";
+  })();
+
+  const dietDesc = (() => {
+    if (!input.diet || input.diet.length === 0 || input.diet.includes("none")) return "Aucune restriction alimentaire";
+    const base = labels(input.diet, DIET_LABELS);
+    return input.allergy_details ? `${base} — Allergies : ${input.allergy_details}` : base;
+  })();
+
+  if (lang === "en") {
+    return `Generate my personalized travel guide:
+
+═══════════ TRAVELER PROFILE ═══════════
 DESTINATION: ${input.destination}
-DURATION: ${input.duration}
-DAILY BUDGET: ${input.budget}
-TRAVEL STYLE: ${styleText}
-PREFERRED ACCOMMODATION: ${input.hebergement}
-DIETARY RESTRICTIONS: ${regimeText}
-TRAVEL COMPANIONS: ${input.compagnie}
-SPECIAL NOTES: ${input.notes || "None"}
+SCOPE: ${scopeDesc}
+DURATION: ${durationLabel}
+TRAVEL DATES: ${input.travel_dates || input.arrival_date || "Not specified"}
+DEPARTURE FROM: ${input.departure_city || "Not specified"}
 
-REQUIRED GUIDE STRUCTURE (follow this exact order):
+GROUP: ${groupDesc}
+BUDGET: ${budgetDesc}
+PACE: ${label(input.activity_pace, PACE_LABELS)}
+VIBE: ${label(input.trip_vibe, VIBE_LABELS)}
+TRIP TYPE: ${label(input.trip_type, TRIP_TYPE_LABELS)}
+DISCOVERY STYLE: ${label(input.authenticity, AUTHENTICITY_LABELS)}
+
+ACCOMMODATION: ${labels(input.accommodations, ACCOMMODATION_LABELS)}
+TRANSPORT: ${labels(input.transport, TRANSPORT_LABELS)}
+${input.neighborhood_vibe ? `PREFERRED NEIGHBORHOOD: ${input.neighborhood_vibe}` : ""}
+
+INTERESTS: ${labels(input.interests, INTEREST_LABELS)}
+${(input.sports?.length ?? 0) > 0 ? `SPORTS & ACTIVITIES: ${labels(input.sports, SPORT_LABELS)}` : ""}
+${(input.landscape?.length ?? 0) > 0 ? `LANDSCAPE PREFERENCES: ${input.landscape!.join(", ")}` : ""}
+${input.climate ? `CLIMATE: ${input.climate}` : ""}
+
+DIETARY RESTRICTIONS: ${dietDesc}
+${input.language_spoken?.length ? `LANGUAGES SPOKEN: ${input.language_spoken.join(", ")}` : ""}
+${input.special_occasion ? `SPECIAL OCCASION: ${input.special_occasion}` : ""}
+${input.non_negotiables ? `MUST-HAVES: ${input.non_negotiables}` : ""}
+${input.things_to_avoid ? `TO AVOID: ${input.things_to_avoid}` : ""}
+${input.already_visited ? `ALREADY VISITED (avoid): ${input.already_visited}` : ""}
+${input.dream_experience ? `DREAM EXPERIENCE: ${input.dream_experience}` : ""}
+${input.notes ? `ADDITIONAL NOTES: ${input.notes}` : ""}
+═══════════════════════════════════════
+
+REQUIRED GUIDE STRUCTURE:
 
 ────────────────────────────────────────────
 COVER PAGE
 ────────────────────────────────────────────
-[Guide title, destination, duration, generation date]
+[Title, destination, duration, dates, personalized subtitle]
 
 ────────────────────────────────────────────
 1. INTRODUCTION — THE DESTINATION AT A GLANCE
 ────────────────────────────────────────────
-[Personalized 200-300 word narrative introduction + quick facts: language, currency, visa, best season. Include this note verbatim: "Opening hours shown are indicative and may vary. Always check before your visit."]
+[150-200 word personalized narrative, tailored to this traveler's style and interests. Quick facts: language, currency, visa requirements, best season. Note: "Opening hours shown are indicative. Always check before your visit."]
 
 ────────────────────────────────────────────
 2. DAY-BY-DAY ITINERARY
 ────────────────────────────────────────────
-[For each day: morning / afternoon / evening with activities, restaurants, transport and local tips. For every listed place or monument, include usual opening hours, weekly closing days and known annual closures where available]
+[Detailed day-by-day plan adapted to the traveler's pace (${label(input.activity_pace, PACE_LABELS)}). Each day: morning / afternoon / evening with specific activities, restaurant names, transport tips and local insider advice. For every place cited, include opening hours and closing days.]
 
 ────────────────────────────────────────────
-3. RECOMMENDED RESTAURANTS
+3. RESTAURANT SELECTION
 ────────────────────────────────────────────
-[Selection by category: breakfast, lunch, dinner, street food. Adapted to dietary restrictions]
+[Curated restaurants by meal type, adapted to budget (${budgetDesc}) and dietary restrictions (${dietDesc}). Include price range per person.]
 
 ────────────────────────────────────────────
-4. ACTIVITIES AND PLACES TO VISIT
+4. ACTIVITIES & PLACES TO VISIT
 ────────────────────────────────────────────
-[Must-sees + hidden gems + activities based on specific interests. For every listed place or monument, include usual opening hours, weekly closing days and known annual closures where available]
+[Must-sees and hidden gems selected for interests: ${labels(input.interests, INTEREST_LABELS)}. Include opening hours, prices, tips.]
 
 ────────────────────────────────────────────
 5. PRACTICAL TIPS
 ────────────────────────────────────────────
-[Transport, money, communication, health & safety, local culture & etiquette, pre-departure checklist]
+[Transport, money, safety, health, local customs & etiquette, pre-departure checklist. Tailored for ${groupDesc}.]
 
-${parseInt(input.duration) >= 7 || input.duration === "7j" || input.duration === "14j" || input.duration === "1mois" ? `────────────────────────────────────────────
+${(input.duration === "7j" || input.duration === "14j" || input.duration === "1mois") ? `────────────────────────────────────────────
 6. RECOMMENDED ACCOMMODATION
 ────────────────────────────────────────────
-[Accommodation selection by budget with recommended neighborhoods. Adapted to the requested accommodation type: ${input.hebergement}]
+[Selection matching budget (${budgetDesc}) and accommodation preference (${labels(input.accommodations, ACCOMMODATION_LABELS)}). Include recommended neighborhoods and price ranges.]
 
 ────────────────────────────────────────────
-7. OFF-THE-BEATEN-PATH EXCURSIONS
+7. DAY TRIPS & EXCURSIONS
 ────────────────────────────────────────────
-[2-3 day trips or half-day trips with practical details, including usual opening hours and closures for visited places where available]` : ""}
+[2-3 excursions with transport details, opening hours and practical tips]` : ""}
 
-[Generate a complete, professional and immediately usable guide. Be precise about addresses, prices, opening hours, closing days, annual closures and practical tips.]`;
+[Write a complete, professional and immediately actionable guide. Be specific with real addresses, real prices, and accurate practical details.]`;
   }
 
-  return `Génère mon guide de voyage personnalisé avec les informations suivantes :
+  return `Génère mon guide de voyage personnalisé :
 
+═══════════ PROFIL VOYAGEUR ═══════════
 DESTINATION : ${input.destination}
-DURÉE : ${input.duration}
-BUDGET JOURNALIER : ${input.budget}
-TYPE DE VOYAGE : ${styleText}
-HÉBERGEMENT PRÉFÉRÉ : ${input.hebergement}
-RESTRICTIONS ALIMENTAIRES : ${regimeText}
-COMPAGNIE : ${input.compagnie}
-NOTES SPÉCIALES : ${input.notes || "Aucune"}
+PÉRIMÈTRE : ${scopeDesc}
+DURÉE : ${durationLabel}
+DATES DE VOYAGE : ${input.travel_dates || input.arrival_date || "Non précisé"}
+DÉPART DEPUIS : ${input.departure_city || "Non précisé"}
 
-STRUCTURE REQUISE DU GUIDE (respecte exactement cet ordre) :
+GROUPE : ${groupDesc}
+BUDGET : ${budgetDesc}
+RYTHME : ${label(input.activity_pace, PACE_LABELS)}
+AMBIANCE : ${label(input.trip_vibe, VIBE_LABELS)}
+TYPE DE VOYAGE : ${label(input.trip_type, TRIP_TYPE_LABELS)}
+STYLE DE DÉCOUVERTE : ${label(input.authenticity, AUTHENTICITY_LABELS)}
+
+HÉBERGEMENT : ${labels(input.accommodations, ACCOMMODATION_LABELS)}
+TRANSPORT : ${labels(input.transport, TRANSPORT_LABELS)}
+${input.neighborhood_vibe ? `QUARTIER / AMBIANCE PRÉFÉRÉ : ${input.neighborhood_vibe}` : ""}
+
+INTÉRÊTS : ${labels(input.interests, INTEREST_LABELS)}
+${(input.sports?.length ?? 0) > 0 ? `SPORTS & ACTIVITÉS : ${labels(input.sports, SPORT_LABELS)}` : ""}
+${(input.landscape?.length ?? 0) > 0 ? `PAYSAGES SOUHAITÉS : ${input.landscape!.join(", ")}` : ""}
+${input.climate ? `CLIMAT PRÉFÉRÉ : ${input.climate}` : ""}
+
+RESTRICTIONS ALIMENTAIRES : ${dietDesc}
+${input.language_spoken?.length ? `LANGUES PARLÉES : ${input.language_spoken.join(", ")}` : ""}
+${input.special_occasion ? `OCCASION SPÉCIALE : ${input.special_occasion}` : ""}
+${input.non_negotiables ? `INCONTOURNABLES : ${input.non_negotiables}` : ""}
+${input.things_to_avoid ? `À ÉVITER : ${input.things_to_avoid}` : ""}
+${input.already_visited ? `DÉJÀ VISITÉ (à éviter) : ${input.already_visited}` : ""}
+${input.dream_experience ? `RÊVE DE VOYAGE : ${input.dream_experience}` : ""}
+${input.notes ? `NOTES COMPLÉMENTAIRES : ${input.notes}` : ""}
+═══════════════════════════════════════
+
+STRUCTURE REQUISE DU GUIDE :
 
 ────────────────────────────────────────────
 PAGE DE COUVERTURE
 ────────────────────────────────────────────
-[Titre du guide, destination, durée, date de génération]
+[Titre, destination, durée, dates, sous-titre personnalisé]
 
 ────────────────────────────────────────────
 1. INTRODUCTION — LA DESTINATION EN UN COUP D'ŒIL
 ────────────────────────────────────────────
-[Introduction narrative 200-300 mots personnalisée + infos rapides : langue, monnaie, visa, meilleure période. Ajoute cette note textuelle : "Les horaires indiqués sont donnés à titre indicatif et peuvent varier. Vérifiez toujours avant votre visite."]
+[Introduction narrative 150-200 mots, adaptée au style et aux intérêts de ce voyageur. Infos rapides : langue locale, monnaie, visa, meilleure période. Note obligatoire : "Les horaires indiqués sont donnés à titre indicatif. Vérifiez toujours avant votre visite."]
 
 ────────────────────────────────────────────
 2. ITINÉRAIRE JOUR PAR JOUR
 ────────────────────────────────────────────
-[Pour chaque journée : matin / après-midi / soirée avec activités, restaurants, transports et conseils locaux. Pour chaque lieu ou monument cité, indique les horaires habituels, jours de fermeture hebdomadaire et périodes de fermeture annuelle connues]
+[Programme détaillé jour par jour, adapté au rythme du voyageur (${label(input.activity_pace, PACE_LABELS)}). Chaque journée : matin / après-midi / soirée avec activités spécifiques, noms de restaurants, conseils transports et astuces locales. Pour chaque lieu cité, indique horaires et jours de fermeture.]
 
 ────────────────────────────────────────────
-3. RESTAURANTS RECOMMANDÉS
+3. SÉLECTION DE RESTAURANTS
 ────────────────────────────────────────────
-[Sélection par catégorie : petit-déjeuner, déjeuner, dîner, street food. Adapté aux restrictions alimentaires]
+[Restaurants sélectionnés par catégorie, adaptés au budget (${budgetDesc}) et aux restrictions alimentaires (${dietDesc}). Inclure la fourchette de prix par personne.]
 
 ────────────────────────────────────────────
 4. ACTIVITÉS ET LIEUX À VISITER
 ────────────────────────────────────────────
-[Incontournables + trésors cachés + activités selon intérêts spécifiques. Pour chaque lieu ou monument cité, indique les horaires habituels, jours de fermeture hebdomadaire et périodes de fermeture annuelle connues]
+[Incontournables et trésors cachés sélectionnés pour les intérêts : ${labels(input.interests, INTEREST_LABELS)}. Inclure horaires, prix, conseils pratiques.]
 
 ────────────────────────────────────────────
 5. CONSEILS PRATIQUES
 ────────────────────────────────────────────
-[Transport, argent, communication, santé & sécurité, culture locale & étiquette, checklist pré-départ]
+[Transport, argent, sécurité, santé, culture locale & étiquette, checklist pré-départ. Adapté pour ${groupDesc}.]
 
-${parseInt(input.duration) >= 7 || input.duration === "7j" || input.duration === "14j" || input.duration === "1mois" ? `────────────────────────────────────────────
+${(input.duration === "7j" || input.duration === "14j" || input.duration === "1mois") ? `────────────────────────────────────────────
 6. HÉBERGEMENTS RECOMMANDÉS
 ────────────────────────────────────────────
-[Sélection hébergements par budget avec quartiers recommandés. Adapté au type d'hébergement demandé : ${input.hebergement}]
+[Sélection adaptée au budget (${budgetDesc}) et au type d'hébergement (${labels(input.accommodations, ACCOMMODATION_LABELS)}). Inclure les quartiers recommandés et fourchettes de prix.]
 
 ────────────────────────────────────────────
-7. EXCURSIONS HORS SENTIERS BATTUS
+7. EXCURSIONS ET ESCAPADES
 ────────────────────────────────────────────
-[2-3 excursions d'une journée ou demi-journée avec détails pratiques, incluant les horaires habituels et fermetures des lieux visités quand disponibles]` : ""}
+[2-3 excursions avec détails transport, horaires et conseils pratiques]` : ""}
 
-[Génère un guide complet, professionnel et immédiatement utilisable. Sois précis sur les adresses, prix, horaires d'ouverture, jours de fermeture, fermetures annuelles et conseils pratiques.]`;
+[Génère un guide complet, professionnel et immédiatement utilisable. Sois précis avec de vraies adresses, des prix réalistes et des détails pratiques exacts.]`;
 }
 
 export function getMaxTokens(duration: string): number {

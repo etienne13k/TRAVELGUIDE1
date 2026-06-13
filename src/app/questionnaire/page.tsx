@@ -320,6 +320,8 @@ interface Answers {
   flow: Flow;
   // Destination
   destination: string;
+  scope_type: string;
+  country_zones: string[];
   departure_city: string;
   // Dates
   arrival_date: string;
@@ -376,8 +378,21 @@ interface DestinationSuggestion {
   highlights: string[];
 }
 
+const SCOPE_TYPE: Opt[] = [
+  { id: "city", emoji: "🏙️", label: "Visite de la ville" },
+  { id: "country", emoji: "🗺️", label: "Tour du pays / road trip" },
+];
+
+const COUNTRY_ZONES: Opt[] = [
+  { id: "nord", emoji: "⬆️", label: "Nord" },
+  { id: "sud", emoji: "⬇️", label: "Sud" },
+  { id: "est", emoji: "➡️", label: "Est" },
+  { id: "ouest", emoji: "⬅️", label: "Ouest" },
+  { id: "tout", emoji: "🌐", label: "Tout le pays" },
+];
+
 const EMPTY: Answers = {
-  flow: "", destination: "", departure_city: "",
+  flow: "", destination: "", scope_type: "", country_zones: [], departure_city: "",
   arrival_date: "", departure_date: "", travel_dates: "", dates_flexible: "",
   traveler_type: "", traveler_adults: 1, traveler_children: 0,
   budget: "", budget_amount: "", budget_currency: "€", budget_scope: "",
@@ -668,6 +683,7 @@ function QuestionnaireContent() {
   const [discoverPhase, setDiscoverPhase] = useState<"form"|"loading"|"results"|"error">("form");
   const [suggestions, setSuggestions] = useState<DestinationSuggestion[]>([]);
   const [suggestError, setSuggestError] = useState<string>("");
+  const [phoneGate, setPhoneGate] = useState<null|"checking"|"blocked">(null);
 
   const plan = selectedPlanKey ? PLANS[selectedPlanKey] : null;
 
@@ -790,7 +806,7 @@ function QuestionnaireContent() {
   function goPrev() { setStep(s=>Math.max(1,s-1)); window.scrollTo({top:0,behavior:"smooth"}); }
 
   function buildCartItemInput(planKey: PlanKey, selectedPlan: typeof PLANS[PlanKey]): CartItemInput {
-    const dest = answers.flow==="destination" ? answers.destination.trim() : "Destination suggérée par IA";
+    const dest = answers.destination.trim() || "Destination suggérée par IA";
     return {
       planId: planKey,
       planLabel: CART_PLANS[planKey].label,
@@ -873,7 +889,16 @@ function QuestionnaireContent() {
             {/* Q2 */}
             <button
               type="button"
-              onClick={()=>setAnswers(p=>({...p,flow:"discover"}))}
+              onClick={async ()=>{
+                setPhoneGate("checking");
+                try {
+                  const r = await fetch("/api/phone-status");
+                  const d = await r.json();
+                  if (!d.loggedIn || !d.verified) { setPhoneGate("blocked"); return; }
+                } catch { setPhoneGate("blocked"); return; }
+                setPhoneGate(null);
+                setAnswers(p=>({...p,flow:"discover"}));
+              }}
               className="group text-left rounded-3xl border-2 border-[#e8e0d4] bg-white p-7 shadow-sm hover:border-[#c9a84c] hover:shadow-lg transition-all duration-200"
             >
               <div className="text-4xl mb-4">🌍</div>
@@ -883,10 +908,17 @@ function QuestionnaireContent() {
               <p className="text-sm text-[#64748b] leading-relaxed mb-4">
                 Vous n&apos;avez pas encore choisi. L&apos;IA vous suggère les meilleures destinations selon vos envies.
               </p>
-              <span className="inline-flex items-center gap-1.5 text-sm font-bold text-[#c9a84c] group-hover:text-[#b8962e] transition-colors">
-                Choisir ce parcours →
-              </span>
+              {phoneGate==="checking"
+                ? <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#94a3b8]">Vérification…</span>
+                : <span className="inline-flex items-center gap-1.5 text-sm font-bold text-[#c9a84c] group-hover:text-[#b8962e] transition-colors">Choisir ce parcours →</span>
+              }
             </button>
+            {phoneGate==="blocked"&&(
+              <div className="sm:col-span-2 rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4 text-sm text-amber-900">
+                <p className="font-bold mb-1">📱 Numéro de téléphone requis</p>
+                <p>Pour accéder aux suggestions IA, vérifiez votre numéro de téléphone dans votre <a href="/account" className="font-semibold underline">espace compte</a>.</p>
+              </div>
+            )}
           </div>
 
           <p className="mt-8 text-center text-xs text-[#94a3b8]">
@@ -983,6 +1015,28 @@ function QuestionnaireContent() {
                   <datalist id="destinations-list">{DESTINATIONS.map(d=><option key={d} value={d}/>)}</datalist>
                   <p className="text-xs text-[#94a3b8] mt-1.5">💡 Suggestions disponibles — vérifiez l&apos;orthographe avant de continuer.</p>
                   {errors.destination&&<p className="text-xs text-red-500 mt-1 font-semibold">{errors.destination}</p>}
+                  <div className="mt-4">
+                    <QLabel>Type de séjour</QLabel>
+                    <div className="flex flex-wrap gap-2">
+                      {SCOPE_TYPE.map(o=>(
+                        <Pill key={o.id} emoji={o.emoji} label={o.label}
+                          selected={answers.scope_type===o.id}
+                          onClick={()=>radio("scope_type",o.id)}/>
+                      ))}
+                    </div>
+                  </div>
+                  {answers.scope_type==="country"&&(
+                    <div className="mt-4">
+                      <QLabel hint="(plusieurs choix)">Quelle(s) zone(s) du pays ?</QLabel>
+                      <div className="flex flex-wrap gap-2">
+                        {COUNTRY_ZONES.map(o=>(
+                          <Pill key={o.id} emoji={o.emoji} label={o.label}
+                            selected={answers.country_zones.includes(o.id)}
+                            onClick={()=>{setAnswers(p=>{const arr=p.country_zones;return{...p,country_zones:arr.includes(o.id)?arr.filter(v=>v!==o.id):[...arr,o.id]};});}}/>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </SectionCard>
               </div>
             )}

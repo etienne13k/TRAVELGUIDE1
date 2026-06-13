@@ -59,17 +59,46 @@ export async function POST(req: NextRequest) {
 
 function buildPrompt(a: Record<string, unknown>): string {
   const arr = (v: unknown) => (Array.isArray(v) ? (v as string[]).join(", ") : "non précisé");
-  return `Propose 3 destinations de voyage variées pour ce voyageur.
+  const budget = a.budget as string ?? "";
+  const travelerType = a.traveler_type as string ?? "";
+  const adults = Number(a.traveler_adults ?? 1);
+  const children = Number(a.traveler_children ?? 0);
 
+  const groupDesc = travelerType === "solo" ? "voyageur solo" :
+    travelerType === "couple" ? "couple" :
+    travelerType === "family" ? `famille avec ${children} enfant${children > 1 ? "s" : ""}` :
+    travelerType === "friends" ? `groupe de ${adults} amis` : "groupe";
+
+  const budgetConstraint = budget === "backpacker"
+    ? "BUDGET LIMITÉ : ne propose QUE des destinations accessibles pour un petit budget (logement < 40€/nuit, vie courante abordable)."
+    : budget === "luxury"
+    ? "BUDGET PREMIUM : propose des destinations avec des expériences haut de gamme possibles."
+    : "Budget confort (milieu de gamme).";
+
+  return `Tu es un expert en voyages. Propose 3 destinations RÉELLES et EXISTANTES pour ce voyageur.
+
+PROFIL VOYAGEUR :
 - Départ : ${a.departure_city ?? "non précisé"}
-- Budget : ${a.budget ?? "non précisé"}
-- Intérêts : ${arr(a.interests)}, sports : ${arr(a.sports)}
-- Paysage : ${arr(a.landscape)}, Climat : ${a.climate ?? "non précisé"}
+- Groupe : ${groupDesc}
+- Budget : ${budgetConstraint}
+- Intérêts : ${arr(a.interests)}${arr(a.sports) !== "non précisé" ? `, sports : ${arr(a.sports)}` : ""}
+- Paysage souhaité : ${arr(a.landscape)}
+- Climat préféré : ${a.climate ?? "non précisé"}
 - Ambiance : ${a.trip_vibe ?? "non précisé"}
-- À éviter : ${a.already_visited ?? ""} ${a.things_to_avoid ?? ""}
+- Type de voyage : ${a.trip_type ?? "non précisé"}
+- Style : ${a.authenticity ?? "non précisé"}
+- Rêve de voyage : ${a.dream_experience ?? ""}
+- À éviter absolument : ${[a.already_visited, a.things_to_avoid].filter(Boolean).join(", ") || "rien de spécifié"}
+
+RÈGLES STRICTES DE COHÉRENCE :
+1. Toutes les destinations proposées doivent être des villes ou pays RÉELS et GÉOGRAPHIQUEMENT EXISTANTS.
+2. Si le budget est "backpacker", n'inclus JAMAIS des destinations connues pour être très chères (Maldives, Dubaï, Suisse…). Adapte strictement au budget.
+3. Si le voyageur est solo, toutes les recommandations doivent être adaptées au voyage seul.
+4. Assure-toi que les 3 destinations sont variées (différents continents ou régions si possible).
+5. Tiens compte du temps de vol acceptable depuis la ville de départ.
 
 Réponds avec exactement ce JSON (3 objets) :
-[{"name":"ville","country":"pays","emoji":"emoji","tagline":"accroche courte","why":"2 phrases personnalisées","highlights":["atout1","atout2","atout3"]}]
+[{"name":"ville/destination","country":"pays","emoji":"emoji pays ou paysage","tagline":"accroche de 8 mots max","why":"2 phrases expliquant POURQUOI cette destination correspond EXACTEMENT à ce profil","highlights":["atout1 concret","atout2 concret","atout3 concret"]}]
 
-UNIQUEMENT le tableau JSON.`;
+UNIQUEMENT le tableau JSON brut, sans markdown.`;
 }

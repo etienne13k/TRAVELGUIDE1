@@ -33,7 +33,11 @@ function CartContent() {
   const [termsError, setTermsError] = useState<string | null>(null);
 
   useEffect(() => {
-    queueMicrotask(() => setItems(loadCart()));
+    queueMicrotask(() => {
+      setItems(loadCart());
+      const saved = localStorage.getItem("tgai_promo");
+      if (saved) setPromoCode(saved);
+    });
   }, []);
 
   const total = getCartTotal(items);
@@ -248,7 +252,9 @@ function CartContent() {
                       type="text"
                       value={promoCode}
                       onChange={(event) => {
-                        setPromoCode(event.target.value);
+                        const v = event.target.value;
+                        setPromoCode(v);
+                        localStorage.setItem("tgai_promo", v);
                         setPromoMessage("");
                         setPromoProfileUrl(null);
                         setPromoApplied(false);
