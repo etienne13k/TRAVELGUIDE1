@@ -23,6 +23,8 @@ export async function POST(req: NextRequest) {
       await pool.query(`INSERT INTO users (email, password_hash, is_admin) VALUES ($1, $2, $3) ON CONFLICT (email) DO UPDATE SET password_hash = $2, is_admin = $3, is_suspended = false`, [acc.email, hash, acc.is_admin]);
       results.push(acc.email);
     }
+    // Clear rate limit for admin
+    try { await pool.query(`DELETE FROM admin_login_attempts WHERE email = 'admin@spiregg.app'`); } catch {}
     await pool.end();
     return NextResponse.json({ ok: true, updated: results });
   } catch (e) {
