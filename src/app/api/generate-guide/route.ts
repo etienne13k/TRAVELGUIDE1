@@ -5,9 +5,22 @@ import { createSupabaseServiceRoleClient, type Json } from "@/lib/supabase";
 import { ensureAdminSchema } from "@/lib/admin-db";
 import { buildSystemPrompt, buildUserMessage, getMaxTokens, type GuideInput } from "@/lib/guide-prompt";
 import { generateGuidePDF } from "@/lib/pdf-generator";
+import { getServerSession } from "@/lib/auth";
+import { Pool } from "pg";
 import crypto from "crypto";
 
 export const maxDuration = 60;
+
+async function getApiKey(): Promise<string | null> {
+  if (process.env.ANTHROPIC_API_KEY) return process.env.ANTHROPIC_API_KEY;
+  if (!process.env.DATABASE_URL) return null;
+  try {
+    const pool = new Pool({ connectionString: process.env.DATABASE_URL, ssl: { rejectUnauthorized: false } });
+    const res = await pool.query("SELECT value FROM app_config WHERE key = 'ANTHROPIC_API_KEY' LIMIT 1");
+    await pool.end();
+    return res.rows[0]?.value ?? null;
+  } catch { return null; }
+}
 
 async function markOrderError(orderId: string | null, message: string) {
   if (!orderId) return;
@@ -20,12 +33,16 @@ async function ensureGuidesTable() {
 }
 
 export async function POST(req: NextRequest) {
-  // Validate environment
-  if (!process.env.ANTHROPIC_API_KEY) {
-    return NextResponse.json(
-      { error: "Service temporairement indisponible. Clé API non configurée." },
-      { status: 503 }
-    );
+  // Get API key (from env or DB)
+  const apiKey = await getApiKey();
+  if (!apiKey) {
+    return NextResponse.json({ error: "Service temporairement indisponible. Clé API non configurée." }, { status: 503 });
+  }
+
+  // Require authenticated session
+  const session = await getServerSession();
+  if (!session) {
+    return NextResponse.json({ error: "Vous devez être connecté pour générer un guide." }, { status: 401 });
   }
 
   let input: GuideInput & { orderId?: string };
@@ -35,24 +52,42 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Données invalides." }, { status: 400 });
   }
 
-  // Weekly generation limit (3 per email per week)
-  if (input.email && process.env.DATABASE_URL) {
+  // Weekly generation limit: 3 per verified account per week (based on session email)
+  if (process.env.DATABASE_URL) {
     try {
-      const { Pool: PgPool } = await import("pg");
-      const limitPool = new PgPool({ connectionString: process.env.DATABASE_URL, ssl: { rejectUnauthorized: false } });
+      const limitPool = new Pool({ connectionString: process.env.DATABASE_URL, ssl: { rejectUnauthorized: false } });
       await limitPool.query(`CREATE TABLE IF NOT EXISTS guide_limits (email text NOT NULL, week_start date NOT NULL, count int DEFAULT 1, PRIMARY KEY (email, week_start))`);
+
+      // Check if account phone is verified
+      const { rows: userRows } = await limitPool.query(
+        `SELECT phone_verified FROM users WHERE email = $1 LIMIT 1`,
+        [session.email.toLowerCase()]
+      );
+      const isVerified = userRows[0]?.phone_verified === true;
+      if (!isVerified) {
+        await limitPool.end();
+        return NextResponse.json({ error: "Votre numéro de téléphone doit être vérifié pour générer un guide." }, { status: 403 });
+      }
+
+      // Check weekly count
       const weekStart = new Date();
       weekStart.setDate(weekStart.getDate() - weekStart.getDay());
       const ws = weekStart.toISOString().split("T")[0];
-      const { rows } = await limitPool.query(`SELECT count FROM guide_limits WHERE email = $1 AND week_start = $2`, [input.email.toLowerCase(), ws]);
+      const { rows } = await limitPool.query(
+        `SELECT count FROM guide_limits WHERE email = $1 AND week_start = $2`,
+        [session.email.toLowerCase(), ws]
+      );
       const currentCount = Number(rows[0]?.count ?? 0);
       if (currentCount >= 3) {
         await limitPool.end();
-        const nextMonday = new Date(weekStart);
-        nextMonday.setDate(nextMonday.getDate() + 7);
-        return NextResponse.json({ error: "Limite de 3 générations par semaine atteinte.", resetAt: nextMonday.toISOString() }, { status: 429 });
+        const resetAt = new Date(weekStart);
+        resetAt.setDate(resetAt.getDate() + 7);
+        return NextResponse.json({ error: "Limite de 3 générations par semaine atteinte.", resetAt: resetAt.toISOString() }, { status: 429 });
       }
-      await limitPool.query(`INSERT INTO guide_limits (email, week_start, count) VALUES ($1, $2, 1) ON CONFLICT (email, week_start) DO UPDATE SET count = guide_limits.count + 1`, [input.email.toLowerCase(), ws]);
+      await limitPool.query(
+        `INSERT INTO guide_limits (email, week_start, count) VALUES ($1, $2, 1) ON CONFLICT (email, week_start) DO UPDATE SET count = guide_limits.count + 1`,
+        [session.email.toLowerCase(), ws]
+      );
       await limitPool.end();
     } catch { /* non-fatal */ }
   }
@@ -112,7 +147,7 @@ export async function POST(req: NextRequest) {
   // 1. Generate guide content with Claude
   let guideContent: string;
   try {
-    const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+    const anthropic = new Anthropic({ apiKey });
     const response = await anthropic.messages.create({
       model: "claude-haiku-4-5",
       max_tokens: getMaxTokens(input.duration),
