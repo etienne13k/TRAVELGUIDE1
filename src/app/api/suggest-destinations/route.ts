@@ -23,20 +23,6 @@ function isoToFlag(iso: string): string {
   return String.fromCodePoint(...[...code].map(c => 0x1F1E6 - 65 + c.charCodeAt(0)));
 }
 
-async function fetchWikipediaPhoto(city: string, country: string): Promise<string | null> {
-  const queries = [city, `${city}, ${country}`, country];
-  for (const q of queries) {
-    try {
-      const url = `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(q)}`;
-      const res = await fetch(url, { headers: { "User-Agent": "TravelGuideAI/1.0" }, signal: AbortSignal.timeout(4000) });
-      if (!res.ok) continue;
-      const data = await res.json() as { thumbnail?: { source?: string } };
-      const photo = data.thumbnail?.source;
-      if (photo) return photo;
-    } catch { continue; }
-  }
-  return null;
-}
 
 export async function POST(req: NextRequest) {
   const apiKey = await getApiKey();
@@ -71,14 +57,11 @@ export async function POST(req: NextRequest) {
 
     const suggestions: Array<Record<string, unknown>> = JSON.parse(match[0]);
 
-    // Fetch Wikipedia photos in parallel + generate flag from ISO code
-    const withPhotos = await Promise.all(
-      suggestions.map(async (s) => {
-        const photo = await fetchWikipediaPhoto(String(s.name ?? ""), String(s.country ?? ""));
-        const flag = isoToFlag(String(s.iso ?? ""));
-        return { ...s, photo, flag };
-      })
-    );
+    // Generate flag emoji from ISO code
+    const withPhotos = suggestions.map((s) => {
+      const flag = isoToFlag(String(s.iso ?? ""));
+      return { ...s, flag, photo: null };
+    });
 
     return NextResponse.json({ suggestions: withPhotos });
 
