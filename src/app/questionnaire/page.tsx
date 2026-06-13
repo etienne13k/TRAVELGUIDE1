@@ -1400,25 +1400,43 @@ function QuestionnaireContent() {
             {suggestions.map((s,i)=>(
               <button key={i} type="button"
                 onClick={()=>{setAnswers(p=>({...p,destination:`${s.name}, ${s.country}`}));setDiscoverPhase("form");setStep(3);window.scrollTo({top:0,behavior:"smooth"});}}
-                className="w-full text-left bg-white rounded-3xl border-2 border-[#e8e0d4] p-6 shadow-sm hover:border-[#c9a84c] hover:shadow-xl transition-all duration-200 group">
-                <div className="flex items-start justify-between gap-4">
-                  <div className="flex items-center gap-4">
-                    <span className="text-5xl">{s.emoji}</span>
+                className="w-full text-left bg-white rounded-3xl border-2 border-[#e8e0d4] overflow-hidden shadow-sm hover:border-[#c9a84c] hover:shadow-xl transition-all duration-200 group">
+                {/* Photo header */}
+                <div className="relative h-44 sm:h-52 w-full bg-[#e8e0d4] overflow-hidden">
+                  <img
+                    src={`https://source.unsplash.com/800x400/?${encodeURIComponent(s.name+","+s.country+",travel")}`}
+                    alt={s.name}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    onError={e=>{(e.target as HTMLImageElement).style.display="none";}}
+                    loading="lazy"
+                  />
+                  {/* Gradient overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent"/>
+                  {/* Emoji + name overlay */}
+                  <div className="absolute bottom-0 left-0 right-0 p-4 flex items-end justify-between">
                     <div>
                       <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#c9a84c] mb-0.5">{s.country}</p>
-                      <h3 className="text-xl font-bold text-[#425B48]" style={{fontFamily:"var(--font-playfair),Georgia,serif"}}>{s.name}</h3>
-                      <p className="text-sm text-[#64748b] italic mt-0.5">{s.tagline}</p>
+                      <h3 className="text-2xl font-bold text-white drop-shadow-md" style={{fontFamily:"var(--font-playfair),Georgia,serif"}}>
+                        {s.emoji} {s.name}
+                      </h3>
                     </div>
+                    <span className="text-white/80 text-2xl font-bold group-hover:translate-x-1 transition-transform">→</span>
                   </div>
-                  <span className="text-[#c9a84c] text-2xl font-bold shrink-0 group-hover:translate-x-1 transition-transform mt-1">→</span>
                 </div>
-                <p className="mt-4 text-sm text-[#475569] leading-relaxed">{s.why}</p>
-                <div className="mt-4 flex flex-wrap gap-2">
-                  {s.highlights.map((h,j)=>(
-                    <span key={j} className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-[#425B48]/8 text-[#425B48] text-xs font-semibold border border-[#425B48]/15">
-                      ✓ {h}
-                    </span>
-                  ))}
+                {/* Card body */}
+                <div className="p-5">
+                  <p className="text-sm text-[#64748b] italic mb-3">{s.tagline}</p>
+                  <p className="text-sm text-[#475569] leading-relaxed">{s.why}</p>
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    {s.highlights.map((h,j)=>(
+                      <span key={j} className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-[#425B48]/8 text-[#425B48] text-xs font-semibold border border-[#425B48]/15">
+                        ✓ {h}
+                      </span>
+                    ))}
+                  </div>
+                  <div className="mt-4 flex items-center justify-end gap-2">
+                    <span className="text-xs font-bold text-[#c9a84c] group-hover:text-[#b8962e] transition-colors">Choisir cette destination →</span>
+                  </div>
                 </div>
               </button>
             ))}
