@@ -30,12 +30,21 @@ export async function POST(req: NextRequest) {
     .map((b) => (b as { type: "text"; text: string }).text)
     .join("");
 
-  const match = text.match(/\[[\s\S]*\]/);
+  // Strip markdown code fences if present
+  const clean = text.replace(/```json\s*/gi, "").replace(/```\s*/g, "").trim();
+  const match = clean.match(/\[[\s\S]*\]/);
   if (!match) {
+    console.error("[suggest-destinations] No JSON array found in:", text.slice(0, 200));
     return NextResponse.json({ error: "Parsing error" }, { status: 500 });
   }
 
-  const suggestions = JSON.parse(match[0]);
+  let suggestions;
+  try {
+    suggestions = JSON.parse(match[0]);
+  } catch (e) {
+    console.error("[suggest-destinations] JSON parse error:", e);
+    return NextResponse.json({ error: "JSON parse error" }, { status: 500 });
+  }
   return NextResponse.json({ suggestions });
 }
 

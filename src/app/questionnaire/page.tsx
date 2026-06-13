@@ -667,7 +667,7 @@ function QuestionnaireContent() {
   const [termsError, setTermsError] = useState<string|null>(null);
   const [cartNotice, setCartNotice] = useState<string|null>(null);
   const [isEditingCartItem, setIsEditingCartItem] = useState(false);
-  const [discoverPhase, setDiscoverPhase] = useState<"form"|"loading"|"results">("form");
+  const [discoverPhase, setDiscoverPhase] = useState<"form"|"loading"|"results"|"error">("form");
   const [suggestions, setSuggestions] = useState<DestinationSuggestion[]>([]);
 
   const plan = selectedPlanKey ? PLANS[selectedPlanKey] : null;
@@ -773,8 +773,11 @@ function QuestionnaireContent() {
         setDiscoverPhase("loading");
         fetch("/api/suggest-destinations",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(answers)})
           .then(r=>r.json())
-          .then(data=>{setSuggestions(data.suggestions??[]);setDiscoverPhase("results");})
-          .catch(()=>{setDiscoverPhase("form");setStep(3);window.scrollTo({top:0,behavior:"smooth"});});
+          .then(data=>{
+            if (data.suggestions&&data.suggestions.length>0){setSuggestions(data.suggestions);setDiscoverPhase("results");}
+            else setDiscoverPhase("error");
+          })
+          .catch(()=>setDiscoverPhase("error"));
         return;
       }
     }
@@ -948,7 +951,7 @@ function QuestionnaireContent() {
           </div>
         )}
 
-        <PlanSelector selectedPlanKey={selectedPlanKey} onSelect={choosePlan} />
+        {discoverPhase==="form"&&<PlanSelector selectedPlanKey={selectedPlanKey} onSelect={choosePlan} />}
 
         {/* ═══════════ STEP 1 ═══════════ */}
         {step===1&&(
@@ -1275,6 +1278,20 @@ function QuestionnaireContent() {
         )}
 
         {/* ═══════════ DISCOVER — SUGGESTION SCREENS ═══════════ */}
+        {step===2&&answers.flow==="discover"&&discoverPhase==="error"&&(
+          <div className="flex flex-col items-center justify-center py-20 gap-5 text-center">
+            <div className="text-5xl">😕</div>
+            <div>
+              <h2 className="text-xl font-bold text-[#425B48] mb-2" style={{fontFamily:"var(--font-playfair),Georgia,serif"}}>Une erreur est survenue</h2>
+              <p className="text-[#64748b] text-sm mb-5">L&apos;IA n&apos;a pas pu générer les suggestions. Réessayez.</p>
+              <button type="button" onClick={()=>{setDiscoverPhase("loading");fetch("/api/suggest-destinations",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(answers)}).then(r=>r.json()).then(data=>{if(data.suggestions?.length>0){setSuggestions(data.suggestions);setDiscoverPhase("results");}else setDiscoverPhase("error");}).catch(()=>setDiscoverPhase("error"));}}
+                className="bg-[#425B48] text-white font-bold px-6 py-3 rounded-xl hover:bg-[#344a39] transition-all text-sm">
+                Réessayer →
+              </button>
+            </div>
+          </div>
+        )}
+
         {step===2&&answers.flow==="discover"&&discoverPhase==="loading"&&(
           <div className="flex flex-col items-center justify-center py-24 gap-6">
             <div className="text-6xl animate-bounce">🌍</div>
@@ -1501,7 +1518,7 @@ function QuestionnaireContent() {
 
         {/* NAV BUTTONS */}
         <div className="flex items-center justify-between pt-4 pb-8">
-          {step>1?(
+          {discoverPhase==="form"&&(step>1?(
             <button type="button" onClick={goPrev}
               className="flex items-center gap-2 text-[#425B48] font-semibold text-sm hover:text-[#c9a84c] transition-colors">
               ← Précédent
@@ -1511,7 +1528,7 @@ function QuestionnaireContent() {
               className="flex items-center gap-2 text-[#94a3b8] font-semibold text-sm hover:text-[#425B48] transition-colors">
               ← Changer de parcours
             </button>
-          )}
+          ))}
           {step<3&&discoverPhase==="form"&&(
             <button type="button" onClick={goNext}
               className="bg-[#425B48] text-white font-bold px-8 py-3 rounded-xl hover:bg-[#344a39] transition-all hover:scale-[1.02] shadow-md text-sm">
