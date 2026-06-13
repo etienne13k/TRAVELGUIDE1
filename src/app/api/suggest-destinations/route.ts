@@ -1,54 +1,73 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 
-export const maxDuration = 10;
+export const runtime = "edge";
 
 export async function POST(req: NextRequest) {
   if (!process.env.ANTHROPIC_API_KEY) {
-    return NextResponse.json({ error: "API key not configured" }, { status: 503 });
+    return new Response(JSON.stringify({ error: "API key not configured" }), { status: 503 });
   }
 
   let answers: Record<string, unknown>;
   try {
     answers = await req.json();
   } catch {
-    return NextResponse.json({ error: "Invalid body" }, { status: 400 });
+    return new Response(JSON.stringify({ error: "Invalid body" }), { status: 400 });
   }
 
   const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
-  const response = await anthropic.messages.create({
-    model: "claude-haiku-4-5",
-    max_tokens: 2000,
-    system: `Tu es un expert en voyages avec 20 ans d'expérience. Tu proposes des destinations parfaitement adaptées aux envies du voyageur. Tu réponds UNIQUEMENT en JSON valide, sans texte avant ou après. Pas de markdown, pas de \`\`\`json, juste le tableau JSON brut.`,
-    messages: [{ role: "user", content: buildPrompt(answers) }],
+  // Use streaming so Vercel Edge keeps the connection open
+  const stream = new ReadableStream({
+    async start(controller) {
+      const enc = new TextEncoder();
+      try {
+        let fullText = "";
+
+        const messageStream = anthropic.messages.stream({
+          model: "claude-haiku-4-5",
+          max_tokens: 2000,
+          system:
+            "Tu es un expert en voyages. Tu réponds UNIQUEMENT avec un tableau JSON valide, sans markdown, sans ```json, juste le JSON brut.",
+          messages: [{ role: "user", content: buildPrompt(answers) }],
+        });
+
+        for await (const chunk of messageStream) {
+          if (
+            chunk.type === "content_block_delta" &&
+            chunk.delta.type === "text_delta"
+          ) {
+            fullText += chunk.delta.text;
+          }
+        }
+
+        const clean = fullText.replace(/```json\s*/gi, "").replace(/```\s*/g, "").trim();
+        const match = clean.match(/\[[\s\S]*\]/);
+        if (!match) {
+          controller.enqueue(enc.encode(JSON.stringify({ error: "No JSON found", raw: fullText.slice(0, 300) })));
+          controller.close();
+          return;
+        }
+
+        const suggestions = JSON.parse(match[0]);
+        controller.enqueue(enc.encode(JSON.stringify({ suggestions })));
+        controller.close();
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err);
+        controller.enqueue(enc.encode(JSON.stringify({ error: msg })));
+        controller.close();
+      }
+    },
   });
 
-  const text = response.content
-    .filter((b) => b.type === "text")
-    .map((b) => (b as { type: "text"; text: string }).text)
-    .join("");
-
-  // Strip markdown code fences if present
-  const clean = text.replace(/```json\s*/gi, "").replace(/```\s*/g, "").trim();
-  const match = clean.match(/\[[\s\S]*\]/);
-  if (!match) {
-    console.error("[suggest-destinations] No JSON array found in:", text.slice(0, 200));
-    return NextResponse.json({ error: "Parsing error" }, { status: 500 });
-  }
-
-  let suggestions;
-  try {
-    suggestions = JSON.parse(match[0]);
-  } catch (e) {
-    console.error("[suggest-destinations] JSON parse error:", e);
-    return NextResponse.json({ error: "JSON parse error" }, { status: 500 });
-  }
-  return NextResponse.json({ suggestions });
+  return new Response(stream, {
+    headers: { "Content-Type": "application/json" },
+  });
 }
 
 function buildPrompt(a: Record<string, unknown>): string {
-  const arr = (v: unknown) => (Array.isArray(v) ? (v as string[]).join(", ") : "non précisé");
+  const arr = (v: unknown) =>
+    Array.isArray(v) ? (v as string[]).join(", ") : "non précisé";
   return `Propose exactement 3 destinations de voyage différentes et variées pour ce voyageur.
 
 CRITÈRES :
@@ -65,20 +84,20 @@ CRITÈRES :
 - Vol max : ${a.max_flight_time ?? "peu importe"}
 - Langues : ${arr(a.language_spoken)}
 - Déjà visité / à éviter : ${a.already_visited ?? "rien"}
-- Rêve de voyage : ${a.dream_experience ?? "non précisé"}
+- Rêve : ${a.dream_experience ?? "non précisé"}
 - À éviter : ${a.things_to_avoid ?? "rien"}
 
-Réponds avec un tableau JSON de 3 objets avec exactement ces champs :
+Réponds avec un tableau JSON de 3 objets :
 [
   {
-    "name": "Nom de la destination (ville ou région)",
+    "name": "Ville ou région",
     "country": "Pays",
-    "emoji": "1 emoji représentatif",
-    "tagline": "Phrase d'accroche courte (max 8 mots)",
-    "why": "Explication personnalisée de 2-3 phrases pourquoi cette destination correspond parfaitement à CE voyageur précis",
+    "emoji": "1 emoji",
+    "tagline": "Accroche courte max 8 mots",
+    "why": "2-3 phrases personnalisées expliquant pourquoi cette destination colle parfaitement à ce voyageur",
     "highlights": ["point fort 1", "point fort 2", "point fort 3"]
   }
 ]
 
-Les 3 destinations doivent être vraiment variées. Réponds UNIQUEMENT avec le tableau JSON.`;
+Les 3 destinations doivent être variées. Réponds UNIQUEMENT avec le tableau JSON.`;
 }
