@@ -1,5 +1,5 @@
 ﻿import { NextRequest, NextResponse } from "next/server";
-import OpenAI from "openai";
+import Anthropic from "@anthropic-ai/sdk";
 import { Resend } from "resend";
 import { createSupabaseServiceRoleClient, type Json } from "@/lib/supabase";
 import { ensureAdminSchema } from "@/lib/admin-db";
@@ -21,9 +21,9 @@ async function ensureGuidesTable() {
 
 export async function POST(req: NextRequest) {
   // Validate environment
-  if (!process.env.OPENAI_API_KEY) {
+  if (!process.env.ANTHROPIC_API_KEY) {
     return NextResponse.json(
-      { error: "Service temporairement indisponible. Clé API OpenAI non configurée." },
+      { error: "Service temporairement indisponible. Clé API non configurée." },
       { status: 503 }
     );
   }
@@ -87,24 +87,25 @@ export async function POST(req: NextRequest) {
     // Non-fatal: order tracking failure doesn't block guide generation
   }
 
-  // 1. Generate guide content with OpenAI
+  // 1. Generate guide content with Claude
   let guideContent: string;
   try {
-    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-    const completion = await openai.chat.completions.create({
-      model: "gpt-4o",
-      temperature: 0.7,
+    const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+    const response = await anthropic.messages.create({
+      model: "claude-opus-4-8",
       max_tokens: getMaxTokens(input.duration),
-      messages: [
-        { role: "system", content: buildSystemPrompt(input.language === "en" ? "en" : "fr") },
-        { role: "user", content: buildUserMessage(input) },
-      ],
+      thinking: { type: "adaptive" },
+      system: buildSystemPrompt(input.language === "en" ? "en" : "fr"),
+      messages: [{ role: "user", content: buildUserMessage(input) }],
     });
-    guideContent = completion.choices[0]?.message?.content ?? "";
-    if (!guideContent) throw new Error("OpenAI returned empty content");
+    guideContent = response.content
+      .filter((block) => block.type === "text")
+      .map((block) => (block as { type: "text"; text: string }).text)
+      .join("");
+    if (!guideContent) throw new Error("Claude returned empty content");
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : String(err);
-    console.error("[generate-guide] OpenAI error:", message);
+    console.error("[generate-guide] Claude error:", message);
     if (orderId) {
       await markOrderError(orderId, message).catch(() => undefined);
     }
@@ -174,11 +175,11 @@ export async function POST(req: NextRequest) {
     try {
       const resend = new Resend(process.env.RESEND_API_KEY);
       const baseUrl =
-        process.env.NEXT_PUBLIC_BASE_URL ?? "https://spiregg.nanocorp.app";
+        process.env.NEXT_PUBLIC_BASE_URL ?? "https://travel-guide.nanocorp.app";
       const downloadUrl = `${baseUrl}/api/download-guide/${guideId}`;
 
       await resend.emails.send({
-        from: "TravelGuide AI <guides@travelguide.ai>",
+        from: "TravelGuide AI <travel-guide@nanocorp.app>",
         to: input.email,
         subject: `Votre guide de voyage ${input.destination} est prêt ! ✈️`,
         html: buildEmailHtml(input, downloadUrl),
@@ -198,7 +199,7 @@ export async function POST(req: NextRequest) {
 
   // Update order delivery state
   if (orderId) {
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "https://spiregg.nanocorp.app";
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "https://travel-guide.nanocorp.app";
     const guideDownloadUrl = `${baseUrl}/api/download-guide/${guideId}`;
     const deliveryStatus = emailSent ? "delivered" : "error";
     const deliveryError = emailSent ? null : "Email de livraison non envoyé";
