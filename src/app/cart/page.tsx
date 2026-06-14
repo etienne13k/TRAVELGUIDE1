@@ -106,31 +106,34 @@ function CartContent() {
 
     try {
       const normalizedPromoCode = promoCode.trim().toUpperCase();
-      const discountMultiplier = promoApplied && promoSavings > 0 ? 0.6 : 1;
+      const discountMultiplier = promoApplied && promoSavings > 0 ? 0.75 : 1;
 
-      const res = await fetch("/api/create-checkout-session", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          items: items.map((item) => ({
-            planId: item.planId,
-            planLabel: item.planLabel,
-            price: Math.round(item.price * discountMultiplier),
-            destination: item.destination,
-            dates: item.dates,
-            criteria: item.criteria,
-          })),
-          promoCode: normalizedPromoCode || undefined,
-        }),
-      });
+      // Use Stripe Payment Link, append promo if active
+      const stripeBase = "https://buy.stripe.com/9B614n5ZX6MYgY31eg0Ba00";
+      const stripeUrl = promoApplied && normalizedPromoCode
+        ? `${stripeBase}?prefilled_promo_code=${normalizedPromoCode}`
+        : stripeBase;
 
-      const data = await res.json();
-      if (!res.ok || !data.url) {
-        setCheckoutProfileUrl(data.profileUrl ?? null);
-        throw new Error(data.error ?? "Impossible de créer le paiement.");
-      }
+      // Still create checkout session for order tracking, but redirect to Stripe link
+      try {
+        await fetch("/api/create-checkout-session", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            items: items.map((item) => ({
+              planId: item.planId,
+              planLabel: item.planLabel,
+              price: Math.round(item.price * discountMultiplier),
+              destination: item.destination,
+              dates: item.dates,
+              criteria: item.criteria,
+            })),
+            promoCode: normalizedPromoCode || undefined,
+          }),
+        });
+      } catch { /* non-fatal — tracking only */ }
 
-      router.push(data.url);
+      router.push(stripeUrl);
     } catch (checkoutError) {
       setError(checkoutError instanceof Error ? checkoutError.message : "Une erreur est survenue.");
       setLoading(false);

@@ -12,7 +12,7 @@ type PromoConfig = {
 };
 
 export const VALID_PROMO_CODES: Record<string, PromoConfig> = {
-  WELCOME: { planKey: null, discount: 40 },
+  WELCOME: { planKey: null, discount: 25 },
 };
 
 export type ValidPromoCode = keyof typeof VALID_PROMO_CODES;
