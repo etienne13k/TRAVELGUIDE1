@@ -22,9 +22,9 @@ type Flow = "" | "destination" | "discover";
 
 const PLANS: Record<PlanKey, { name: string; duration: string; oldPrice: string; price: string; priceN: number }> = {
   "3j":    { name: "Guide Express",  duration: "3 jours",  oldPrice: "5€",  price: "3€",  priceN: 3  },
-  "7j":    { name: "Guide Complet",  duration: "7 jours",  oldPrice: "10€", price: "7€",  priceN: 7  },
-  "14j":   { name: "Guide Immersif", duration: "14 jours", oldPrice: "18€", price: "12€", priceN: 12 },
-  "1mois": { name: "Guide de Vie",   duration: "1 mois",   oldPrice: "25€", price: "18€", priceN: 18 },
+  "7j":    { name: "Guide Complet",  duration: "7 jours",  oldPrice: "9€",  price: "6€",  priceN: 6  },
+  "14j":   { name: "Guide Immersif", duration: "14 jours", oldPrice: "15€", price: "10€", priceN: 10 },
+  "1mois": { name: "Guide Évasion",  duration: "1 mois",   oldPrice: "22€", price: "16€", priceN: 16 },
 };
 
 const DESTINATIONS = [

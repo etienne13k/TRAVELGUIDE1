@@ -20,10 +20,10 @@ export type CartItem = {
 };
 
 export const CART_PLANS: Record<PlanKey, { label: string; duration: string; amount: number }> = {
-  "3j": { label: "Guide 3 jours", duration: "3 jours", amount: 300 },
-  "7j": { label: "Guide 7 jours", duration: "7 jours", amount: 700 },
-  "14j": { label: "Guide 14 jours", duration: "14 jours", amount: 1200 },
-  "1mois": { label: "Guide 1 mois", duration: "1 mois", amount: 2000 },
+  "3j":    { label: "Guide Express",  duration: "3 jours", amount: 300  },
+  "7j":    { label: "Guide Complet",  duration: "7 jours", amount: 600  },
+  "14j":   { label: "Guide Immersif", duration: "14 jours", amount: 1000 },
+  "1mois": { label: "Guide Évasion",  duration: "1 mois",  amount: 1600 },
 };
 
 export type CartItemInput = Omit<CartItem, "id" | "createdAt" | "updatedAt">;

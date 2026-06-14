@@ -18,8 +18,8 @@ type PhoneStatus = {
 const translations = {
   fr: {
     banner_messages: [
-      "🏷️ -40% sur votre premier guide avec le code WELCOME",
-      "✈️ Jusqu'à 10€ économisés · Livraison 48h · Sans abonnement",
+      "🏷️ -25% sur votre premier guide avec le code WELCOME",
+      "✈️ Jusqu'à 6€ économisés · Livraison 48h · Sans abonnement",
       "🌍 Paris · Tokyo · Bali · Bangkok · New York · et bien plus",
     ],
     nav_cta: "Créer mon guide",
@@ -51,7 +51,7 @@ const translations = {
     pricing_title: "Choisissez votre aventure",
     pricing_sub:
       "Chaque plan inclut tout ce que comprend le plan précédent, plus des fonctionnalités supplémentaires.",
-    gift_tooltip: "🏷️ -40% avec le code WELCOME",
+    gift_tooltip: "🏷️ -25% avec le code WELCOME",
     gift_unlocked_tooltip: "✅ Code WELCOME disponible !",
     plans: [
       {
@@ -77,8 +77,8 @@ const translations = {
       {
         name: "Guide Complet",
         duration: "7 jours",
-        price: "7€",
-        oldPrice: "10€",
+        price: "6€",
+        oldPrice: "9€",
         savings: "Économisez 3€",
         desc: "L'équilibre parfait pour une semaine de vacances.",
         inherited: "Tout le plan 3 jours +",
@@ -94,9 +94,9 @@ const translations = {
       {
         name: "Guide Immersif",
         duration: "14 jours",
-        price: "12€",
-        oldPrice: "18€",
-        savings: "Économisez 6€",
+        price: "10€",
+        oldPrice: "15€",
+        savings: "Économisez 5€",
         desc: "Deux semaines pour une vraie immersion culturelle.",
         inherited: "Tout le plan 7 jours +",
         features: [
@@ -109,11 +109,11 @@ const translations = {
         plan_key: "14j",
       },
       {
-        name: "Guide de Vie",
+        name: "Guide Évasion",
         duration: "1 mois",
-        price: "18€",
-        oldPrice: "25€",
-        savings: "Économisez 7€",
+        price: "16€",
+        oldPrice: "22€",
+        savings: "Économisez 6€",
         desc: "Pour digital nomads et globe-trotters.",
         inherited: "Tout le plan 14 jours +",
         features: [
@@ -181,8 +181,8 @@ const translations = {
   },
   en: {
     banner_messages: [
-      "🏷️ -40% on your first guide with code WELCOME",
-      "✈️ Save up to €10 · 48h delivery · No subscription",
+      "🏷️ -25% on your first guide with code WELCOME",
+      "✈️ Save up to €4 · 48h delivery · No subscription",
       "🌍 Paris · Tokyo · Bali · Bangkok · New York · and much more",
     ],
     nav_cta: "Create my guide",
@@ -213,7 +213,7 @@ const translations = {
     ],
     pricing_title: "Choose your adventure",
     pricing_sub: "Each plan includes everything from the previous plan, plus additional features.",
-    gift_tooltip: "🏷️ -40% with code WELCOME",
+    gift_tooltip: "🏷️ -25% with code WELCOME",
     gift_unlocked_tooltip: "✅ WELCOME code available!",
     plans: [
       {
@@ -239,8 +239,8 @@ const translations = {
       {
         name: "Complete Guide",
         duration: "7 days",
-        price: "€7",
-        oldPrice: "€10",
+        price: "€6",
+        oldPrice: "€9",
         savings: "Save €3",
         desc: "The perfect balance for a vacation week.",
         inherited: "Everything in 3 days +",
@@ -256,9 +256,9 @@ const translations = {
       {
         name: "Immersive Guide",
         duration: "14 days",
-        price: "€12",
-        oldPrice: "€18",
-        savings: "Save €6",
+        price: "€10",
+        oldPrice: "€15",
+        savings: "Save €5",
         desc: "Two weeks for genuine cultural immersion.",
         inherited: "Everything in 7 days +",
         features: [
@@ -271,11 +271,11 @@ const translations = {
         plan_key: "14j",
       },
       {
-        name: "Life Guide",
+        name: "Évasion Guide",
         duration: "1 month",
-        price: "€18",
-        oldPrice: "€25",
-        savings: "Save €7",
+        price: "€16",
+        oldPrice: "€22",
+        savings: "Save €6",
         desc: "For digital nomads and globe-trotters.",
         inherited: "Everything in 14 days +",
         features: [
