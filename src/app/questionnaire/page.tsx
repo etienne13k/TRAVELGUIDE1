@@ -376,9 +376,14 @@ interface DestinationSuggestion {
   flag: string;
   emoji: string;
   photo: string | null;
+  type: string; // "valeur_sure" | "caractere" | "coup_de_coeur"
   tagline: string;
   why: string;
-  highlights: string[];
+  weather: string;
+  budget_note: string;
+  ideal_duration: string;
+  keywords: string[];
+  downside: string;
 }
 
 const ISO_FLAGS: Record<string, string> = {
@@ -1447,16 +1452,35 @@ function QuestionnaireContent() {
                 </div>
                 {/* Card body */}
                 <div className="p-5">
-                  <p className="text-sm text-[#64748b] italic mb-3">{s.tagline}</p>
-                  <p className="text-sm text-[#475569] leading-relaxed">{s.why}</p>
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    {s.highlights.map((h,j)=>(
-                      <span key={j} className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-[#425B48]/8 text-[#425B48] text-xs font-semibold border border-[#425B48]/15">
-                        ✓ {h}
-                      </span>
-                    ))}
+                  {/* Badge type */}
+                  {s.type && (
+                    <span className="inline-block mb-3 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-widest border"
+                      style={s.type==="coup_de_coeur"
+                        ? {background:"#fef3c7",color:"#92400e",borderColor:"#fde68a"}
+                        : s.type==="caractere"
+                        ? {background:"#ede9fe",color:"#5b21b6",borderColor:"#ddd6fe"}
+                        : {background:"#dcfce7",color:"#166534",borderColor:"#bbf7d0"}}>
+                      {s.type==="coup_de_coeur" ? "✨ Coup de cœur" : s.type==="caractere" ? "⚡ A du caractère" : "✅ Valeur sûre"}
+                    </span>
+                  )}
+                  <p className="text-base font-semibold text-[#1e293b] italic mb-3">&laquo; {s.tagline} &raquo;</p>
+                  <p className="text-sm text-[#475569] leading-relaxed mb-4">{s.why}</p>
+                  <div className="grid grid-cols-2 gap-2 mb-4 text-xs">
+                    {s.weather && <div className="flex gap-1.5"><span>🌡️</span><span className="text-[#475569]">{s.weather}</span></div>}
+                    {s.budget_note && <div className="flex gap-1.5"><span>💶</span><span className="text-[#475569]">{s.budget_note}</span></div>}
+                    {s.ideal_duration && <div className="flex gap-1.5"><span>⏱️</span><span className="text-[#475569]">{s.ideal_duration}</span></div>}
                   </div>
-                  <div className="mt-4 flex items-center justify-end gap-2">
+                  {s.keywords?.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5 mb-3">
+                      {s.keywords.map((k,j)=>(
+                        <span key={j} className="px-2.5 py-1 rounded-full bg-[#425B48]/8 text-[#425B48] text-xs font-semibold border border-[#425B48]/15">{k}</span>
+                      ))}
+                    </div>
+                  )}
+                  {s.downside && (
+                    <p className="text-xs text-[#92400e] bg-amber-50 border border-amber-200 rounded-xl px-3 py-2 mb-3">⚠️ {s.downside}</p>
+                  )}
+                  <div className="flex items-center justify-end">
                     <span className="text-xs font-bold text-[#c9a84c] group-hover:text-[#b8962e] transition-colors">Choisir cette destination →</span>
                   </div>
                 </div>
