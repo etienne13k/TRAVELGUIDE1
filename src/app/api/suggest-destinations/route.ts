@@ -92,9 +92,9 @@ function buildPrompt(a: Record<string, unknown>): string {
     : `Tiens compte du temps de vol réel depuis ${departure || "la France"} — privilégie la cohérence avec la durée du séjour.`;
 
   const budgetLabel =
-    budget === "backpacker" ? "petit budget / backpacker (logement < 40€/nuit, destinations accessibles financièrement)" :
-    budget === "comfort" ? "budget confort / milieu de gamme (50–120€/nuit)" :
-    budget === "luxury" ? "budget premium / luxe (hôtels 4-5 étoiles, expériences exclusives)" :
+    budget === "backpacker" ? "PETIT BUDGET / BACKPACKER — coût de la vie < 60€/jour tout compris (logement < 35€, repas < 15€). Destinations chères INTERDITES." :
+    budget === "comfort" ? "BUDGET CONFORT — 80–180€/jour tout compris, hôtels 3 étoiles, restaurants corrects." :
+    budget === "luxury" ? "BUDGET PREMIUM / LUXE — 250€+/jour, hôtels 4-5 étoiles, expériences exclusives." :
     "budget non précisé";
 
   const lines: string[] = [
@@ -137,13 +137,18 @@ ${lines.join("\n")}
 CONTRAINTE VOL :
 ${flightGuidance}
 
-RÈGLES DE COHÉRENCE (absolues) :
+RÈGLES DE COHÉRENCE BUDGET (priorité absolue) :
+- BACKPACKER : coût de la vie journalier estimé DOIT être < 60€/personne. Pays INTERDITS : Islande, Norvège, Suisse, Suède, Danemark, Australie, Nouvelle-Zélande, Maldives, Seychelles, Polynésie française, Dubaï, Monaco, Singapour, Japon (hors budget serré possible mais risqué). Pays RECOMMANDÉS : Vietnam, Thaïlande, Cambodge, Indonésie, Inde, Népal, Maroc, Géorgie, Albanie, Serbie, Macédoine, Colombie, Pérou, Bolivie, Guatemala, Portugal (hors Lisbonne haute saison).
+- CONFORT : destinations à coût moyen mondial, hôtels corrects disponibles. Évite uniquement les pays très hors budget (Maldives, Seychelles, etc.).
+- LUXURY : propose des destinations avec offre haut de gamme réelle (Maldives, Toscane, Japon, etc. sont pertinents).
+- Si le voyageur a choisi une destination lui-même mais que son budget est clairement insuffisant pour ce pays, signale-le dans le champ "why" avec une note d'alerte et propose une alternative moins chère dans la même région.
+
+AUTRES RÈGLES :
 1. Destinations RÉELLES et EXISTANTES uniquement.
-2. Budget "backpacker" → jamais Maldives, Dubaï, Suisse, Maldives, Polynésie, Seychelles, etc. Privilégie Asie du Sud-Est, Europe de l'Est, Amérique Latine, Balkans, Maroc, etc.
-3. Voyage solo → recommandations adaptées au voyage seul (sécurité, communauté backpacker, etc.).
-4. Famille avec enfants → pas de destinations trop exotiques ou risquées, activités adaptées aux enfants.
-5. Les 3 destinations doivent être VARIÉES (régions/ambiances différentes, pas 3 plages asiatiques si le voyageur n'a pas demandé ça).
-6. Chaque destination doit répondre à AU MOINS 3 critères explicites du profil — explique lesquels dans "why".
+2. Voyage solo → sécurité, infrastructure backpacker, facilité de rencontre.
+3. Famille avec enfants → destinations sécurisées, activités adaptées, pas de zones à risque sanitaire.
+4. Les 3 destinations doivent être VARIÉES (ambiances/régions différentes).
+5. Chaque destination doit répondre à AU MOINS 3 critères du profil — cite-les dans "why".
 
 Réponds avec exactement ce JSON (3 objets, rien d'autre) :
 [{"name":"ville ou région","country":"pays en français","iso":"code pays ISO 3166-1 alpha-2 (ex: FR, JP, MA, TH, CO)","emoji":"1 emoji représentant le lieu","tagline":"accroche percutante de 6-8 mots","why":"2 phrases montrant PRÉCISÉMENT pourquoi cette destination colle au profil (cite les critères)","highlights":["point fort concret 1","point fort concret 2","point fort concret 3"]}]

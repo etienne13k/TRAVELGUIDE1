@@ -155,7 +155,7 @@ CRITICAL RULES:
 1. Adapt every section to the traveler's budget, style, pace, and group composition.
 2. For solo travelers: tailor all activities and social tips for solo travel. Never suggest activities that require a partner unless offering solo alternatives.
 3. For families: emphasize child-friendly venues, age-appropriate activities, family meals.
-4. Budget coherence: for backpacker budgets, only recommend affordable options. For luxury, recommend premium experiences.
+4. Budget coherence: for backpacker budgets, only recommend affordable options (street food, hostels, free attractions). If the chosen destination is notoriously expensive (Iceland, Norway, Switzerland, Maldives, Seychelles, Dubai, Singapore, French Polynesia, etc.) and the budget is backpacker or low comfort, start the guide with a clear WARNING section explaining the budget mismatch and suggesting realistic daily cost estimates. For luxury budgets, recommend premium experiences.
 5. For every place, monument, restaurant or attraction: include usual opening hours, weekly closing days, and known annual closures. If uncertain, write "Check before visiting" and recommend official sources.
 6. Validate that all recommended addresses, places, and hours are realistic and plausible.
 
@@ -170,7 +170,7 @@ RÈGLES CRITIQUES :
 1. Adapte chaque section au budget, style, rythme et composition du groupe du voyageur.
 2. Pour les voyageurs en solo : adapte toutes les activités et conseils sociaux au voyage solo. Ne propose jamais d'activités nécessitant un partenaire sans alternative solo.
 3. Pour les familles : mets en avant les lieux adaptés aux enfants, activités adaptées à l'âge, repas familiaux.
-4. Cohérence budget : pour les petits budgets, ne recommande que des options abordables. Pour le luxe, propose des expériences premium.
+4. Cohérence budget : pour les petits budgets, ne recommande que des options abordables (street food, auberges, attractions gratuites). Si la destination choisie est notoirement chère (Islande, Norvège, Suisse, Maldives, Seychelles, Dubaï, Singapour, Polynésie française, Australie, etc.) et que le budget est "backpacker" ou petit confort, commence le guide par une section "⚠️ ALERTE BUDGET" expliquant clairement le décalage, en donnant un coût journalier réaliste estimé pour cette destination, et en suggérant une alternative moins chère dans la même région. Pour le luxe, propose des expériences premium.
 5. Pour chaque lieu, monument, restaurant ou attraction cité : indique les horaires habituels, jours de fermeture hebdomadaire et périodes de fermeture annuelle connues. En cas d'incertitude, écris "À vérifier avant la visite" et recommande les sources officielles.
 6. Vérifie que toutes les adresses, lieux et horaires recommandés sont réalistes et plausibles.
 
