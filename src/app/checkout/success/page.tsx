@@ -10,7 +10,7 @@ const PLAN_LABELS: Record<string, string> = {
   "3j": "Guide Express — 3 jours",
   "7j": "Guide Complet — 7 jours",
   "14j": "Guide Immersif — 14 jours",
-  "1mois": "Guide de Vie — 1 mois",
+  "1mois": "Guide Évasion — 1 mois",
 };
 
 type SessionItemSummary = {

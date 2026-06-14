@@ -4,9 +4,9 @@ import { getPool } from "@/lib/db";
 import { isManagedPromoCode, normalizePromoCode, recordPromoUsage } from "@/lib/promo";
 
 function inferPlan(amountCents: number): string {
-  if (amountCents === 0) return "3j";
-  if (amountCents <= 700) return "7j";
-  if (amountCents <= 1200) return "14j";
+  if (amountCents <= 300) return "3j";
+  if (amountCents <= 600) return "7j";
+  if (amountCents <= 1000) return "14j";
   return "1mois";
 }
 
