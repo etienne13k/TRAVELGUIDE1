@@ -180,6 +180,63 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  // 1b. Coherence check — if issues detected, pause the order for admin review
+  if (orderId) {
+    try {
+      const coherencePrompt = `Tu es un vérificateur de commandes pour un service de guide de voyage. Analyse le profil voyageur suivant et détecte UNIQUEMENT les problèmes sérieux qui rendraient ce guide inutilisable ou incohérent.
+
+Signale SEULEMENT si :
+- Le budget est clairement absurde pour la destination (ex: 50€ total pour Tokyo 14 jours)
+- Les dates sont impossibles (voyage de 30 jours avec le plan 3 jours)
+- Des informations critiques sont manquantes ou contradictoires
+- Les réponses semblent être un test ou du contenu aléatoire sans sens
+
+Ne signale PAS des imperfections normales ou des cas limites acceptables.
+
+DONNÉES QUESTIONNAIRE :
+Destination: ${input.destination}
+Durée forfait: ${input.duration}
+Dates: ${input.travel_dates || input.arrival_date || "non précisé"}
+Groupe: ${input.traveler_type || "non précisé"}, ${input.traveler_adults || 1} adulte(s), ${input.traveler_children || 0} enfant(s)
+Budget: ${input.budget || "non précisé"}${input.budget_amount ? `, ${input.budget_amount}${input.budget_currency || "€"} ${input.budget_scope === "per_person" ? "/pers" : "total"}` : ""}
+Pays résidence: ${(input as Record<string, unknown>).residence_country || "non précisé"}
+Ville résidence: ${(input as Record<string, unknown>).residence_city || "non précisé"}
+Ville départ: ${input.departure_city || "non précisé"}
+Email: ${input.email}
+Notes: ${input.notes || "aucune"}
+
+Réponds en JSON uniquement :
+{"issues": ["problème 1", "problème 2"], "should_pause": true/false}
+
+Si tout semble normal, réponds : {"issues": [], "should_pause": false}`;
+
+      const coherenceClient = new Anthropic({ apiKey });
+      const coherenceResp = await coherenceClient.messages.create({
+        model: "claude-haiku-4-5",
+        max_tokens: 300,
+        messages: [{ role: "user", content: coherencePrompt }],
+      });
+      const coherenceText = (coherenceResp.content.find(b => b.type === "text") as { type: "text"; text: string } | undefined)?.text ?? "";
+      const jsonMatch = coherenceText.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
+        const parsed = JSON.parse(jsonMatch[0]) as { issues?: string[]; should_pause?: boolean };
+        if (parsed.should_pause && parsed.issues && parsed.issues.length > 0) {
+          await supabase.from("orders").update({
+            status: "paused_review",
+            delivery_error: `[PAUSE AUTO] ${parsed.issues.join(" | ")}`,
+          }).eq("id", orderId);
+          return NextResponse.json({
+            paused: true,
+            reasons: parsed.issues,
+            message: "Votre commande est en cours de vérification. Un membre de notre équipe va l'examiner et vous contactera dans les 24h.",
+          }, { status: 202 });
+        }
+      }
+    } catch {
+      // Non-fatal: coherence check failure doesn't block generation
+    }
+  }
+
   // 2. Generate PDF
   let pdfBuffer: Buffer;
   try {

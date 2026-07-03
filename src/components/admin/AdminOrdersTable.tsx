@@ -24,6 +24,7 @@ const STATUS_META: Record<string, { label: string; badge: string; dot: string }>
   pdf_conversion: { label: "En génération", badge: "bg-sky-400/10 text-sky-200 border-sky-400/25", dot: "🔵" },
   delivered: { label: "Livré", badge: "bg-emerald-400/10 text-emerald-200 border-emerald-400/25", dot: "🟢" },
   error: { label: "Erreur", badge: "bg-red-400/10 text-red-200 border-red-400/25", dot: "🔴" },
+  paused_review: { label: "En pause — révision", badge: "bg-orange-400/10 text-orange-200 border-orange-400/25", dot: "⏸" },
 };
 
 const PLAN_LABELS: Record<string, string> = {
@@ -41,6 +42,7 @@ function formatDate(value: string | null) {
 function deliveryText(order: AdminOrder) {
   if (order.status === "delivered") return `✅ Livré le ${formatDate(order.delivered_at || order.created_at)}`;
   if (order.status === "error") return `❌ Échec — ${order.delivery_error || "erreur inconnue"}`;
+  if (order.status === "paused_review") return `⏸ En pause — ${order.delivery_error?.replace("[PAUSE AUTO] ", "") || "vérification en cours"}`;
   if (["generating", "human_review", "pdf_conversion"].includes(order.status)) return "🔄 En cours de génération...";
 
   const created = new Date(order.created_at).getTime();

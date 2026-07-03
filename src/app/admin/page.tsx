@@ -16,6 +16,7 @@ type DashboardKpis = {
   delivered_orders: number;
   generating_orders: number;
   error_orders: number;
+  paused_orders: number;
   revenue_cents: number;
   users_count: number;
 };
@@ -30,6 +31,7 @@ function normalizeStatus(status?: string) {
   if (status === "generating") return ["generating", "human_review", "pdf_conversion"];
   if (status === "delivered") return ["delivered"];
   if (status === "error") return ["error"];
+  if (status === "paused") return ["paused_review"];
   return [];
 }
 
@@ -104,6 +106,7 @@ async function getDashboardData(params: SearchParams) {
     delivered_orders: enrichedOrders.filter((o) => o.status === "delivered").length,
     generating_orders: enrichedOrders.filter((o) => ["generating", "human_review", "pdf_conversion"].includes(o.status)).length,
     error_orders: enrichedOrders.filter((o) => o.status === "error").length,
+    paused_orders: enrichedOrders.filter((o) => o.status === "paused_review").length,
     revenue_cents: paymentSessions.reduce((total, p) => total + (p.amount_cents ?? 0), 0),
     users_count: usersRows.length,
   };
@@ -138,9 +141,10 @@ export default async function AdminDashboardPage({ searchParams }: { searchParam
     ["En attente", kpis.pending_orders],
     ["Guides livrés", kpis.delivered_orders],
     ["En génération", kpis.generating_orders],
+    ["En pause / révision", kpis.paused_orders],
     ["En erreur", kpis.error_orders],
     ["Revenus totaux", euros(kpis.revenue_cents)],
-    ["Utilisateurs inscrits", kpis.users_count],
+    ["Utilisateurs", kpis.users_count],
   ];
 
   return (
@@ -174,6 +178,7 @@ export default async function AdminDashboardPage({ searchParams }: { searchParam
           <option value="generating">En génération</option>
           <option value="delivered">Livré</option>
           <option value="error">Erreur</option>
+          <option value="paused">En pause / révision</option>
         </select>
         <select name="plan" defaultValue={filters.plan} className="rounded-xl border border-white/10 bg-[#0f172a] px-3 py-2 text-sm text-slate-100">
           <option value="all">Tous plans</option>
