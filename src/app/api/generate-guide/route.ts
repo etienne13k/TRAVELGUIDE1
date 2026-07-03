@@ -199,8 +199,6 @@ Durée forfait: ${input.duration}
 Dates: ${input.travel_dates || input.arrival_date || "non précisé"}
 Groupe: ${input.traveler_type || "non précisé"}, ${input.traveler_adults || 1} adulte(s), ${input.traveler_children || 0} enfant(s)
 Budget: ${input.budget || "non précisé"}${input.budget_amount ? `, ${input.budget_amount}${input.budget_currency || "€"} ${input.budget_scope === "per_person" ? "/pers" : "total"}` : ""}
-Pays résidence: ${(input as Record<string, unknown>).residence_country || "non précisé"}
-Ville résidence: ${(input as Record<string, unknown>).residence_city || "non précisé"}
 Ville départ: ${input.departure_city || "non précisé"}
 Email: ${input.email}
 Notes: ${input.notes || "aucune"}

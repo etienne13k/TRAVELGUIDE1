@@ -26,42 +26,6 @@ const PLANS: Record<PlanKey, { name: string; duration: string; oldPrice: string;
   "1mois": { name: "Guide Évasion",  duration: "1 mois",   oldPrice: "22€", price: "16€", priceN: 16 },
 };
 
-const DESTINATIONS = [
-  "Paris","Nice","Lyon","Marseille","Bordeaux","Toulouse","Strasbourg","Lille","Nantes","Montpellier","Rennes","Monaco","Cannes","Saint-Tropez","Annecy","Grenoble","Avignon","Aix-en-Provence","Carcassonne","Biarritz","Colmar","Tours","La Rochelle","Brest","Dijon","Metz","Nancy","Reims","Ajaccio","Bonifacio","Calvi","Toulon","Perpignan","Clermont-Ferrand","Limoges",
-  "Londres","Édimbourg","Glasgow","Manchester","Liverpool","Bristol","Bath","Oxford","Cambridge","York","Brighton","Cardiff","Dublin","Belfast","Cork",
-  "Rome","Milan","Florence","Venise","Naples","Turin","Bologne","Palerme","Vérone","Gênes","Capri","Amalfi","Positano","Sorrento","Cinque Terre","Portofino","Lac de Côme","Lac de Garde","Toscane","Sicile","Sardaigne","San Marin",
-  "Barcelone","Madrid","Séville","Valence","Bilbao","Saint-Sébastien","Grenade","Cordoue","Tolède","Salamanque","Saint-Jacques-de-Compostelle","Palma de Majorque","Ibiza","Formentera","Ténérife","Grande Canarie","Lanzarote","Fuerteventura","La Palma","Minorque","Malaga","Marbella","Cadix","Alicante","Murcie","Saragosse","Valladolid",
-  "Lisbonne","Porto","Algarve","Sintra","Madère","Açores","Faro","Évora","Braga","Coimbra",
-  "Amsterdam","Rotterdam","La Haye","Utrecht","Bruges","Bruxelles","Gand","Anvers","Luxembourg",
-  "Berlin","Munich","Hambourg","Francfort","Cologne","Stuttgart","Dresde","Leipzig","Düsseldorf","Heidelberg","Rothenburg","Forêt-Noire","Vallée du Rhin","Nuremberg","Brême","Hanovre",
-  "Vienne","Salzbourg","Innsbruck","Hallstatt","Graz","Zurich","Genève","Berne","Lucerne","Interlaken","Zermatt","Saint-Moritz","Lausanne","Bâle","Lugano",
-  "Prague","Brno","Český Krumlov","Karlovy Vary","Budapest","Eger","Varsovie","Cracovie","Gdansk","Wroclaw","Tallinn","Riga","Vilnius","Helsinki","Turku","Stockholm","Göteborg","Malmö","Oslo","Bergen","Tromsø","Lofoten","Stavanger","Flåm","Copenhague","Aarhus","Reykjavik",
-  "Athènes","Thessalonique","Rhodes","Santorin","Mykonos","Corfou","Crète","Zakynthos","Météores","Delphes","Dubrovnik","Split","Hvar","Zadar","Pula","Zagreb","Kotor","Monténégro","Ljubljana","Lac de Bled","Bratislava","Bucarest","Transylvanie","Brasov","Sibiu","Cluj-Napoca","Sofia","Plovdiv","Belgrade","Novi Sad",
-  "Istanbul","Cappadoce","Antalya","Bodrum","Izmir","Éphèse","Pamukkale","Trabzon","Ölüdeniz","Alanya","Kaş","Göreme","Fethiye","Marmaris",
-  "Jérusalem","Tel Aviv","Mer Morte","Petra","Wadi Rum","Amman","Beyrouth","Aqaba","Dubaï","Abu Dhabi","Muscat","Doha","Bahreïn","Riyad","Koweït","Tbilissi","Batoumi","Erevan","Bakou",
-  "Almaty","Samarkand","Boukhara","Tachkent","Khiva","Oulan-Bator",
-  "Tokyo","Kyoto","Osaka","Hiroshima","Nara","Hakone","Nikko","Sapporo","Fukuoka","Okinawa","Kanazawa","Nagasaki","Kobé","Nagoya","Sendai","Matsuyama",
-  "Séoul","Busan","Île de Jeju","Gyeongju","Incheon",
-  "Pékin","Shanghai","Hong Kong","Macao","Guangzhou","Shenzhen","Chengdu","Xi'an","Hangzhou","Suzhou","Guilin","Zhangjiajie","Lijiang","Dali","Kunming","Chongqing","Nankin","Harbin","Wuhan",
-  "Taipei","Tainan","Taichung","Jiufen","Gorges de Taroko",
-  "Bangkok","Chiang Mai","Chiang Rai","Phuket","Koh Samui","Koh Phi Phi","Krabi","Kanchanaburi","Ayutthaya","Pai","Sukhothaï","Koh Lanta","Koh Chang","Pattaya","Koh Tao",
-  "Bali","Jakarta","Yogyakarta","Lombok","Île de Komodo","Raja Ampat","Flores","Volcan Bromo","Borobudur","Ubud","Seminyak","Nusa Penida","Gili Air",
-  "Singapour","Kuala Lumpur","Penang","Langkawi","Malacca","Bornéo","Kota Kinabalu","Kuching",
-  "Hô Chi Minh-Ville","Hanoï","Hoi An","Baie d'Ha Long","Da Nang","Hué","Sapa","Ninh Binh","Phong Nha","Mui Ne","Phu Quoc","Nha Trang",
-  "Phnom Penh","Siem Reap","Angkor Wat","Luang Prabang","Vientiane","Vang Vieng","Yangon","Bagan","Lac Inle","Mandalay","Ngapali",
-  "Mumbai","Delhi","Agra","Jaipur","Goa","Kerala","Varanasi","Kolkata","Chennai","Bangalore","Hyderabad","Udaipur","Jodhpur","Rishikesh","Ladakh","Darjeeling","Îles Andaman","Munnar","Pondichéry","Hampi","Mysore","Amritsar","Shimla","Manali","Pushkar","Jaisalmer","Alleppey",
-  "Maldives","Sri Lanka","Colombo","Sigiriya","Kandy","Galle","Ella","Mirissa","Népal","Katmandou","Pokhara","Chitwan","Bhoutan","Thimphou","Paro",
-  "New York","Los Angeles","Miami","San Francisco","Chicago","Las Vegas","Boston","Washington DC","La Nouvelle-Orléans","Nashville","Austin","Seattle","Portland","Denver","Phoenix","San Diego","Houston","Atlanta","Orlando","Honolulu","Maui","Big Island Hawaï","Napa Valley","Parc Yellowstone","Grand Canyon","Yosemite","Parc de Zion","Bryce Canyon","Glacier National Park","Montréal","Toronto","Vancouver","Québec","Ottawa","Calgary","Whistler","Victoria","Chutes du Niagara","Halifax",
-  "Mexico","Cancun","Playa del Carmen","Tulum","Oaxaca","Guadalajara","Puerto Vallarta","Los Cabos","Mérida","Chichen Itza","Guanajuato","Puebla","Holbox","Bacalar","Cozumel","La Havane","Trinidad Cuba","Punta Cana","Jamaïque","Barbade","Sainte-Lucie","Martinique","Guadeloupe","Aruba","Curaçao","Costa Rica","Arenal","Manuel Antonio","Monteverde","Panama City","Bocas del Toro","Guatemala","Antigua Guatemala","Tikal","Belize",
-  "Bogotá","Carthagène des Indes","Medellín","Santa Marta","Parc Tayrona","Lima","Cusco","Machu Picchu","Lac Titicaca","Arequipa","Lignes de Nazca","Vallée Sacrée","Montagne Arc-en-Ciel","La Paz","Sucre","Salar d'Uyuni","Potosí","Quito","Îles Galápagos","Cuenca","Amazonie","Rio de Janeiro","São Paulo","Salvador de Bahia","Manaus","Florianópolis","Chutes d'Iguazú","Fernando de Noronha","Buenos Aires","Patagonie","Mendoza","Bariloche","El Calafate","Ushuaia","Salta","Jujuy","Santiago du Chili","Valparaíso","Torres del Paine","Île de Pâques","Désert d'Atacama","Puerto Natales","Montevideo","Punta del Este","Colonia del Sacramento",
-  "Marrakech","Fès","Casablanca","Chefchaouen","Désert du Sahara","Essaouira","Meknès","Ouarzazate","Agadir","Tanger","Djerba","Tunis","Hammamet","Tozeur","Le Caire","Louxor","Assouan","Alexandrie","Mer Rouge","Hurghada","Charm el-Cheikh","Dahab","Sinaï","Abou Simbel","Oasis de Siwa",
-  "Nairobi","Mombasa","Kisumu","Masai Mara","Amboseli","Tsavo","Lamu","Diani","Zanzibar","Serengeti","Kilimandjaro","Ngorongoro","Stone Town","Dar es Salaam","Arusha","Mwanza","Kampala","Entebbe","Jinja","Bwindi","Kigali","Parc des Volcans","Bujumbura","Addis-Abeba","Lalibela","Montagnes du Simien","Gondar","Dire Dawa","Asmara","Djibouti","Mogadiscio","Khartoum","Juba",
-  "Le Cap","Johannesburg","Pretoria","Durban","Safari Kruger","Garden Route","Drakensberg","Stellenbosch","Cape Winelands","Windhoek","Sossusvlei","Etosha","Swakopmund","Lüderitz","Botswana","Delta de l'Okavango","Chobe","Maun","Victoria Falls","Lusaka","Livingstone","Harare","Bulawayo","Maputo","Beira","Pemba","Lilongwe","Blantyre","Maseru","Mbabane","Antananarivo","Toamasina","Nosy Be","Avenue des Baobabs","Île Maurice","Port Louis","La Réunion","Seychelles","Mahé","Praslin","La Digue","Comores","Moroni",
-  "Accra","Kumasi","Lagos","Abuja","Kano","Port Harcourt","Dakar","Saint-Louis Sénégal","Abidjan","Yamoussoukro","Bamako","Ouagadougou","Lomé","Porto-Novo","Cotonou","Conakry","Freetown","Monrovia","Bissau","Banjul","Nouakchott","Niamey","Ndjamena",
-  "Yaoundé","Douala","Libreville","Kinshasa","Lubumbashi","Brazzaville","Bangui","Malabo","São Tomé","Luanda","Huambo",
-  "Sydney","Melbourne","Brisbane","Perth","Adélaïde","Cairns","Gold Coast","Darwin","Hobart","Alice Springs","Uluru","Grande Barrière de Corail","Whitsundays","Byron Bay","Noosa","Margaret River","Kimberley","Kakadu","Auckland","Wellington","Queenstown","Milford Sound","Rotorua","Christchurch","Fiordland","Wanaka","Napier","Taupo","Bay of Islands","Coromandel",
-  "Fidji","Nadi","Suva","Tahiti","Papeete","Bora-Bora","Moorea","Rangiroa","Fakarava","Huahine","Raiatea","Nouvelle-Calédonie","Nouméa","Île des Pins","Vanuatu","Port Vila","Samoa","Apia","Tonga","Nukualofa","Îles Cook","Rarotonga","Palau","Îles Marshall","Micronésie","Kiribati","Tuvalu","Niue","Papouasie-Nouvelle-Guinée","Port Moresby","Goroka","Îles Salomon","Honiara",
-];
 
 const PLAN_DATE_LIMITS: Record<PlanKey, { maxDays: number; label: string }> = {
   "3j": { maxDays: 3, label: "3 jours" },
@@ -255,11 +219,9 @@ interface Answers {
   destination: string;
   scope_type: string;
   country_zones: string[];
-  // New fields
-  residence_country: string;
-  residence_city: string;
-  destination_arrival_city: string;
+  // Location fields
   departure_city: string;
+  destination_arrival_city: string;
   // Dates
   arrival_date: string;
   departure_date: string;
@@ -304,8 +266,7 @@ interface Answers {
 
 const EMPTY: Answers = {
   destination: "", scope_type: "", country_zones: [],
-  residence_country: "", residence_city: "", destination_arrival_city: "",
-  departure_city: "",
+  departure_city: "", destination_arrival_city: "",
   arrival_date: "", departure_date: "", travel_dates: "", dates_flexible: "",
   traveler_type: "", traveler_adults: 1, traveler_children: 0,
   budget: "", budget_amount: "", budget_currency: "€", budget_scope: "",
@@ -660,8 +621,6 @@ function QuestionnaireContent() {
     if (step===1) {
       const nextErrors: Record<string,string> = {};
       if (!answers.destination.trim()) nextErrors.destination = "Veuillez indiquer votre destination.";
-      if (!answers.residence_country.trim()) nextErrors.residence_country = "Veuillez indiquer votre pays de résidence.";
-      if (!answers.residence_city.trim()) nextErrors.residence_city = "Veuillez indiquer votre ville de résidence.";
       if (!answers.departure_city.trim()) nextErrors.departure_city = "Veuillez indiquer votre ville de départ.";
       if (!answers.arrival_date) nextErrors.dates = "Veuillez sélectionner au moins une date.";
       if (!answers.dates_flexible) nextErrors.dates_flexible = "Veuillez indiquer si vos dates sont flexibles.";
@@ -816,13 +775,11 @@ function QuestionnaireContent() {
                 <QLabel required>Où souhaitez-vous aller ?</QLabel>
                 <input
                   type="text"
-                  list="destinations-list"
                   value={answers.destination}
                   onChange={e=>{setAnswers(p=>({...p,destination:e.target.value}));if(errors.destination)setErrors(p=>({...p,destination:""}));}}
                   placeholder="Ville, pays ou région — ex. Tokyo, Japon"
                   className={inputCls("destination")}
                 />
-                <datalist id="destinations-list">{DESTINATIONS.map(d=><option key={d} value={d}/>)}</datalist>
                 <FieldError msg={errors.destination} />
 
                 <div className="mt-5">
@@ -853,63 +810,37 @@ function QuestionnaireContent() {
                   )}
                 </div>
 
-                <div className="mt-5" id="field-destination_arrival_city">
-                  <QLabel hint="(optionnel)">Ville d&apos;arrivée dans le pays de destination</QLabel>
+              </SectionCard>
+            </div>
+
+            {/* Départ & arrivée */}
+            <SectionCard title="Départ & arrivée">
+              <div className="space-y-4">
+                <div id="field-departure_city">
+                  <QLabel required>Ville de départ</QLabel>
+                  <input
+                    type="text"
+                    value={answers.departure_city}
+                    onChange={e=>{setAnswers(p=>({...p,departure_city:e.target.value}));if(errors.departure_city)setErrors(p=>({...p,departure_city:""}));}}
+                    placeholder="ex. Paris, France"
+                    className={inputCls("departure_city")}
+                  />
+                  <p className="text-xs text-[#3a5037] mt-1.5">La ville et le pays depuis lesquels vous partez.</p>
+                  <FieldError msg={errors.departure_city} />
+                </div>
+                <div id="field-destination_arrival_city">
+                  <QLabel hint="(optionnel)">Ville d&apos;arrivée dans la destination</QLabel>
                   <input
                     type="text"
                     value={answers.destination_arrival_city}
                     onChange={e=>setAnswers(p=>({...p,destination_arrival_city:e.target.value}))}
-                    placeholder="ex. Tokyo, Bangkok, Paris — généralement la capitale"
+                    placeholder="ex. Tokyo, Japon"
                     className={inputCls("destination_arrival_city")}
                   />
-                  <p className="text-xs text-[#3a5037] mt-1.5">La ville par laquelle vous entrez dans le pays (aéroport principal, gare de départ...).</p>
-                </div>
-              </SectionCard>
-            </div>
-
-            {/* Lieu de résidence */}
-            <SectionCard title="Lieu de résidence">
-              <div className="space-y-4">
-                <div id="field-residence_country">
-                  <QLabel required>Pays de résidence</QLabel>
-                  <input
-                    type="text"
-                    value={answers.residence_country}
-                    onChange={e=>{setAnswers(p=>({...p,residence_country:e.target.value}));if(errors.residence_country)setErrors(p=>({...p,residence_country:""}));}}
-                    placeholder="ex. France, Belgique, Canada..."
-                    className={inputCls("residence_country")}
-                  />
-                  <FieldError msg={errors.residence_country} />
-                </div>
-                <div id="field-residence_city">
-                  <QLabel required>Ville de résidence</QLabel>
-                  <input
-                    type="text"
-                    value={answers.residence_city}
-                    onChange={e=>{setAnswers(p=>({...p,residence_city:e.target.value}));if(errors.residence_city)setErrors(p=>({...p,residence_city:""}));}}
-                    placeholder="ex. Paris, Bruxelles, Montréal..."
-                    className={inputCls("residence_city")}
-                  />
-                  <FieldError msg={errors.residence_city} />
+                  <p className="text-xs text-[#3a5037] mt-1.5">La ville par laquelle vous entrez dans le pays (capitale, aéroport principal...).</p>
                 </div>
               </div>
             </SectionCard>
-
-            {/* Ville de départ */}
-            <div id="field-departure_city">
-              <SectionCard title="Départ">
-                <QLabel required>Ville ou aéroport de départ</QLabel>
-                <input
-                  type="text"
-                  value={answers.departure_city}
-                  onChange={e=>{setAnswers(p=>({...p,departure_city:e.target.value}));if(errors.departure_city)setErrors(p=>({...p,departure_city:""}));}}
-                  placeholder="ex. Paris-CDG, Lyon, Bordeaux..."
-                  className={inputCls("departure_city")}
-                />
-                <p className="text-xs text-[#3a5037] mt-1.5">L&apos;aéroport ou la gare depuis lequel vous partirez.</p>
-                <FieldError msg={errors.departure_city} />
-              </SectionCard>
-            </div>
 
             {/* Dates */}
             <div id="field-dates">

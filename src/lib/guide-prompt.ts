@@ -44,8 +44,6 @@ export interface GuideInput {
   special_occasion?: string;
   scope_type?: string;
   country_zones?: string[];
-  residence_country?: string;
-  residence_city?: string;
   destination_arrival_city?: string;
 }
 
@@ -237,10 +235,8 @@ PARTIE 1 — PROFIL VOYAGEUR (questionnaire rempli)
 
 DESTINATION(S) ........... ${input.destination}
 PÉRIMÈTRE ................ ${scopeDesc}
-VILLE D'ARRIVÉE DESTINATION ${input.destination_arrival_city || "Non précisé (se réfère à la capitale ou aéroport principal)"}
-PAYS DE RÉSIDENCE ........ ${input.residence_country || "Non précisé"}
-VILLE DE RÉSIDENCE ....... ${input.residence_city || "Non précisé"}
 VILLE DE DÉPART .......... ${input.departure_city || "Non précisé"}
+VILLE D'ARRIVÉE DESTINATION ${input.destination_arrival_city || "Non précisé (capitale ou aéroport principal)"}
 DATES / SAISON ........... ${input.travel_dates || input.arrival_date || "Non précisé"}
 DURÉE .................... ${durationLabel}
 
