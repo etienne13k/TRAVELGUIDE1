@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import Stripe from "stripe";
 import { ensureAdminSchema } from "@/lib/admin-db";
 import { getPool } from "@/lib/db";
 import { isManagedPromoCode, normalizePromoCode, recordPromoUsage } from "@/lib/promo";
@@ -31,18 +32,39 @@ function itemCountFromMetadata(metadata: Record<string, unknown>): number {
 
 export async function POST(req: NextRequest) {
   try {
-    const event = await req.json();
+    const rawBody = await req.text();
+    const sig = req.headers.get("stripe-signature");
+    const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+
+    let event: Stripe.Event;
+
+    if (webhookSecret && sig) {
+      const stripe = new Stripe(process.env.STRIPE_SECRET_KEY ?? "");
+      try {
+        event = stripe.webhooks.constructEvent(rawBody, sig, webhookSecret);
+      } catch (err) {
+        console.error("[webhook] signature verification failed:", err);
+        return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
+      }
+    } else {
+      try {
+        event = JSON.parse(rawBody) as Stripe.Event;
+      } catch {
+        return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+      }
+    }
 
     if (event?.type !== "checkout.session.completed") {
       return NextResponse.json({ received: true });
     }
 
-    const session = event.data?.object ?? {};
+    const session = event.data?.object as Stripe.Checkout.Session;
     const sessionId: string = session.id;
     const amountCents: number = session.amount_total ?? 0;
     const currency: string = session.currency ?? "eur";
     const email: string | null = session.customer_details?.email ?? null;
-    const metadata = session.metadata ?? {};
+    const metadata = (session.metadata ?? {}) as Record<string, string>;
+    const clientReferenceId: string | null = session.client_reference_id ?? null;
     const promoCode = normalizePromoCode(metadata.promo_code);
     const normalizedEmail = email?.toLowerCase() ?? null;
     const itemCount = itemCountFromMetadata(metadata);
@@ -68,6 +90,37 @@ export async function POST(req: NextRequest) {
       userId = rows[0]?.id ?? null;
     }
 
+    // Payment Link flow: client_reference_id = pending order ID saved before redirect
+    if (clientReferenceId) {
+      const { rows: pendingRows } = await pool.query(
+        "SELECT id FROM orders WHERE id = $1 AND status = 'pending_payment' LIMIT 1",
+        [clientReferenceId]
+      );
+      const pendingOrder = pendingRows[0];
+
+      if (pendingOrder) {
+        await pool.query(
+          `UPDATE orders SET
+             user_id = COALESCE(user_id, $1),
+             stripe_session_id = $2,
+             session_id = $3,
+             status = 'questionnaire_pending',
+             amount_cents = $4,
+             currency = $5
+           WHERE id = $6`,
+          [userId, sessionId, sessionId, amountCents, currency, clientReferenceId]
+        );
+
+        if (userId && isManagedPromoCode(promoCode)) {
+          await recordPromoUsage({ userId, code: promoCode, productId: plan });
+        }
+
+        console.log(`[webhook] payment_link: order=${clientReferenceId} session=${sessionId} email=${normalizedEmail} plan=${plan}`);
+        return NextResponse.json({ received: true });
+      }
+    }
+
+    // Fallback: Checkout Session flow or Payment Link without pending order
     for (let index = 0; index < itemCount; index += 1) {
       const perItemMetadata = itemCount > 1 ? itemMetadata(metadata, index) : metadata as Record<string, string>;
       const itemPlan = perItemMetadata.plan ?? metadataString(metadata, `item_${index}_plan`) ?? inferPlan(amountCents);
@@ -127,7 +180,7 @@ export async function POST(req: NextRequest) {
       await recordPromoUsage({ userId, code: promoCode, productId: plan });
     }
 
-    console.log(`[webhook] session=${sessionId} email=${normalizedEmail} plan=${plan} items=${itemCount} amount=${amountCents}${currency} userId=${userId}`);
+    console.log(`[webhook] checkout_session: session=${sessionId} email=${normalizedEmail} plan=${plan} items=${itemCount} amount=${amountCents}${currency}`);
     return NextResponse.json({ received: true });
   } catch (error) {
     console.error("[webhook] error:", error);

@@ -111,9 +111,27 @@ function CartContent() {
       const item = items[0];
       const baseLink = STRIPE_PAYMENT_LINKS[item.planId as PlanKey];
       if (!baseLink) throw new Error("Lien de paiement introuvable.");
-      const stripeUrl = normalizedPromoCode
-        ? `${baseLink}?prefilled_promo_code=${encodeURIComponent(normalizedPromoCode)}`
-        : baseLink;
+
+      // Save questionnaire data to DB before redirecting so the webhook can find it
+      const pendingRes = await fetch("/api/save-pending-order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          planId: item.planId,
+          destination: item.destination,
+          dates: item.dates,
+          criteria: item.criteria,
+        }),
+      });
+      const pendingData = pendingRes.ok ? await pendingRes.json() : null;
+      const orderId: string | null = pendingData?.orderId ?? null;
+
+      const params = new URLSearchParams();
+      if (orderId) params.set("client_reference_id", orderId);
+      if (normalizedPromoCode) params.set("prefilled_promo_code", normalizedPromoCode);
+
+      const query = params.toString();
+      const stripeUrl = query ? `${baseLink}?${query}` : baseLink;
       router.push(stripeUrl);
     } catch (checkoutError) {
       setError(checkoutError instanceof Error ? checkoutError.message : "Une erreur est survenue.");
