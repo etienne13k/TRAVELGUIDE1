@@ -16,19 +16,19 @@ const PLAN_LABELS: Record<string, string> = {
 };
 
 const PLAN_COLORS: Record<string, { bg: string; text: string; border: string }> = {
-  "3j":    { bg: "#d4e0d6", text: "#425B48", border: "#b3cbb9" },
-  "7j":    { bg: "#f0fdf4", text: "#16a34a", border: "#bbf7d0" },
-  "14j":   { bg: "#f5f3ff", text: "#7c3aed", border: "#ddd6fe" },
-  "1mois": { bg: "#fffbeb", text: "#d97706", border: "#fde68a" },
+  "3j":    { bg: "rgba(66,92,71,0.2)", text: "#9ab896", border: "rgba(66,92,71,0.4)" },
+  "7j":    { bg: "rgba(22,163,74,0.1)", text: "#4ade80", border: "rgba(22,163,74,0.25)" },
+  "14j":   { bg: "rgba(124,58,237,0.1)", text: "#a78bfa", border: "rgba(124,58,237,0.25)" },
+  "1mois": { bg: "rgba(201,168,76,0.1)", text: "#c9a84c", border: "rgba(201,168,76,0.3)" },
 };
 
 const STATUS_LABELS: Record<string, { label: string; color: string }> = {
-  questionnaire_pending:   { label: "En attente du questionnaire", color: "#ea580c" },
-  questionnaire_completed: { label: "Questionnaire complété", color: "#425B48" },
-  generating:              { label: "Guide en génération…", color: "#ea580c" },
-  human_review:            { label: "Vérification humaine", color: "#7c3aed" },
-  pdf_conversion:          { label: "Conversion PDF", color: "#0891b2" },
-  delivered:               { label: "Guide livré ✓", color: "#16a34a" },
+  questionnaire_pending:   { label: "En attente du questionnaire", color: "#c9a84c" },
+  questionnaire_completed: { label: "Questionnaire complété", color: "#9ab896" },
+  generating:              { label: "Guide en génération…", color: "#60a5fa" },
+  human_review:            { label: "Vérification humaine", color: "#a78bfa" },
+  pdf_conversion:          { label: "Conversion PDF", color: "#22d3ee" },
+  delivered:               { label: "Guide livré", color: "#4ade80" },
 };
 
 interface Order {
@@ -80,11 +80,11 @@ export default async function AccountPage() {
   ]);
 
   return (
-    <div className="min-h-screen" style={{ background: "#FDFAF5", fontFamily: "var(--font-dm-sans), system-ui, sans-serif" }}>
+    <div className="min-h-screen" style={{ background: "#0e1310", fontFamily: "var(--font-dm-sans), system-ui, sans-serif" }}>
       {/* Navbar */}
-      <nav className="sticky top-0 z-10 px-6 py-4 flex items-center justify-between" style={{ background: "#425C47" }}>
-        <Link href="/" className="text-lg font-bold text-white" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
-          ✈️ TravelGuide AI
+      <nav className="sticky top-0 z-10 px-6 py-4 flex items-center justify-between border-b border-[#232c20]" style={{ background: "#0e1310/90", backdropFilter: "blur(12px)" }}>
+        <Link href="/" className="text-lg font-bold text-[#d8e3d5]" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
+          TravelGuide AI
         </Link>
         <div className="flex items-center gap-4">
           <LangToggle />
@@ -94,72 +94,70 @@ export default async function AccountPage() {
       </nav>
 
       <main className="max-w-3xl mx-auto px-4 py-10">
-        <h1 className="text-3xl font-bold mb-1" style={{ fontFamily: "var(--font-playfair), Georgia, serif", color: "#425C47" }}>
+        <h1 className="text-3xl font-bold mb-1" style={{ fontFamily: "var(--font-playfair), Georgia, serif", color: "#d8e3d5" }}>
           Mon compte
         </h1>
-        <p className="text-sm mb-8" style={{ color: "#7a7060" }}>
+        <p className="text-sm mb-8" style={{ color: "#7a9076" }}>
           Retrouvez vos commandes et gérez votre profil.
         </p>
 
         {/* Profil */}
-        <div className="rounded-2xl p-6 mb-8" style={{ background: "#fff", border: "1px solid #E8E0D0" }}>
-          <h2 className="text-lg font-bold mb-5" style={{ fontFamily: "var(--font-playfair), Georgia, serif", color: "#425C47" }}>
+        <div className="rounded-2xl p-6 mb-8" style={{ background: "#161c14", border: "1px solid #232c20" }}>
+          <h2 className="text-lg font-bold mb-5" style={{ fontFamily: "var(--font-playfair), Georgia, serif", color: "#d8e3d5" }}>
             Mon profil
           </h2>
 
-          {/* Prénom / Nom / Email */}
           <ProfileForm
             initialFirstName={profile.first_name}
             initialLastName={profile.last_name}
             email={session.email}
           />
 
-          {/* Séparateur */}
-          <div className="my-6 border-t" style={{ borderColor: "#E8E0D0" }} />
+          <div className="my-6 border-t" style={{ borderColor: "#232c20" }} />
 
           {/* Téléphone */}
           <div>
             <div className="flex items-center gap-2 mb-3">
-              <span className="text-base font-bold" style={{ color: "#425C47" }}>Numéro de téléphone</span>
+              <span className="text-base font-bold" style={{ color: "#d8e3d5" }}>Numéro de téléphone</span>
               {phoneStatus.phoneVerified ? (
-                <span className="text-xs font-semibold px-2 py-0.5 rounded-full" style={{ background: "#dcfce7", color: "#16a34a", border: "1px solid #bbf7d0" }}>
-                  ✓ Vérifié
+                <span className="text-xs font-semibold px-2 py-0.5 rounded-full" style={{ background: "rgba(22,163,74,0.15)", color: "#4ade80", border: "1px solid rgba(22,163,74,0.3)" }}>
+                  Vérifié
                 </span>
               ) : (
-                <span className="text-xs font-semibold px-2 py-0.5 rounded-full" style={{ background: "#fef9c3", color: "#92400e", border: "1px solid #fde68a" }}>
+                <span className="text-xs font-semibold px-2 py-0.5 rounded-full" style={{ background: "rgba(201,168,76,0.1)", color: "#c9a84c", border: "1px solid rgba(201,168,76,0.3)" }}>
                   Non vérifié
                 </span>
               )}
             </div>
             {!phoneStatus.phoneVerified && (
-              <p className="text-sm mb-3" style={{ color: "#78350f" }}>
-                🎁 Vérifiez votre numéro pour débloquer le code <span className="font-mono font-bold">WELCOME</span> (-40% sur votre premier guide).
+              <p className="text-sm mb-3" style={{ color: "#b8cdb4" }}>
+                Vérifiez votre numéro pour débloquer le code <span className="font-mono font-bold text-[#c9a84c]">WELCOME</span> (-40% sur votre premier guide).
               </p>
             )}
             <PhoneVerification initialPhone={phoneStatus.phone} initialVerified={phoneStatus.phoneVerified} />
           </div>
         </div>
 
-        <h2 className="text-2xl font-bold mb-1" style={{ fontFamily: "var(--font-playfair), Georgia, serif", color: "#425C47" }}>
+        <h2 className="text-2xl font-bold mb-1" style={{ fontFamily: "var(--font-playfair), Georgia, serif", color: "#d8e3d5" }}>
           Mes commandes
         </h2>
-        <p className="text-sm mb-6" style={{ color: "#7a7060" }}>
+        <p className="text-sm mb-6" style={{ color: "#7a9076" }}>
           Suivez la progression de vos guides en temps réel.
         </p>
 
         {orders.length === 0 ? (
-          <div className="rounded-2xl p-12 text-center" style={{ background: "#fff", border: "1px solid #E8E0D0" }}>
-            <div className="text-5xl mb-4">🗺️</div>
-            <h2 className="text-xl font-bold mb-2" style={{ fontFamily: "var(--font-playfair), Georgia, serif", color: "#425C47" }}>
+          <div className="rounded-2xl p-12 text-center" style={{ background: "#161c14", border: "1px solid #232c20" }}>
+            <div className="text-5xl mb-4 text-[#4a6447]">—</div>
+            <h2 className="text-xl font-bold mb-2" style={{ fontFamily: "var(--font-playfair), Georgia, serif", color: "#d8e3d5" }}>
               Aucune commande pour l&apos;instant
             </h2>
-            <p className="text-sm mb-6" style={{ color: "#7a7060" }}>
+            <p className="text-sm mb-6" style={{ color: "#7a9076" }}>
               Commandez votre premier guide de voyage personnalisé par IA.
             </p>
             <Link
               href="/"
-              className="inline-block rounded-xl px-6 py-3 font-semibold text-sm text-white"
-              style={{ background: "#C9A84C" }}
+              className="inline-block rounded-xl px-6 py-3 font-semibold text-sm"
+              style={{ background: "#C9A84C", color: "#0e1310" }}
             >
               Découvrir les offres →
             </Link>
@@ -168,16 +166,16 @@ export default async function AccountPage() {
           <div className="space-y-4">
             {orders.map((order) => {
               const plan = PLAN_COLORS[order.plan] ?? PLAN_COLORS["3j"];
-              const statusCfg = STATUS_LABELS[order.status] ?? { label: order.status, color: "#6b7280" };
+              const statusCfg = STATUS_LABELS[order.status] ?? { label: order.status, color: "#7a9076" };
               return (
                 <div
                   key={order.id}
                   className="rounded-2xl p-6 flex items-center justify-between gap-4"
-                  style={{ background: "#fff", border: "1px solid #E8E0D0" }}
+                  style={{ background: "#161c14", border: "1px solid #232c20" }}
                 >
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1 flex-wrap">
-                      <span className="text-base font-semibold truncate" style={{ color: "#425C47" }}>
+                      <span className="text-base font-semibold truncate" style={{ color: "#d8e3d5" }}>
                         {order.destination ?? "Destination non définie"}
                       </span>
                       <span
@@ -188,18 +186,18 @@ export default async function AccountPage() {
                       </span>
                     </div>
                     <div className="flex items-center gap-3 text-xs flex-wrap">
-                      <span style={{ color: "#7a7060" }}>
+                      <span style={{ color: "#4a6447" }}>
                         {new Date(order.created_at).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}
                       </span>
                       <span className="font-medium" style={{ color: statusCfg.color }}>
-                        ● {statusCfg.label}
+                        {statusCfg.label}
                       </span>
                     </div>
                   </div>
                   <Link
                     href={`/account/orders/${order.id}`}
-                    className="shrink-0 rounded-xl px-4 py-2 text-sm font-semibold transition-all"
-                    style={{ background: "#425C47", color: "#fff" }}
+                    className="shrink-0 rounded-xl px-4 py-2 text-sm font-semibold transition-all border border-[#232c20] hover:border-[#c9a84c]"
+                    style={{ background: "#1a2418", color: "#b8cdb4" }}
                   >
                     Voir le suivi →
                   </Link>

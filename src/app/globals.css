@@ -36,30 +36,30 @@ input, textarea, select {
 }
 
 body {
-  background-color: #FDFCFA;
-  background-image: radial-gradient(circle, rgba(201,168,76,0.13) 1px, transparent 1px);
+  background-color: #0e1310;
+  background-image: radial-gradient(circle, rgba(201,168,76,0.07) 1px, transparent 1px);
   background-size: 24px 24px;
-  color: #425C47;
+  color: #d8e3d5;
   font-family: var(--font-dm-sans), system-ui, sans-serif;
 }
 
 .bg-pattern {
-  background-color: #ffffff;
-  background-image: radial-gradient(circle, rgba(201,168,76,0.10) 1px, transparent 1px);
+  background-color: #0e1310;
+  background-image: radial-gradient(circle, rgba(201,168,76,0.07) 1px, transparent 1px);
   background-size: 24px 24px;
 }
 
 .bg-pattern-light {
-  background-color: #F5F7F5;
-  background-image: radial-gradient(circle, rgba(201,168,76,0.10) 1px, transparent 1px);
+  background-color: #111810;
+  background-image: radial-gradient(circle, rgba(201,168,76,0.06) 1px, transparent 1px);
   background-size: 24px 24px;
 }
 
 .hero-bg {
-  background-color: #ffffff;
+  background-color: #0e1310;
   background-image:
-    radial-gradient(ellipse 70% 60% at 85% 45%, rgba(201,168,76,0.06) 0%, transparent 70%),
-    radial-gradient(ellipse 50% 40% at 15% 70%, rgba(66,92,71,0.04) 0%, transparent 60%);
+    radial-gradient(ellipse 70% 60% at 85% 45%, rgba(201,168,76,0.10) 0%, transparent 70%),
+    radial-gradient(ellipse 50% 40% at 15% 70%, rgba(66,92,71,0.08) 0%, transparent 60%);
 }
 
 @keyframes float {

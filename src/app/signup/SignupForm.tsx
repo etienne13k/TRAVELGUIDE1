@@ -10,9 +10,9 @@ type SignupFormProps = {
 };
 
 const inputStyle = {
-  background: "#F8F5EF",
-  border: "1.5px solid #E8E0D0",
-  color: "#425C47",
+  background: "#111810",
+  border: "1.5px solid #232c20",
+  color: "#d8e3d5",
 };
 
 export default function SignupForm({ turnstileSiteKey }: SignupFormProps) {
@@ -69,7 +69,7 @@ export default function SignupForm({ turnstileSiteKey }: SignupFormProps) {
   return (
     <div
       className="min-h-screen flex items-center justify-center px-4 py-12"
-      style={{ background: "#FDFAF5", fontFamily: "var(--font-dm-sans), system-ui, sans-serif" }}
+      style={{ background: "#0e1310", fontFamily: "var(--font-dm-sans), system-ui, sans-serif" }}
     >
       <div className="w-full max-w-md">
         <div className="flex items-center justify-between mb-8">
@@ -77,27 +77,27 @@ export default function SignupForm({ turnstileSiteKey }: SignupFormProps) {
           <Link
             href="/"
             className="text-2xl font-bold"
-            style={{ fontFamily: "var(--font-playfair), Georgia, serif", color: "#425C47" }}
+            style={{ fontFamily: "var(--font-playfair), Georgia, serif", color: "#d8e3d5" }}
           >
-            ✈️ TravelGuide AI
+            TravelGuide AI
           </Link>
           <LangToggle />
         </div>
 
-        <div className="rounded-2xl p-8 shadow-lg" style={{ background: "#fff", border: "1px solid #E8E0D0" }}>
+        <div className="rounded-2xl p-8" style={{ background: "#161c14", border: "1px solid #232c20" }}>
           <h1
             className="text-2xl font-bold mb-1"
-            style={{ fontFamily: "var(--font-playfair), Georgia, serif", color: "#425C47" }}
+            style={{ fontFamily: "var(--font-playfair), Georgia, serif", color: "#d8e3d5" }}
           >
             Créer un compte
           </h1>
-          <p className="text-sm mb-6" style={{ color: "#7a7060" }}>
+          <p className="text-sm mb-6" style={{ color: "#7a9076" }}>
             Suivez vos guides de voyage en temps réel depuis votre espace personnel.
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium mb-1" style={{ color: "#425C47" }}>
+              <label className="block text-sm font-medium mb-1" style={{ color: "#b8cdb4" }}>
                 Email
               </label>
               <input
@@ -109,12 +109,12 @@ export default function SignupForm({ turnstileSiteKey }: SignupFormProps) {
                 className="w-full rounded-xl px-4 py-3 text-sm outline-none transition-all"
                 style={inputStyle}
                 onFocus={(event) => (event.target.style.borderColor = "#C9A84C")}
-                onBlur={(event) => (event.target.style.borderColor = "#E8E0D0")}
+                onBlur={(event) => (event.target.style.borderColor = "#232c20")}
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1" style={{ color: "#425C47" }}>
+              <label className="block text-sm font-medium mb-1" style={{ color: "#b8cdb4" }}>
                 Téléphone
               </label>
               <input
@@ -129,15 +129,15 @@ export default function SignupForm({ turnstileSiteKey }: SignupFormProps) {
                 className="w-full rounded-xl px-4 py-3 text-sm outline-none transition-all"
                 style={inputStyle}
                 onFocus={(event) => (event.target.style.borderColor = "#C9A84C")}
-                onBlur={(event) => (event.target.style.borderColor = "#E8E0D0")}
+                onBlur={(event) => (event.target.style.borderColor = "#232c20")}
               />
-              <p className="mt-1 text-xs" style={{ color: "#7a7060" }}>
+              <p className="mt-1 text-xs" style={{ color: "#7a9076" }}>
                 Format international E.164 requis. Exemple : +33612345678.
               </p>
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1" style={{ color: "#425C47" }}>
+              <label className="block text-sm font-medium mb-1" style={{ color: "#b8cdb4" }}>
                 Mot de passe
               </label>
               <input
@@ -150,12 +150,12 @@ export default function SignupForm({ turnstileSiteKey }: SignupFormProps) {
                 className="w-full rounded-xl px-4 py-3 text-sm outline-none transition-all"
                 style={inputStyle}
                 onFocus={(event) => (event.target.style.borderColor = "#C9A84C")}
-                onBlur={(event) => (event.target.style.borderColor = "#E8E0D0")}
+                onBlur={(event) => (event.target.style.borderColor = "#232c20")}
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1" style={{ color: "#425C47" }}>
+              <label className="block text-sm font-medium mb-1" style={{ color: "#b8cdb4" }}>
                 Confirmer le mot de passe
               </label>
               <input
@@ -167,7 +167,7 @@ export default function SignupForm({ turnstileSiteKey }: SignupFormProps) {
                 className="w-full rounded-xl px-4 py-3 text-sm outline-none transition-all"
                 style={inputStyle}
                 onFocus={(event) => (event.target.style.borderColor = "#C9A84C")}
-                onBlur={(event) => (event.target.style.borderColor = "#E8E0D0")}
+                onBlur={(event) => (event.target.style.borderColor = "#232c20")}
               />
             </div>
 
@@ -185,12 +185,12 @@ export default function SignupForm({ turnstileSiteKey }: SignupFormProps) {
             </div>
 
             {turnstileSiteKey ? (
-              <div className="rounded-xl border border-[#E8E0D0] bg-[#F8F5EF] p-3">
+              <div className="rounded-xl border border-[#232c20] bg-[#111810] p-3">
                 <div className="cf-turnstile" data-sitekey={turnstileSiteKey} />
               </div>
             ) : (
-              <div className="rounded-xl border border-[#E8E0D0] bg-[#F8F5EF] p-4">
-                <label className="block text-sm font-medium mb-1" style={{ color: "#425C47" }}>
+              <div className="rounded-xl border border-[#232c20] bg-[#111810] p-4">
+                <label className="block text-sm font-medium mb-1" style={{ color: "#b8cdb4" }}>
                   Vérification anti-robot : combien font 3 + 4 ?
                 </label>
                 <input
@@ -203,16 +203,16 @@ export default function SignupForm({ turnstileSiteKey }: SignupFormProps) {
                   className="w-full rounded-xl px-4 py-3 text-sm outline-none transition-all"
                   style={inputStyle}
                   onFocus={(event) => (event.target.style.borderColor = "#C9A84C")}
-                  onBlur={(event) => (event.target.style.borderColor = "#E8E0D0")}
+                  onBlur={(event) => (event.target.style.borderColor = "#232c20")}
                 />
-                <p className="mt-2 text-xs" style={{ color: "#7a7060" }}>
+                <p className="mt-2 text-xs" style={{ color: "#7a9076" }}>
                   Cloudflare Turnstile s&apos;activera automatiquement dès que sa clé publique sera configurée.
                 </p>
               </div>
             )}
 
             {error && (
-              <div className="rounded-lg px-4 py-3 text-sm" style={{ background: "#fef2f2", color: "#dc2626", border: "1px solid #fecaca" }}>
+              <div className="rounded-lg px-4 py-3 text-sm" style={{ background: "rgba(220,38,38,0.1)", color: "#f87171", border: "1px solid rgba(220,38,38,0.25)" }}>
                 {error}
               </div>
             )}
@@ -221,13 +221,13 @@ export default function SignupForm({ turnstileSiteKey }: SignupFormProps) {
               type="submit"
               disabled={loading}
               className="w-full rounded-xl py-3 font-semibold text-sm transition-all"
-              style={{ background: loading ? "#8899bb" : "#425C47", color: "#fff" }}
+              style={{ background: loading ? "#2a3527" : "#425C47", color: "#d8e3d5" }}
             >
               {loading ? "Création…" : "Créer mon compte"}
             </button>
           </form>
 
-          <div className="mt-6 pt-6 text-center text-sm" style={{ borderTop: "1px solid #E8E0D0", color: "#7a7060" }}>
+          <div className="mt-6 pt-6 text-center text-sm" style={{ borderTop: "1px solid #232c20", color: "#7a9076" }}>
             Déjà un compte ?{" "}
             <Link href="/login" className="font-semibold" style={{ color: "#C9A84C" }}>
               Se connecter

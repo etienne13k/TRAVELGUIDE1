@@ -415,31 +415,31 @@ export default function Home() {
       </div>
 
       {/* NAV */}
-      <nav className="fixed top-12 w-full z-50 bg-white/95 backdrop-blur-md border-b border-gray-100 shadow-[0_1px_16px_rgba(0,0,0,0.05)]">
+      <nav className="fixed top-12 w-full z-50 bg-[#0e1310]/95 backdrop-blur-md border-b border-[#232c20]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
-          <div className="text-xl font-bold tracking-tight" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
+          <div className="text-xl font-bold tracking-tight text-[#d8e3d5]" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
             TravelGuide AI
           </div>
           <div className="flex items-center gap-3">
-            <div className="flex items-center gap-1 border border-[#425C47]/30 rounded-lg p-0.5">
+            <div className="flex items-center gap-1 border border-[#232c20] rounded-lg p-0.5">
               <button
                 onClick={() => { setLang("fr"); localStorage.setItem("tgai_lang", "fr"); window.dispatchEvent(new CustomEvent("tgai_lang_change", { detail: { lang: "fr" } })); }}
                 title="Passer en français"
-                className={`rounded-md px-2 py-0.5 transition-all ${lang === "fr" ? "bg-[#425C47]/15 shadow-sm" : "opacity-40 hover:opacity-70"}`}
+                className={`rounded-md px-2 py-0.5 transition-all ${lang === "fr" ? "bg-[#232c20] shadow-sm" : "opacity-40 hover:opacity-70"}`}
               >
                 <img src="https://flagcdn.com/w40/fr.png" width="24" height="16" alt="FR" style={{display:"inline",borderRadius:"2px"}} />
               </button>
               <button
                 onClick={() => { setLang("en"); localStorage.setItem("tgai_lang", "en"); window.dispatchEvent(new CustomEvent("tgai_lang_change", { detail: { lang: "en" } })); }}
                 title="Switch to English"
-                className={`rounded-md px-2 py-0.5 transition-all ${lang === "en" ? "bg-[#425C47]/15 shadow-sm" : "opacity-40 hover:opacity-70"}`}
+                className={`rounded-md px-2 py-0.5 transition-all ${lang === "en" ? "bg-[#232c20] shadow-sm" : "opacity-40 hover:opacity-70"}`}
               >
                 <img src="https://flagcdn.com/w40/gb.png" width="24" height="16" alt="GB" style={{display:"inline",borderRadius:"2px"}} />
               </button>
             </div>
             <Link
               href="/account"
-              className="flex items-center gap-2 rounded-full hover:bg-[#425C47]/8 transition-colors px-2 py-1.5"
+              className="flex items-center gap-2 rounded-full hover:bg-[#232c20] transition-colors px-2 py-1.5 text-[#d8e3d5]"
               aria-label={tx.nav_account_label}
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -447,17 +447,17 @@ export default function Home() {
                 <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
               </svg>
               {phoneStatus.loggedIn && phoneStatus.email && (
-                <span className="text-xs font-medium hidden sm:inline max-w-[120px] truncate" style={{ color: "#425C47" }}>
+                <span className="text-xs font-medium hidden sm:inline max-w-[120px] truncate text-[#b8cdb4]">
                   {phoneStatus.email.split("@")[0]}
                 </span>
               )}
             </Link>
             <Link
               href="/cart"
-              className="relative p-2 rounded-full hover:bg-[#425C47]/8 transition-colors"
+              className="relative p-2 rounded-full hover:bg-[#232c20] transition-colors text-[#d8e3d5]"
               aria-label="Voir le panier"
             >
-              <span className="text-xl leading-none">🛒</span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
               {cartCount > 0 && (
                 <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white">
                   {cartCount}
@@ -482,7 +482,7 @@ export default function Home() {
           <div className="absolute top-1/2 right-0 -translate-y-1/2 translate-x-1/3 w-[700px] h-[700px] rounded-full border border-[#C9A84C]/10" />
           <div className="absolute top-1/2 right-0 -translate-y-1/2 translate-x-1/3 w-[500px] h-[500px] rounded-full border border-[#C9A84C]/7" />
           <div className="absolute top-1/2 right-0 -translate-y-1/2 translate-x-1/3 w-[300px] h-[300px] rounded-full bg-[#C9A84C]/4" />
-          <div className="absolute bottom-0 left-0 w-full h-24 bg-gradient-to-t from-white/40 to-transparent" />
+          <div className="absolute bottom-0 left-0 w-full h-24 bg-gradient-to-t from-[#0e1310]/60 to-transparent" />
         </div>
 
         <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-12 lg:gap-20 items-center w-full py-16">
@@ -495,12 +495,12 @@ export default function Home() {
               </span>
             </div>
             <h1
-              className="text-4xl sm:text-5xl lg:text-7xl xl:text-8xl font-bold leading-tight sm:leading-none mb-5 sm:mb-6"
+              className="text-4xl sm:text-5xl lg:text-7xl xl:text-8xl font-bold leading-tight sm:leading-none mb-5 sm:mb-6 text-[#d8e3d5]"
               style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
             >
               {tx.hero_title}
             </h1>
-            <p className="text-base sm:text-xl text-[#425C47]/70 max-w-lg leading-relaxed mb-8 sm:mb-10 font-medium">{tx.hero_sub}</p>
+            <p className="text-base sm:text-xl text-[#7a9076] max-w-lg leading-relaxed mb-8 sm:mb-10 font-medium">{tx.hero_sub}</p>
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
               <a
                 href="#pricing"
@@ -509,7 +509,7 @@ export default function Home() {
               >
                 {tx.hero_cta} →
               </a>
-              <p className="text-sm text-[#425C47]/45 text-center sm:text-left">{tx.hero_sub_cta}</p>
+              <p className="text-sm text-[#4a6447] text-center sm:text-left">{tx.hero_sub_cta}</p>
             </div>
             {/* Trust badges */}
             <div className="flex items-center gap-4 sm:gap-6 mt-8 sm:mt-10">
@@ -519,12 +519,12 @@ export default function Home() {
                 { val: "4.9★", label: tx.hero_badge_rating },
               ].map((b, i) => (
                 <div key={b.label} className="flex items-center gap-6">
-                  {i > 0 && <div className="w-px h-8 bg-[#425C47]/15" />}
+                  {i > 0 && <div className="w-px h-8 bg-[#232c20]" />}
                   <div className="text-center">
-                    <div className="text-2xl font-bold" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
+                    <div className="text-2xl font-bold text-[#d8e3d5]" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
                       {b.val}
                     </div>
-                    <div className="text-xs text-[#425C47]/50">{b.label}</div>
+                    <div className="text-xs text-[#4a6447]">{b.label}</div>
                   </div>
                 </div>
               ))}
@@ -534,8 +534,8 @@ export default function Home() {
           {/* Right: Preview card */}
           <div className="relative hidden sm:flex justify-center lg:justify-end">
             <div className="animate-float relative">
-              <div className="bg-white rounded-2xl shadow-2xl p-7 border border-[#425C47]/5 w-full max-w-sm">
-                <div className="bg-[#425C47] text-white rounded-xl p-5 mb-5">
+              <div className="bg-[#161c14] rounded-2xl shadow-2xl p-7 border border-[#232c20] w-full max-w-sm">
+                <div className="bg-[#1a2418] border border-[#232c20] rounded-xl p-5 mb-5">
                   <div className="flex items-center justify-between mb-2">
                     <div className="text-[10px] font-mono text-white/40 tracking-widest">TRAVELGUIDE AI</div>
                     <span className="text-[#C9A84C] font-black text-lg" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>7€</span>
@@ -565,19 +565,19 @@ export default function Home() {
                         {item.day}
                       </span>
                       <div>
-                        <div className="text-sm font-semibold text-[#425C47]">{item.title}</div>
-                        <div className="text-xs text-[#425C47]/50">{item.sub}</div>
+                        <div className="text-sm font-semibold text-[#d8e3d5]">{item.title}</div>
+                        <div className="text-xs text-[#4a6447]">{item.sub}</div>
                       </div>
                     </div>
                   ))}
-                  <div className="text-center text-xs text-[#425C47]/30 py-1">
+                  <div className="text-center text-xs text-[#3a5037] py-1">
                     {tx.hero_card_more}
                   </div>
                 </div>
-                <div className="border-t border-[#425C47]/8 pt-4 flex items-center justify-between text-[10px] text-[#425C47]/40 font-mono">
-                  <span>📄 PDF</span>
-                  <span>✈️ {tx.hero_card_delivery}</span>
-                  <span>🤖 IA entraînée</span>
+                <div className="border-t border-[#232c20] pt-4 flex items-center justify-between text-[10px] text-[#3a5037] font-mono">
+                  <span>PDF</span>
+                  <span>{tx.hero_card_delivery}</span>
+                  <span>IA entraînée</span>
                 </div>
               </div>
               <div className="absolute -top-3 -right-3 bg-[#C9A84C] text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg">
@@ -645,19 +645,19 @@ export default function Home() {
       </section>
 
       {/* TWO FLOWS */}
-      <section className="py-14 sm:py-20 px-4 sm:px-6 bg-[#fdf8f0]">
+      <section className="py-14 sm:py-20 px-4 sm:px-6 bg-[#111810]">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-12">
-            <div className="inline-flex items-center gap-2 bg-[#425C47]/8 border border-[#425C47]/15 rounded-full px-4 py-1.5 mb-4">
+            <div className="inline-flex items-center gap-2 bg-[#232c20] border border-[#2a3527] rounded-full px-4 py-1.5 mb-4">
               <span className="w-1.5 h-1.5 bg-[#C9A84C] rounded-full animate-pulse" />
-              <span className="text-xs font-bold text-[#425C47] uppercase tracking-widest">
+              <span className="text-xs font-bold text-[#c9a84c] uppercase tracking-widest">
                 {lang === "fr" ? "Deux façons de voyager" : "Two ways to travel"}
               </span>
             </div>
-            <h2 className="text-2xl sm:text-4xl font-bold text-[#425C47] mb-3" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
+            <h2 className="text-2xl sm:text-4xl font-bold text-[#d8e3d5] mb-3" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
               {lang === "fr" ? "Votre voyage, votre façon" : "Your trip, your way"}
             </h2>
-            <p className="text-[#425C47]/60 max-w-lg mx-auto text-sm leading-relaxed">
+            <p className="text-[#7a9076] max-w-lg mx-auto text-sm leading-relaxed">
               {lang === "fr"
                 ? "Que vous sachiez déjà où aller ou non, TravelGuide AI s'adapte à vous."
                 : "Whether you know where to go or not, TravelGuide AI adapts to you."}
@@ -665,46 +665,50 @@ export default function Home() {
           </div>
           <div className="grid sm:grid-cols-2 gap-6">
             {/* Q1 */}
-            <div className="rounded-3xl border-2 border-[#425C47]/15 bg-white p-8 hover:border-[#425C47] hover:shadow-xl transition-all duration-300 group">
-              <div className="w-14 h-14 rounded-2xl bg-[#425C47]/8 flex items-center justify-center text-2xl mb-5 group-hover:bg-[#425C47]/15 transition-colors">📍</div>
-              <h3 className="text-xl font-bold text-[#425C47] mb-2" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
+            <div className="rounded-3xl border border-[#232c20] bg-[#161c14] p-8 hover:border-[#425C47] transition-all duration-300 group">
+              <div className="w-12 h-12 rounded-xl bg-[#232c20] flex items-center justify-center mb-5 group-hover:bg-[#2a3527] transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              </div>
+              <h3 className="text-xl font-bold text-[#d8e3d5] mb-2" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
                 {lang === "fr" ? "J'ai ma destination" : "I know where I'm going"}
               </h3>
-              <p className="text-[#425C47]/60 text-sm leading-relaxed mb-5">
+              <p className="text-[#7a9076] text-sm leading-relaxed mb-5">
                 {lang === "fr"
                   ? "Vous savez exactement où aller. L'IA crée un programme sur mesure : itinéraire jour par jour, restaurants, activités, budget, transports — tout adapté à votre profil."
                   : "You know exactly where to go. The AI creates a tailor-made programme: day-by-day itinerary, restaurants, activities, budget, transport — all adapted to your profile."}
               </p>
-              <ul className="space-y-1.5 mb-6 text-sm text-[#425C47]/70">
+              <ul className="space-y-1.5 mb-6 text-sm text-[#7a9076]">
                 {(lang === "fr"
                   ? ["+ 2 000 destinations disponibles","Programme adapté à votre budget","Conseils restaurants & hébergements","Itinéraire selon votre rythme"]
                   : ["2,000+ destinations available","Programme tailored to your budget","Restaurant & accommodation tips","Itinerary matching your pace"]
                 ).map(f => <li key={f} className="flex items-center gap-2"><span className="text-[#C9A84C] font-bold text-xs">✓</span>{f}</li>)}
               </ul>
               <a href={`/questionnaire?lang=${lang}`}
-                className="inline-flex items-center gap-2 bg-[#425C47] text-white font-semibold px-5 py-2.5 rounded-full text-sm hover:bg-[#2e4133] transition-all hover:scale-105">
+                className="inline-flex items-center gap-2 bg-[#425C47] text-[#d8e3d5] font-semibold px-5 py-2.5 rounded-full text-sm hover:bg-[#2e4133] transition-all hover:scale-105">
                 {lang === "fr" ? "Choisir ma destination →" : "Choose my destination →"}
               </a>
             </div>
             {/* Q2 */}
-            <div className="rounded-3xl border-2 border-[#C9A84C]/30 bg-[#fffdf8] p-8 hover:border-[#C9A84C] hover:shadow-xl transition-all duration-300 group">
-              <div className="w-14 h-14 rounded-2xl bg-[#C9A84C]/10 flex items-center justify-center text-2xl mb-5 group-hover:bg-[#C9A84C]/20 transition-colors">🌍</div>
-              <h3 className="text-xl font-bold text-[#425C47] mb-2" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
+            <div className="rounded-3xl border border-[#c9a84c]/20 bg-[#161c14] p-8 hover:border-[#C9A84C]/50 transition-all duration-300 group">
+              <div className="w-12 h-12 rounded-xl bg-[#c9a84c]/10 flex items-center justify-center mb-5 group-hover:bg-[#c9a84c]/20 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+              </div>
+              <h3 className="text-xl font-bold text-[#d8e3d5] mb-2" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
                 {lang === "fr" ? "Où partir ?" : "Where should I go?"}
               </h3>
-              <p className="text-[#425C47]/60 text-sm leading-relaxed mb-5">
+              <p className="text-[#7a9076] text-sm leading-relaxed mb-5">
                 {lang === "fr"
                   ? "Vous n'avez pas encore choisi. Décrivez vos envies — climat, ambiance, budget, durée — et l'IA vous suggère les meilleures destinations, puis crée le guide complet."
                   : "You haven't decided yet. Describe your wishes — climate, mood, budget, duration — and the AI suggests the best destinations, then creates the full guide."}
               </p>
-              <ul className="space-y-1.5 mb-6 text-sm text-[#425C47]/70">
+              <ul className="space-y-1.5 mb-6 text-sm text-[#7a9076]">
                 {(lang === "fr"
                   ? ["Suggestions personnalisées par IA","Filtres : plage, montagne, ville, aventure…","Budget, durée de vol, langues parlées","Un lieu ou road trip — vous choisissez"]
                   : ["AI-powered personalised suggestions","Filters: beach, mountain, city, adventure…","Budget, flight time, languages spoken","One place or road trip — your choice"]
                 ).map(f => <li key={f} className="flex items-center gap-2"><span className="text-[#C9A84C] font-bold text-xs">✓</span>{f}</li>)}
               </ul>
               <a href={`/questionnaire?lang=${lang}`}
-                className="inline-flex items-center gap-2 bg-[#C9A84C] text-white font-semibold px-5 py-2.5 rounded-full text-sm hover:bg-[#B8962E] transition-all hover:scale-105">
+                className="inline-flex items-center gap-2 bg-[#C9A84C] text-[#0e1310] font-semibold px-5 py-2.5 rounded-full text-sm hover:bg-[#B8962E] transition-all hover:scale-105">
                 {lang === "fr" ? "Trouver ma destination →" : "Find my destination →"}
               </a>
             </div>
@@ -717,12 +721,12 @@ export default function Home() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2
-              className="text-2xl sm:text-4xl lg:text-5xl font-bold mb-4"
+              className="text-2xl sm:text-4xl lg:text-5xl font-bold mb-4 text-[#d8e3d5]"
               style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
             >
               {tx.pricing_title}
             </h2>
-            <p className="text-[#425C47]/55 max-w-2xl mx-auto text-sm leading-relaxed">{tx.pricing_sub}</p>
+            <p className="text-[#7a9076] max-w-2xl mx-auto text-sm leading-relaxed">{tx.pricing_sub}</p>
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {tx.plans.map((plan) => {
@@ -735,8 +739,8 @@ export default function Home() {
                   key={plan.name}
                   className={`relative rounded-2xl p-6 border flex flex-col transition-all duration-300 hover:shadow-2xl hover:-translate-y-1.5 ${
                     isInverted
-                      ? "bg-gradient-to-br from-[#425C47] to-[#2e4133] text-white border-[#425C47] shadow-[0_8px_32px_rgba(66,92,71,0.3)]"
-                      : "bg-white text-[#425C47] border-gray-100 shadow-[0_2px_16px_rgba(0,0,0,0.06)]"
+                      ? "bg-gradient-to-br from-[#1e3324] to-[#162818] text-white border-[#2a4433] shadow-[0_8px_32px_rgba(66,92,71,0.3)]"
+                      : "bg-[#161c14] text-[#d8e3d5] border-[#232c20]"
                   }`}
                 >
                   {/* Popular badge */}
@@ -781,7 +785,7 @@ export default function Home() {
                     </div>
                   )}
 
-                  <div className={`text-xs font-mono tracking-wide mb-1 ${isInverted ? "text-white/45" : "text-[#425C47]/40"}`}>
+                  <div className={`text-xs font-mono tracking-wide mb-1 ${isInverted ? "text-white/45" : "text-[#4a6447]"}`}>
                     {plan.duration.toUpperCase()}
                   </div>
 
@@ -798,7 +802,7 @@ export default function Home() {
                     </div>
                     <span
                       className={`mt-2 inline-flex rounded-full px-3 py-1 text-[11px] font-bold ${
-                        isInverted ? "bg-white/10 text-[#E8C060]" : "bg-[#C9A84C]/10 text-[#9A7629]"
+                        isInverted ? "bg-white/10 text-[#E8C060]" : "bg-[#C9A84C]/10 text-[#c9a84c]"
                       }`}
                     >
                       {plan.savings}
@@ -806,7 +810,7 @@ export default function Home() {
                   </div>
 
                   <div className="font-semibold text-base mb-4">{plan.name}</div>
-                  <p className={`text-sm leading-relaxed mb-6 ${isInverted ? "text-white/65" : "text-[#425C47]/60"}`}>
+                  <p className={`text-sm leading-relaxed mb-6 ${isInverted ? "text-white/65" : "text-[#7a9076]"}`}>
                     {plan.desc}
                   </p>
 
@@ -820,7 +824,7 @@ export default function Home() {
                     {plan.features.map((f) => (
                       <li
                         key={f}
-                        className={`text-sm flex items-center gap-2 ${isInverted ? "text-white/80" : "text-[#425C47]/70"}`}
+                        className={`text-sm flex items-center gap-2 ${isInverted ? "text-white/80" : "text-[#7a9076]"}`}
                       >
                         <span className="text-[#C9A84C] font-bold text-xs">✓</span>
                         {f}
@@ -833,8 +837,8 @@ export default function Home() {
                     onClick={() => trackPurchase(plan.name, plan.price)}
                     className={`block w-full text-center font-semibold py-3 rounded-xl transition-all hover:scale-105 text-sm ${
                       isInverted
-                        ? "bg-[#C9A84C] text-white hover:bg-[#B8962E]"
-                        : "bg-[#425C47] text-white hover:bg-[#2e4133]"
+                        ? "bg-[#C9A84C] text-[#0e1310] hover:bg-[#B8962E]"
+                        : "bg-[#425C47] text-[#d8e3d5] hover:bg-[#2e4133]"
                     }`}
                   >
                     {plan.cta}
@@ -851,12 +855,12 @@ export default function Home() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2
-              className="text-2xl sm:text-4xl lg:text-5xl font-bold mb-4"
+              className="text-2xl sm:text-4xl lg:text-5xl font-bold mb-4 text-[#d8e3d5]"
               style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
             >
               {tx.examples_title}
             </h2>
-            <p className="text-[#425C47]/55 max-w-lg mx-auto text-sm">{tx.examples_sub}</p>
+            <p className="text-[#7a9076] max-w-lg mx-auto text-sm">{tx.examples_sub}</p>
           </div>
           <div className="grid lg:grid-cols-2 gap-8">
             {/* Cover mockup */}
@@ -899,27 +903,27 @@ export default function Home() {
             </div>
 
             {/* Jour 1 complet — scrollable */}
-            <div className="bg-white rounded-2xl overflow-hidden shadow-[0_4px_40px_rgba(0,0,0,0.08)] border border-gray-100 flex flex-col">
+            <div className="bg-[#161c14] rounded-2xl overflow-hidden border border-[#232c20] flex flex-col">
               {/* Header sticky */}
-              <div className="border-b-2 border-[#C9A84C] px-7 pt-7 pb-4 bg-white">
+              <div className="border-b-2 border-[#C9A84C] px-7 pt-7 pb-4 bg-[#1a2418]">
                 <div className="text-[10px] font-mono text-[#C9A84C] tracking-widest mb-1">
                   {lang === "fr" ? "JOUR 1 — PROGRAMME COMPLET" : "DAY 1 — FULL SCHEDULE"}
                 </div>
-                <h3 className="text-xl font-bold text-[#425C47]" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
+                <h3 className="text-xl font-bold text-[#d8e3d5]" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
                   {lang === "fr" ? "Arrivée à Tokyo · Shinjuku & Kabukicho" : "Arrival in Tokyo · Shinjuku & Kabukicho"}
                 </h3>
                 <div className="flex gap-3 mt-2">
-                  <span className="text-[10px] bg-[#425C47]/8 text-[#425C47] px-2 py-0.5 rounded-full font-semibold">
-                    {lang === "fr" ? "🗓️ Budget estimé : ~¥8 500 (~55€)" : "🗓️ Est. budget: ~¥8,500 (~€55)"}
+                  <span className="text-[10px] bg-[#232c20] text-[#b8cdb4] px-2 py-0.5 rounded-full font-semibold">
+                    {lang === "fr" ? "Budget estimé : ~¥8 500 (~55€)" : "Est. budget: ~¥8,500 (~€55)"}
                   </span>
-                  <span className="text-[10px] bg-[#C9A84C]/10 text-[#9a7629] px-2 py-0.5 rounded-full font-semibold">
-                    {lang === "fr" ? "🚇 IC Card recommandée" : "🚇 IC Card recommended"}
+                  <span className="text-[10px] bg-[#C9A84C]/10 text-[#c9a84c] px-2 py-0.5 rounded-full font-semibold">
+                    {lang === "fr" ? "IC Card recommandée" : "IC Card recommended"}
                   </span>
                 </div>
               </div>
 
               {/* Timeline scrollable */}
-              <div className="px-7 py-5 space-y-0">
+              <div className="px-7 py-5 space-y-0 bg-[#161c14]">
                 {([
                   {
                     time: lang === "fr" ? "9h00" : "9am",
@@ -999,25 +1003,25 @@ export default function Home() {
                     color: "#C9A84C",
                   },
                 ] as const).slice(0, exampleExpanded ? 99 : 2).map((item, idx, arr) => (
-                  <div key={item.time} className="flex gap-4 py-4 border-b border-gray-50 last:border-0">
+                  <div key={item.time} className="flex gap-4 py-4 border-b border-[#1e2b1c] last:border-0">
                     <div className="flex-shrink-0 w-12 text-right">
-                      <div className="font-mono text-[10px] text-[#425C47]/40 mt-1">{item.time}</div>
+                      <div className="font-mono text-[10px] text-[#3a5037] mt-1">{item.time}</div>
                     </div>
                     <div className="relative flex-shrink-0 flex flex-col items-center">
                       <div className="w-2.5 h-2.5 rounded-full mt-1 flex-shrink-0" style={{ backgroundColor: item.color }} />
-                      {idx < arr.length - 1 && <div className="w-px flex-1 bg-gray-100 mt-1" />}
+                      {idx < arr.length - 1 && <div className="w-px flex-1 bg-[#232c20] mt-1" />}
                     </div>
                     <div className="flex-1 min-w-0 pb-1">
                       <div className="flex items-start justify-between gap-2 mb-1">
                         <div>
-                          <div className="text-[9px] text-[#425C47]/35 uppercase tracking-wide mb-0.5">{item.label}</div>
-                          <div className="font-bold text-sm text-[#425C47]">{item.title}</div>
+                          <div className="text-[9px] text-[#3a5037] uppercase tracking-wide mb-0.5">{item.label}</div>
+                          <div className="font-bold text-sm text-[#d8e3d5]">{item.title}</div>
                         </div>
                         <span className="text-[9px] font-bold px-2 py-0.5 rounded-full flex-shrink-0 text-white" style={{ backgroundColor: item.color }}>
                           {item.tag}
                         </span>
                       </div>
-                      <p className="text-xs text-[#425C47]/60 leading-relaxed mb-1.5">{item.desc}</p>
+                      <p className="text-xs text-[#7a9076] leading-relaxed mb-1.5">{item.desc}</p>
                       <p className="text-[10px] text-[#C9A84C] font-medium bg-[#C9A84C]/8 px-2 py-1 rounded-lg">{item.tip}</p>
                     </div>
                   </div>
@@ -1026,7 +1030,7 @@ export default function Home() {
                 {!exampleExpanded && (
                   <button
                     onClick={() => setExampleExpanded(true)}
-                    className="w-full mt-2 mb-4 flex items-center justify-center gap-2 rounded-xl border-2 border-dashed border-[#C9A84C]/40 py-3 text-sm font-bold text-[#C9A84C] hover:bg-[#C9A84C]/5 transition-colors"
+                    className="w-full mt-2 mb-4 flex items-center justify-center gap-2 rounded-xl border-2 border-dashed border-[#C9A84C]/30 py-3 text-sm font-bold text-[#C9A84C] hover:bg-[#C9A84C]/8 transition-colors"
                   >
                     <span className="text-lg leading-none">+</span>
                     {lang === "fr" ? "Voir les 4 étapes suivantes" : "Show 4 more steps"}
@@ -1116,23 +1120,23 @@ export default function Home() {
       </section>
 
       {/* FOOTER */}
-      <footer className="py-8 px-6 border-t border-gray-100 bg-pattern">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-[#425C47]/45">
+      <footer className="py-8 px-6 border-t border-[#232c20] bg-[#0e1310]">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-[#3a5037]">
           <span
-            className="font-bold text-[#425C47] text-base"
+            className="font-bold text-[#7a9076] text-base"
             style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
           >
             TravelGuide AI
           </span>
           <span className="text-xs">{tx.footer_tagline}</span>
           <div className="flex items-center gap-4 text-xs">
-            <a href="/cgv" className="hover:text-[#425C47] underline underline-offset-2 transition-colors">
+            <a href="/cgv" className="hover:text-[#b8cdb4] underline underline-offset-2 transition-colors">
               {tx.footer_cgv}
             </a>
-            <a href="/privacy" className="hover:text-[#425C47] underline underline-offset-2 transition-colors">
+            <a href="/privacy" className="hover:text-[#b8cdb4] underline underline-offset-2 transition-colors">
               {tx.footer_privacy}
             </a>
-            <a href="/contact" className="hover:text-[#425C47] underline underline-offset-2 transition-colors">
+            <a href="/contact" className="hover:text-[#b8cdb4] underline underline-offset-2 transition-colors">
               {lang === "fr" ? "Contact" : "Contact"}
             </a>
             <span>{tx.footer_copy}</span>

@@ -39,28 +39,28 @@ export default function LoginPage() {
   return (
     <div
       className="min-h-screen flex items-center justify-center px-4"
-      style={{ background: "#FDFAF5", fontFamily: "var(--font-dm-sans), system-ui, sans-serif" }}
+      style={{ background: "#0e1310", fontFamily: "var(--font-dm-sans), system-ui, sans-serif" }}
     >
       <div className="w-full max-w-md">
         <div className="flex items-center justify-between mb-8">
           <div />
-          <Link href="/" className="text-2xl font-bold" style={{ fontFamily: "var(--font-playfair), Georgia, serif", color: "#425C47" }}>
-            ✈️ TravelGuide AI
+          <Link href="/" className="text-2xl font-bold" style={{ fontFamily: "var(--font-playfair), Georgia, serif", color: "#d8e3d5" }}>
+            TravelGuide AI
           </Link>
           <LangToggle />
         </div>
 
-        <div className="rounded-2xl p-8 shadow-lg" style={{ background: "#fff", border: "1px solid #E8E0D0" }}>
-          <h1 className="text-2xl font-bold mb-1" style={{ fontFamily: "var(--font-playfair), Georgia, serif", color: "#425C47" }}>
+        <div className="rounded-2xl p-8" style={{ background: "#161c14", border: "1px solid #232c20" }}>
+          <h1 className="text-2xl font-bold mb-1" style={{ fontFamily: "var(--font-playfair), Georgia, serif", color: "#d8e3d5" }}>
             Connexion
           </h1>
-          <p className="text-sm mb-6" style={{ color: "#7a7060" }}>
+          <p className="text-sm mb-6" style={{ color: "#7a9076" }}>
             Accédez à votre espace client et suivez vos commandes.
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium mb-1" style={{ color: "#425C47" }}>Email</label>
+              <label className="block text-sm font-medium mb-1" style={{ color: "#b8cdb4" }}>Email</label>
               <input
                 type="email"
                 value={email}
@@ -68,14 +68,14 @@ export default function LoginPage() {
                 required
                 placeholder="vous@exemple.com"
                 className="w-full rounded-xl px-4 py-3 text-sm outline-none transition-all"
-                style={{ background: "#F8F5EF", border: "1.5px solid #E8E0D0", color: "#425C47" }}
+                style={{ background: "#111810", border: "1.5px solid #232c20", color: "#d8e3d5" }}
                 onFocus={(e) => (e.target.style.borderColor = "#C9A84C")}
-                onBlur={(e) => (e.target.style.borderColor = "#E8E0D0")}
+                onBlur={(e) => (e.target.style.borderColor = "#232c20")}
               />
             </div>
             <div>
               <div className="flex items-center justify-between mb-1">
-                <label className="block text-sm font-medium" style={{ color: "#425C47" }}>Mot de passe</label>
+                <label className="block text-sm font-medium" style={{ color: "#b8cdb4" }}>Mot de passe</label>
                 <Link href="/forgot-password" className="text-xs" style={{ color: "#C9A84C" }}>
                   Mot de passe oublié ?
                 </Link>
@@ -87,14 +87,14 @@ export default function LoginPage() {
                 required
                 placeholder="••••••••"
                 className="w-full rounded-xl px-4 py-3 text-sm outline-none transition-all"
-                style={{ background: "#F8F5EF", border: "1.5px solid #E8E0D0", color: "#425C47" }}
+                style={{ background: "#111810", border: "1.5px solid #232c20", color: "#d8e3d5" }}
                 onFocus={(e) => (e.target.style.borderColor = "#C9A84C")}
-                onBlur={(e) => (e.target.style.borderColor = "#E8E0D0")}
+                onBlur={(e) => (e.target.style.borderColor = "#232c20")}
               />
             </div>
 
             {error && (
-              <div className="rounded-lg px-4 py-3 text-sm" style={{ background: "#fef2f2", color: "#dc2626", border: "1px solid #fecaca" }}>
+              <div className="rounded-lg px-4 py-3 text-sm" style={{ background: "rgba(220,38,38,0.1)", color: "#f87171", border: "1px solid rgba(220,38,38,0.25)" }}>
                 {error}
               </div>
             )}
@@ -103,13 +103,13 @@ export default function LoginPage() {
               type="submit"
               disabled={loading}
               className="w-full rounded-xl py-3 font-semibold text-sm transition-all"
-              style={{ background: loading ? "#8899bb" : "#425C47", color: "#fff" }}
+              style={{ background: loading ? "#2a3527" : "#425C47", color: "#d8e3d5" }}
             >
               {loading ? "Connexion…" : "Se connecter"}
             </button>
           </form>
 
-          <div className="mt-6 pt-6 text-center text-sm" style={{ borderTop: "1px solid #E8E0D0", color: "#7a7060" }}>
+          <div className="mt-6 pt-6 text-center text-sm" style={{ borderTop: "1px solid #232c20", color: "#7a9076" }}>
             Pas encore de compte ?{" "}
             <Link href="/signup" className="font-semibold" style={{ color: "#C9A84C" }}>
               Créer un compte
