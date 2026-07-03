@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { Pool } from "pg";
+import { getServerSession } from "@/lib/auth";
 
 export const maxDuration = 60;
 
@@ -28,6 +29,49 @@ export async function POST(req: NextRequest) {
   const apiKey = await getApiKey();
   if (!apiKey) {
     return NextResponse.json({ error: "ANTHROPIC_API_KEY manquante" }, { status: 503 });
+  }
+
+  // Suggestion limit: 3 per verified account per 3-day window
+  if (process.env.DATABASE_URL) {
+    try {
+      const session = await getServerSession();
+      if (session?.email) {
+        const limitPool = new Pool({ connectionString: process.env.DATABASE_URL, ssl: { rejectUnauthorized: false } });
+
+        // Check phone verified
+        const { rows: userRows } = await limitPool.query(
+          `SELECT phone_verified FROM users WHERE email = $1 LIMIT 1`,
+          [session.email.toLowerCase()]
+        );
+        const isVerified = userRows[0]?.phone_verified === true;
+        if (!isVerified) {
+          await limitPool.end();
+          return NextResponse.json({ error: "Numéro de téléphone non vérifié.", code: "phone_unverified" }, { status: 403 });
+        }
+
+        // 3-day window: floor to nearest 3-day block from epoch
+        await limitPool.query(`CREATE TABLE IF NOT EXISTS suggestion_limits (email text NOT NULL, period_start date NOT NULL, count int DEFAULT 1, PRIMARY KEY (email, period_start))`);
+        const epochDays = Math.floor(Date.now() / 86400000);
+        const periodStartDays = epochDays - (epochDays % 3);
+        const periodStart = new Date(periodStartDays * 86400000).toISOString().split("T")[0];
+        const resetAt = new Date((periodStartDays + 3) * 86400000).toISOString();
+
+        const { rows } = await limitPool.query(
+          `SELECT count FROM suggestion_limits WHERE email = $1 AND period_start = $2`,
+          [session.email.toLowerCase(), periodStart]
+        );
+        const count = Number(rows[0]?.count ?? 0);
+        if (count >= 3) {
+          await limitPool.end();
+          return NextResponse.json({ error: "Limite de 3 suggestions par 3 jours atteinte.", resetAt, code: "suggestion_limit" }, { status: 429 });
+        }
+        await limitPool.query(
+          `INSERT INTO suggestion_limits (email, period_start, count) VALUES ($1, $2, 1) ON CONFLICT (email, period_start) DO UPDATE SET count = suggestion_limits.count + 1`,
+          [session.email.toLowerCase(), periodStart]
+        );
+        await limitPool.end();
+      }
+    } catch { /* non-fatal */ }
   }
 
   let answers: Record<string, unknown>;

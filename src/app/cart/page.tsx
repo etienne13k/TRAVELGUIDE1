@@ -5,12 +5,14 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   CART_PLANS,
+  STRIPE_PAYMENT_LINKS,
   clearCart,
   formatEuro,
   getCartTotal,
   loadCart,
   removeCartItem,
   type CartItem,
+  type PlanKey,
 } from "@/lib/cart";
 import LangToggle from "@/components/LangToggle";
 
@@ -106,29 +108,13 @@ function CartContent() {
 
     try {
       const normalizedPromoCode = promoCode.trim().toUpperCase();
-      const res = await fetch("/api/create-checkout-session", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          items: items.map((item) => ({
-            planId: item.planId,
-            planLabel: item.planLabel,
-            price: item.price,
-            destination: item.destination,
-            dates: item.dates,
-            criteria: item.criteria,
-          })),
-          promoCode: normalizedPromoCode || undefined,
-        }),
-      });
-
-      const data = await res.json();
-      if (!res.ok || !data.url) {
-        setCheckoutProfileUrl(data.profileUrl ?? null);
-        throw new Error(data.error ?? "Impossible de créer le paiement.");
-      }
-
-      router.push(data.url);
+      const item = items[0];
+      const baseLink = STRIPE_PAYMENT_LINKS[item.planId as PlanKey];
+      if (!baseLink) throw new Error("Lien de paiement introuvable.");
+      const stripeUrl = normalizedPromoCode
+        ? `${baseLink}?prefilled_promo_code=${encodeURIComponent(normalizedPromoCode)}`
+        : baseLink;
+      router.push(stripeUrl);
     } catch (checkoutError) {
       setError(checkoutError instanceof Error ? checkoutError.message : "Une erreur est survenue.");
       setLoading(false);

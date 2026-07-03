@@ -825,8 +825,12 @@ function QuestionnaireContent() {
         window.scrollTo({top:0,behavior:"smooth"});
         setDiscoverPhase("loading");
         fetch("/api/suggest-destinations",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(answers)})
-          .then(r=>{
+          .then(async r=>{
+            if(r.status===429){const d=await r.json();const reset=d.resetAt?new Date(d.resetAt):null;const diff=reset?Math.ceil((reset.getTime()-Date.now())/3600000):72;throw new Error(`LIMIT:Limite de suggestions atteinte. Disponible dans ~${diff}h.`);}
+            if(r.status===403){const d=await r.json();throw new Error(`PHONE:${d.error||"Téléphone non vérifié."}`);}
             if(!r.ok) return r.text().then(t=>{throw new Error(`HTTP ${r.status}: ${t.slice(0,300)}`);});
+            return r;
+          })
             return r.json();
           })
           .then(data=>{
@@ -1374,12 +1378,15 @@ function QuestionnaireContent() {
         {/* ═══════════ DISCOVER — SUGGESTION SCREENS ═══════════ */}
         {step===2&&answers.flow==="discover"&&discoverPhase==="error"&&(
           <div className="flex flex-col items-center justify-center py-20 gap-5 text-center">
-            <div className="text-5xl">😕</div>
+            <div className="text-5xl">{suggestError.startsWith("LIMIT:") ? "⏳" : suggestError.startsWith("PHONE:") ? "📱" : "😕"}</div>
             <div className="w-full max-w-md mx-auto">
-              <h2 className="text-xl font-bold text-[#425B48] mb-2" style={{fontFamily:"var(--font-playfair),Georgia,serif"}}>Une erreur est survenue</h2>
-              <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 mb-4 text-left">
-                <p className="text-xs font-bold text-red-600 mb-1">Détail de l&apos;erreur :</p>
-                <p className="text-xs text-red-500 font-mono break-all">{suggestError || "(aucun message — timeout probable)"}</p>
+              <h2 className="text-xl font-bold text-[#425B48] mb-2" style={{fontFamily:"var(--font-playfair),Georgia,serif"}}>
+                {suggestError.startsWith("LIMIT:") ? "Limite atteinte" : suggestError.startsWith("PHONE:") ? "Téléphone requis" : "Une erreur est survenue"}
+              </h2>
+              <div className={`border rounded-xl px-4 py-3 mb-4 text-left ${suggestError.startsWith("LIMIT:") ? "bg-amber-50 border-amber-200" : suggestError.startsWith("PHONE:") ? "bg-blue-50 border-blue-200" : "bg-red-50 border-red-200"}`}>
+                <p className={`text-sm ${suggestError.startsWith("LIMIT:") ? "text-amber-800" : suggestError.startsWith("PHONE:") ? "text-blue-800" : "text-red-500 font-mono break-all text-xs"}`}>
+                  {suggestError.startsWith("LIMIT:") ? suggestError.slice(6) : suggestError.startsWith("PHONE:") ? suggestError.slice(6) : (suggestError || "(aucun message — timeout probable)")}
+                </p>
               </div>
               <button type="button" onClick={()=>{
                 setSuggestError("");

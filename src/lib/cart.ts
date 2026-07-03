@@ -88,6 +88,14 @@ export function saveCart(items: CartItem[]): void {
   window.dispatchEvent(new Event(CART_UPDATED_EVENT));
 }
 
+// Stripe Payment Links — one per plan
+export const STRIPE_PAYMENT_LINKS: Record<PlanKey, string> = {
+  "3j":    "https://buy.stripe.com/6oUbJ15ZXb3e8rx9KM0Ba01",
+  "7j":    "https://buy.stripe.com/00wdR9fAxc7iePV8GI0Ba02",
+  "14j":   "https://buy.stripe.com/7sY3cv2NLefq8rxe120Ba03",
+  "1mois": "https://buy.stripe.com/5kQ28r1JHfju239g9a0Ba04",
+};
+
 export function addCartItem(input: CartItemInput): CartItem {
   const timestamp = new Date().toISOString();
   const item: CartItem = {
@@ -97,7 +105,8 @@ export function addCartItem(input: CartItemInput): CartItem {
     updatedAt: timestamp,
   };
 
-  saveCart([...loadCart(), item]);
+  // Only 1 item allowed — replace previous
+  saveCart([item]);
   return item;
 }
 
