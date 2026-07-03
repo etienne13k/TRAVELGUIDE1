@@ -30,19 +30,16 @@ const translations = {
     how_title: "Comment ça marche",
     how_steps: [
       {
-        icon: "✏️",
         n: "01",
         title: "Dites-nous où partir",
         desc: "Vous avez déjà une destination ? Parfait. Sinon, laissez l'IA en suggérer une selon vos envies. 5 minutes.",
       },
       {
-        icon: "✨",
         n: "02",
         title: "L'IA rédige votre guide",
         desc: "Notre IA spécialisée génère un guide complet et personnalisé à votre profil de voyageur unique.",
       },
       {
-        icon: "📩",
         n: "03",
         title: "Recevez votre guide",
         desc: "PDF professionnel livré dans votre boîte mail sous 24h. Prêt à partir.",
@@ -193,19 +190,16 @@ const translations = {
     how_title: "How it works",
     how_steps: [
       {
-        icon: "✏️",
         n: "01",
         title: "Tell us where to go",
         desc: "Already have a destination? Great. Or let the AI suggest one based on your wishes. 5 minutes.",
       },
       {
-        icon: "✨",
         n: "02",
         title: "AI writes your guide",
         desc: "Our specialized AI generates a complete guide personalized to your unique traveler profile.",
       },
       {
-        icon: "📩",
         n: "03",
         title: "Receive your guide",
         desc: "Professional PDF delivered to your inbox within 48h. Ready to explore.",
@@ -533,54 +527,52 @@ export default function Home() {
 
           {/* Right: Preview card */}
           <div className="relative hidden sm:flex justify-center lg:justify-end">
-            <div className="animate-float relative">
-              <div className="bg-[#161c14] rounded-2xl shadow-2xl p-7 border border-[#232c20] w-full max-w-sm">
-                <div className="bg-[#1a2418] border border-[#232c20] rounded-xl p-5 mb-5">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="text-[10px] font-mono text-white/40 tracking-widest">TRAVELGUIDE AI</div>
-                    <span className="text-[#C9A84C] font-black text-lg" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>7€</span>
+            <div className="relative">
+              <div className="bg-[#161c14] rounded-2xl border border-[#232c20] w-full max-w-[340px] overflow-hidden">
+                {/* Card header */}
+                <div className="bg-[#111810] border-b border-[#232c20] px-6 py-5">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-[9px] font-mono text-[#3a5037] tracking-[0.2em] uppercase">TravelGuide AI</span>
+                    <span className="text-[#C9A84C] font-bold text-base" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>7€</span>
                   </div>
-                  <div className="flex items-start justify-between mb-3">
-                    <div>
-                      <div className="text-2xl font-bold" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
-                        Tokyo
-                      </div>
-                      <div className="text-white/60 text-sm">{tx.hero_card_subtitle}</div>
-                    </div>
-                    <div className="text-3xl">🗾</div>
+                  <div className="text-2xl font-bold text-[#d8e3d5] mb-0.5" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
+                    Tokyo
                   </div>
-                  <div className="flex gap-2 flex-wrap">
-                    <span className="bg-white/10 text-white/70 text-xs px-2 py-0.5 rounded-full">{tx.hero_card_tag1}</span>
-                    <span className="bg-white/10 text-white/70 text-xs px-2 py-0.5 rounded-full">{tx.hero_card_tag2}</span>
-                    <span className="bg-[#C9A84C]/25 text-[#C9A84C] text-xs px-2 py-0.5 rounded-full">{tx.hero_card_tag3}</span>
+                  <div className="text-[#7a9076] text-xs mb-4">{tx.hero_card_subtitle}</div>
+                  <div className="flex gap-1.5 flex-wrap">
+                    <span className="bg-[#1e2c1e] border border-[#2a3a2a] text-[#9ab896] text-[10px] px-2.5 py-0.5 rounded-md">{tx.hero_card_tag1}</span>
+                    <span className="bg-[#1e2c1e] border border-[#2a3a2a] text-[#9ab896] text-[10px] px-2.5 py-0.5 rounded-md">{tx.hero_card_tag2}</span>
+                    <span className="bg-[#c9a84c]/10 border border-[#c9a84c]/25 text-[#c9a84c] text-[10px] px-2.5 py-0.5 rounded-md">{tx.hero_card_tag3}</span>
                   </div>
                 </div>
-                <div className="space-y-3 mb-5">
+                {/* Days list */}
+                <div className="px-6 py-4 space-y-3">
                   {tx.hero_card_days.map((item) => (
                     <div key={item.day} className="flex items-start gap-3">
                       <span
-                        className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5 text-white"
+                        className="w-6 h-6 rounded-md flex items-center justify-center text-[10px] font-bold flex-shrink-0 mt-0.5 text-white"
                         style={{ backgroundColor: item.color }}
                       >
                         {item.day}
                       </span>
                       <div>
-                        <div className="text-sm font-semibold text-[#d8e3d5]">{item.title}</div>
-                        <div className="text-xs text-[#4a6447]">{item.sub}</div>
+                        <div className="text-sm font-semibold text-[#d8e3d5] leading-tight">{item.title}</div>
+                        <div className="text-[11px] text-[#4a6447] mt-0.5">{item.sub}</div>
                       </div>
                     </div>
                   ))}
-                  <div className="text-center text-xs text-[#3a5037] py-1">
+                  <div className="text-[10px] text-[#3a5037] pt-1">
                     {tx.hero_card_more}
                   </div>
                 </div>
-                <div className="border-t border-[#232c20] pt-4 flex items-center justify-between text-[10px] text-[#3a5037] font-mono">
-                  <span>PDF</span>
-                  <span>{tx.hero_card_delivery}</span>
-                  <span>IA entraînée</span>
+                {/* Footer */}
+                <div className="border-t border-[#1e2c1e] px-6 py-3 flex items-center justify-between">
+                  <span className="text-[9px] font-mono text-[#3a5037] uppercase tracking-wider">PDF</span>
+                  <span className="text-[9px] font-mono text-[#3a5037] uppercase tracking-wider">{tx.hero_card_delivery}</span>
+                  <span className="text-[9px] font-mono text-[#3a5037] uppercase tracking-wider">IA entraînée</span>
                 </div>
               </div>
-              <div className="absolute -top-3 -right-3 bg-[#C9A84C] text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg">
+              <div className="absolute -top-2.5 -right-2.5 bg-[#C9A84C] text-[#0e1310] text-[10px] font-bold px-3 py-1 rounded-full">
                 {tx.hero_card_label}
               </div>
             </div>
@@ -625,12 +617,11 @@ export default function Home() {
                 key={step.n}
                 className="group bg-white/8 hover:bg-white/13 backdrop-blur-sm border border-white/15 hover:border-white/25 rounded-2xl p-8 text-center transition-all duration-300"
               >
-                <div className="font-black text-5xl text-[#C9A84C]/70 leading-none mb-5 group-hover:text-[#C9A84C] transition-colors"
+                <div className="font-black text-5xl text-[#C9A84C]/70 leading-none mb-6 group-hover:text-[#C9A84C] transition-colors"
                   style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
                 >
                   {step.n}
                 </div>
-                <div className="text-4xl mb-5">{step.icon}</div>
                 <h3
                   className="text-xl font-bold mb-3 text-white"
                   style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
