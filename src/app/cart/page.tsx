@@ -80,9 +80,9 @@ function CartContent() {
 
       setPromoApplied(true);
       setPromoState("valid");
-      const savings = Math.round(total * 0.4); // -40%
+      const savings = Math.round(total * 0.25); // -25%
       setPromoSavings(savings);
-      setPromoMessage(`Code ${normalizedCode} appliqué — -40% sur votre commande ! 🎉`);
+      setPromoMessage(`Code ${normalizedCode} appliqué — -25% sur votre commande !`);
     } catch {
       setPromoMessage("Erreur serveur, réessayez.");
     }

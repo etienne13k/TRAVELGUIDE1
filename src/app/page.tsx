@@ -533,7 +533,7 @@ export default function Home() {
                 <div className="bg-[#111810] border-b border-[#232c20] px-6 py-5">
                   <div className="flex items-center justify-between mb-3">
                     <span className="text-[9px] font-mono text-[#3a5037] tracking-[0.2em] uppercase">TravelGuide AI</span>
-                    <span className="text-[#C9A84C] font-bold text-base" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>7€</span>
+                    <span className="text-[#C9A84C] font-bold text-base" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>6€</span>
                   </div>
                   <div className="text-2xl font-bold text-[#d8e3d5] mb-0.5" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
                     Tokyo
