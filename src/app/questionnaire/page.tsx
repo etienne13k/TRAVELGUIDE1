@@ -661,6 +661,33 @@ function QuestionnaireContent() {
     setTimeout(()=>{const el=document.getElementById(id);if(el)el.scrollIntoView({behavior:"smooth",block:"center"});},50);
   }
 
+  // Heuristic gibberish detection — works without API
+  function isLikelyGibberish(text: string): boolean {
+    const s = text.trim().toLowerCase();
+    if (s.length === 0) return false;
+    const alpha = s.replace(/[^a-z]/g, "");
+    if (alpha.length < 3) return false;
+    const vowels = (alpha.match(/[aeiouy]/g) ?? []).length;
+    const ratio = vowels / alpha.length;
+    // Less than 18% vowels in a word of 4+ chars = almost certainly not a real place
+    if (ratio < 0.18 && alpha.length >= 4) return true;
+    // 5+ consecutive consonants = not a real word
+    if (/[^aeiouy]{5,}/.test(alpha)) return true;
+    // Repeating character pairs (e.g. "ababab", "xyxy") = keyboard mashing
+    if (/^(.{1,3})\1{2,}$/.test(alpha)) return true;
+    return false;
+  }
+
+  function heuristicValidate(fields: { name: string; label: string; value: string }[]): Record<string,string> {
+    const errs: Record<string,string> = {};
+    for (const f of fields) {
+      if (f.value.trim() && isLikelyGibberish(f.value)) {
+        errs[f.name] = `"${f.value.trim()}" ne semble pas être un lieu réel. Veuillez vérifier la saisie.`;
+      }
+    }
+    return errs;
+  }
+
   async function goNext() {
     if (step===1) {
       const nextErrors: Record<string,string> = {};
@@ -674,22 +701,31 @@ function QuestionnaireContent() {
         scrollToError(`field-${Object.keys(nextErrors)[0]}`);
         return;
       }
-      // AI validation for text fields
+      // Client-side heuristic check first (no API key needed)
+      const textFields = [
+        { name: "destination", label: "Destination", value: answers.destination },
+        { name: "departure_city", label: "Ville de départ", value: answers.departure_city },
+        ...(answers.destination_arrival_city.trim() ? [{ name: "destination_arrival_city", label: "Ville d'arrivée", value: answers.destination_arrival_city }] : []),
+      ];
+      const heuristicErrs = heuristicValidate(textFields);
+      if (Object.keys(heuristicErrs).length > 0) {
+        setErrors(heuristicErrs);
+        scrollToError(`field-${Object.keys(heuristicErrs)[0]}`);
+        return;
+      }
+      // AI validation for deeper checks
       try {
         setValidating(true);
-        const toValidate = [
-          { name: "destination", label: "Destination", value: answers.destination },
-          { name: "departure_city", label: "Ville de départ", value: answers.departure_city },
-          ...(answers.destination_arrival_city.trim() ? [{ name: "destination_arrival_city", label: "Ville d'arrivée", value: answers.destination_arrival_city }] : []),
-        ];
-        const res = await fetch("/api/validate-input", { method: "POST", headers: {"Content-Type":"application/json"}, body: JSON.stringify({ fields: toValidate }) });
-        const data = await res.json() as { errors: Record<string,string> };
-        if (Object.keys(data.errors).length > 0) {
-          setErrors(data.errors);
-          scrollToError(`field-${Object.keys(data.errors)[0]}`);
-          return;
+        const res = await fetch("/api/validate-input", { method: "POST", headers: {"Content-Type":"application/json"}, body: JSON.stringify({ fields: textFields }) });
+        if (res.ok) {
+          const data = await res.json() as { errors: Record<string,string> };
+          if (Object.keys(data.errors).length > 0) {
+            setErrors(data.errors);
+            scrollToError(`field-${Object.keys(data.errors)[0]}`);
+            return;
+          }
         }
-      } catch { /* silently allow if API fails */ }
+      } catch { /* silently allow if API unreachable */ }
       finally { setValidating(false); }
       setErrors({});
     }
@@ -730,24 +766,33 @@ function QuestionnaireContent() {
         scrollToError(`s2-${Object.keys(s2)[0]}`);
         return;
       }
+      // Heuristic check for free text fields in step 2
+      const s2TextFields = [
+        { name: "already_visited", label: "Pays/villes déjà visités", value: answers.already_visited },
+        { name: "non_negotiables", label: "Incontournables", value: answers.non_negotiables },
+        { name: "things_to_avoid", label: "Choses à éviter", value: answers.things_to_avoid },
+      ].filter(f => f.value.trim() && !["aucun","none"].includes(f.value.trim().toLowerCase()));
+      const heuristicErrs2 = heuristicValidate(s2TextFields);
+      if (Object.keys(heuristicErrs2).length > 0) {
+        setStep2Errors(heuristicErrs2);
+        scrollToError(`s2-${Object.keys(heuristicErrs2)[0]}`);
+        return;
+      }
       // AI validation for free text fields in step 2
       try {
         setValidating(true);
-        const toValidate = [
-          { name: "already_visited", label: "Pays/villes déjà visités", value: answers.already_visited },
-          { name: "non_negotiables", label: "Incontournables", value: answers.non_negotiables },
-          { name: "things_to_avoid", label: "Choses à éviter", value: answers.things_to_avoid },
-        ].filter(f => f.value.trim() && f.value.trim().toLowerCase() !== "aucun" && f.value.trim().toLowerCase() !== "none");
-        if (toValidate.length > 0) {
-          const res = await fetch("/api/validate-input", { method: "POST", headers: {"Content-Type":"application/json"}, body: JSON.stringify({ fields: toValidate }) });
-          const data = await res.json() as { errors: Record<string,string> };
-          if (Object.keys(data.errors).length > 0) {
-            setStep2Errors(data.errors);
-            scrollToError(`s2-${Object.keys(data.errors)[0]}`);
-            return;
+        if (s2TextFields.length > 0) {
+          const res = await fetch("/api/validate-input", { method: "POST", headers: {"Content-Type":"application/json"}, body: JSON.stringify({ fields: s2TextFields }) });
+          if (res.ok) {
+            const data = await res.json() as { errors: Record<string,string> };
+            if (Object.keys(data.errors).length > 0) {
+              setStep2Errors(data.errors);
+              scrollToError(`s2-${Object.keys(data.errors)[0]}`);
+              return;
+            }
           }
         }
-      } catch { /* silently allow */ }
+      } catch { /* silently allow if API unreachable */ }
       finally { setValidating(false); }
       setStep2Errors({});
     }
@@ -788,19 +833,27 @@ function QuestionnaireContent() {
     if (!answers.destination.trim()) { setErrors({destination:"Veuillez indiquer votre destination."}); setStep(1); setTimeout(()=>scrollToError("field-destination"),100); return; }
     if (!answers.arrival_date) { setErrors({dates:"Veuillez sélectionner au moins une date."}); setStep(1); setTimeout(()=>scrollToError("field-dates"),100); return; }
 
-    // Validate notes field with AI if filled
+    // Validate notes field
     if (answers.notes.trim()) {
+      // Heuristic check first
+      if (isLikelyGibberish(answers.notes)) {
+        setStep3Errors({ notes: "Le texte saisi ne semble pas cohérent. Veuillez vérifier." });
+        scrollToError("s3-notes");
+        return;
+      }
       try {
         setSubmitting(true);
         const res = await fetch("/api/validate-input", { method: "POST", headers: {"Content-Type":"application/json"}, body: JSON.stringify({ fields: [{ name: "notes", label: "Notes libres", value: answers.notes }] }) });
-        const data = await res.json() as { errors: Record<string,string> };
-        if (data.errors.notes) {
-          setStep3Errors({ notes: data.errors.notes });
-          setSubmitting(false);
-          scrollToError("s3-notes");
-          return;
+        if (res.ok) {
+          const data = await res.json() as { errors: Record<string,string> };
+          if (data.errors.notes) {
+            setStep3Errors({ notes: data.errors.notes });
+            setSubmitting(false);
+            scrollToError("s3-notes");
+            return;
+          }
         }
-      } catch { /* silently allow */ }
+      } catch { /* silently allow if API unreachable */ }
       finally { setSubmitting(false); }
     }
 
