@@ -58,7 +58,7 @@ export default function Home() {
               className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 leading-none text-[#c8d5c0] group-hover:text-[#d8e3d5] transition-colors duration-300"
               style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
             >
-              Travel<br />Guide AI
+              Travel<br />Guide
             </h2>
 
             {/* Description */}

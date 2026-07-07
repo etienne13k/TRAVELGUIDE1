@@ -412,8 +412,12 @@ function BusinessQuestionnaireContent() {
 
       // Heuristic + AI validation
       const toCheck = [
-        { name: "destination_city", label: "Ville de destination", value: answers.destination_city },
         { name: "departure_city", label: "Ville de départ", value: answers.departure_city },
+        ...(answers.destination_city.trim() && answers.destination_country
+          ? [{ name: "destination_city", label: `Ville d'arrivée "${answers.destination_city}" dans le pays "${answers.destination_country}"`, value: `${answers.destination_city} (${answers.destination_country})` }]
+          : answers.destination_city.trim()
+          ? [{ name: "destination_city", label: "Ville de destination", value: answers.destination_city }]
+          : []),
       ];
       const heurErrs: Record<string, string> = {};
       for (const f of toCheck) {
