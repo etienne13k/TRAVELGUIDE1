@@ -666,15 +666,25 @@ function QuestionnaireContent() {
     const s = text.trim().toLowerCase();
     if (s.length === 0) return false;
     const alpha = s.replace(/[^a-z]/g, "");
-    if (alpha.length < 3) return false;
-    const vowels = (alpha.match(/[aeiouy]/g) ?? []).length;
-    const ratio = vowels / alpha.length;
-    // Less than 18% vowels in a word of 4+ chars = almost certainly not a real place
-    if (ratio < 0.18 && alpha.length >= 4) return true;
-    // 5+ consecutive consonants = not a real word
-    if (/[^aeiouy]{5,}/.test(alpha)) return true;
+    if (alpha.length < 4) return false;
+    // No vowels including y = pure consonants
+    if (!/[aeiouy]/.test(alpha)) return true;
     // Repeating character pairs (e.g. "ababab", "xyxy") = keyboard mashing
     if (/^(.{1,3})\1{2,}$/.test(alpha)) return true;
+    // 5+ consecutive consonants (excluding y) = not a real word
+    if (/[^aeiouy]{5,}/.test(alpha)) return true;
+    // Too many consonants after the last REAL vowel (a,e,i,o,u — not y)
+    // e.g. "eyhrh" → last real vowel = 'e' at 0 → trailing "yhrh" = 4 > 3 → gibberish
+    const realVowelPositions = [...alpha].reduce<number[]>((acc, c, i) => {
+      if ("aeiou".includes(c)) acc.push(i);
+      return acc;
+    }, []);
+    if (realVowelPositions.length === 0 && alpha.length >= 5) return true;
+    if (realVowelPositions.length > 0) {
+      const lastRealVowelIdx = realVowelPositions[realVowelPositions.length - 1];
+      const trailing = alpha.slice(lastRealVowelIdx + 1);
+      if (trailing.length > 3) return true;
+    }
     return false;
   }
 
@@ -693,6 +703,7 @@ function QuestionnaireContent() {
       const nextErrors: Record<string,string> = {};
       if (!answers.destination.trim()) nextErrors.destination = "Veuillez indiquer votre destination.";
       if (!answers.departure_city.trim()) nextErrors.departure_city = "Veuillez indiquer votre ville de départ.";
+      if (!answers.scope_type) nextErrors.scope_type = "Veuillez choisir comment vous souhaitez explorer.";
       if (!answers.arrival_date) nextErrors.dates = "Veuillez sélectionner au moins une date.";
       if (!answers.dates_flexible) nextErrors.dates_flexible = "Veuillez indiquer si vos dates sont flexibles.";
       if (!answers.traveler_type) nextErrors.traveler_type = "Veuillez indiquer avec qui vous voyagez.";
@@ -705,7 +716,11 @@ function QuestionnaireContent() {
       const textFields = [
         { name: "destination", label: "Destination", value: answers.destination },
         { name: "departure_city", label: "Ville de départ", value: answers.departure_city },
-        ...(answers.destination_arrival_city.trim() ? [{ name: "destination_arrival_city", label: "Ville d'arrivée", value: answers.destination_arrival_city }] : []),
+        ...(answers.destination_arrival_city.trim() && answers.arrival_city_country
+          ? [{ name: "destination_arrival_city", label: `Ville d'arrivée "${answers.destination_arrival_city}" dans le pays "${answers.arrival_city_country}"`, value: `${answers.destination_arrival_city} (${answers.arrival_city_country})` }]
+          : answers.destination_arrival_city.trim()
+          ? [{ name: "destination_arrival_city", label: "Ville d'arrivée", value: answers.destination_arrival_city }]
+          : []),
       ];
       const heuristicErrs = heuristicValidate(textFields);
       if (Object.keys(heuristicErrs).length > 0) {
@@ -1006,11 +1021,12 @@ function QuestionnaireContent() {
                   <select
                     value={answers.scope_type}
                     onChange={e=>setAnswers(p=>({...p,scope_type:e.target.value,country_zones:[],nearby_cities:""}))}
-                    className="w-full border border-[#2a3527] rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-[#c9a84c] bg-[#0e1310] text-[#d8e3d5] transition-colors appearance-none cursor-pointer"
+                    className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-[#c9a84c] bg-[#0e1310] transition-colors appearance-none cursor-pointer ${errors.scope_type ? "border-red-500/60" : "border-[#2a3527]"} ${answers.scope_type ? "text-[#d8e3d5]" : "text-[#4a6447]"}`}
                   >
-                    <option value="">-- Choisir un type --</option>
+                    <option value="" disabled>Choisir un type...</option>
                     {SCOPE_TYPE.map(o=><option key={o.id} value={o.id}>{o.label}</option>)}
                   </select>
+                  <FieldError msg={errors.scope_type} />
                 </div>
                 {answers.scope_type==="city"&&(
                   <div>

@@ -35,8 +35,9 @@ Tu reçois des champs de formulaire et tu dois vérifier si les valeurs saisies 
 
 Règles de validation :
 - Les destinations, villes et pays doivent être des lieux réels qui existent sur Terre
+- Si un champ indique une ville avec un pays associé (format "Ville (Pays)"), vérifie que la ville appartient bien à ce pays. Par exemple "Marseille (Norvège)" est invalide car Marseille est en France, pas en Norvège. "Marseille (France)" est valide.
 - Les textes libres (incontournables, choses à éviter, notes, pays visités) doivent être du texte cohérent lié au voyage — pas du texte aléatoire, des suites de lettres sans sens, des caractères spéciaux sans signification, ou du contenu qui n'a aucun rapport avec un voyage
-- Écris "Aucun" ou "None" sont des valeurs valides pour les champs texte
+- "Aucun" ou "None" sont des valeurs valides pour les champs texte
 - Un seul mot cohérent est valide (ex: "Tokyo", "France", "Aucun")
 - Sois permissif : les fautes d'orthographe légères sont acceptées, les abréviations connues aussi
 - Ne valide PAS le format, seulement le sens et la cohérence
