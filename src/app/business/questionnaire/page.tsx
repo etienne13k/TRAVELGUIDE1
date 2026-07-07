@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState, Suspense } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { addCartItem, CART_PLANS, loadCart, updateCartItem } from "@/lib/cart";
 
 /* ─── Design tokens ─── */
@@ -360,6 +360,8 @@ function Stepper({ value, min, max, onChange }: { value: number; min: number; ma
 /* ─── Main component ─── */
 function BusinessQuestionnaireContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const isSoloLocked = searchParams.get("type") === "solo";
   const [step, setStep] = useState(1);
   const [answers, setAnswers] = useState<MissionAnswers>({ ...EMPTY });
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -373,6 +375,7 @@ function BusinessQuestionnaireContent() {
   const topRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    if (isSoloLocked) setAnswers(p => ({ ...p, participants: 1 }));
     localStorage.setItem("tgai_mode", "business");
     const stored = localStorage.getItem("tgai_session_user");
     if (stored) {
@@ -567,7 +570,12 @@ function BusinessQuestionnaireContent() {
                       ? "Mission solo — guide optimisé pour un déplacement individuel."
                       : `Mission en groupe — guide adapté pour ${answers.participants} participants.`}
                   </p>
-                  <Stepper value={answers.participants} min={1} max={30} onChange={v => setAnswers(p => ({ ...p, participants: v }))} />
+                  <Stepper value={answers.participants} min={1} max={isSoloLocked ? 1 : 30} onChange={v => !isSoloLocked && setAnswers(p => ({ ...p, participants: v }))} />
+                  {isSoloLocked && (
+                    <p className="mt-2 text-xs rounded-lg border px-3 py-2" style={{ color: B.muted, borderColor: B.border, background: B.cardDeep }}>
+                      Mission solo — le nombre de participants est fixé à 1.
+                    </p>
+                  )}
                 </div>
                 <div className="flex-shrink-0 w-14 h-14 rounded-xl flex items-center justify-center" style={{ background: B.blueFaint, border: `1px solid ${B.blueBorder}` }}>
                   {answers.participants === 1

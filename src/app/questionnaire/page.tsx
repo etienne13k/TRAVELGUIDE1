@@ -906,7 +906,7 @@ function QuestionnaireContent() {
       <header className="sticky top-0 z-20 bg-[#0a0f09]/95 backdrop-blur-md border-b border-[#1a2218]">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 py-3">
           <div className="flex items-center justify-between gap-3 mb-3">
-            <Link href="/" className="font-bold text-[#d8e3d5] text-base shrink-0 hover:text-[#c9a84c] transition-colors" style={{fontFamily:"var(--font-playfair),Georgia,serif"}}>
+            <Link href="/personal" className="font-bold text-[#d8e3d5] text-base shrink-0 hover:text-[#c9a84c] transition-colors" style={{fontFamily:"var(--font-playfair),Georgia,serif"}}>
               TravelGuide
             </Link>
             <LangToggle />
@@ -1522,7 +1522,7 @@ function QuestionnaireContent() {
               ← Précédent
             </button>
           ):(
-            <Link href="/" className="flex items-center gap-2 text-[#4a6447] font-semibold text-sm hover:text-[#7a9076] transition-colors">
+            <Link href="/personal" className="flex items-center gap-2 text-[#4a6447] font-semibold text-sm hover:text-[#7a9076] transition-colors">
               ← Retour à l&apos;accueil
             </Link>
           )}

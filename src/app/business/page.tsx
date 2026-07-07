@@ -534,7 +534,7 @@ export default function BusinessPage() {
                 ))}
               </ul>
               <a
-                href="/business/questionnaire"
+                href="/business/questionnaire?type=solo"
                 className="inline-flex items-center gap-2 font-semibold px-5 py-2.5 rounded-full text-sm text-white transition-all hover:scale-105"
                 style={{ background: B.dark1 }}
               >
@@ -567,7 +567,7 @@ export default function BusinessPage() {
                 ))}
               </ul>
               <a
-                href="/business/questionnaire"
+                href="/business/questionnaire?type=group"
                 className="inline-flex items-center gap-2 font-semibold px-5 py-2.5 rounded-full text-sm text-white transition-all hover:scale-105"
                 style={{ background: B.accent }}
               >
