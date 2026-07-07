@@ -936,6 +936,13 @@ function QuestionnaireContent() {
       </header>
 
       <main className="max-w-3xl mx-auto px-4 sm:px-6 py-8 space-y-5">
+        {validating&&(
+          <div className="rounded-xl border border-[#c9a84c]/30 bg-[#1a2218] px-5 py-3 flex items-center gap-3 text-sm text-[#d8e3d5]">
+            <span className="w-4 h-4 rounded-full border-2 border-t-transparent animate-spin flex-shrink-0" style={{ borderColor: "#c9a84c transparent transparent transparent" }} />
+            <span>Vérification des informations en cours<span className="inline-flex gap-0.5 ml-1"><span className="animate-bounce" style={{ animationDelay: "0ms" }}>.</span><span className="animate-bounce" style={{ animationDelay: "150ms" }}>.</span><span className="animate-bounce" style={{ animationDelay: "300ms" }}>.</span></span></span>
+          </div>
+        )}
+
         {cartNotice&&(
           <div className="rounded-xl border border-[#c9a84c]/30 bg-[#1a2218] px-5 py-4">
             <p className="font-bold text-[#c9a84c] mb-3">{cartNotice}</p>

@@ -555,6 +555,13 @@ function BusinessQuestionnaireContent() {
           </p>
         </div>
 
+        {validating && (
+          <div className="mb-4 rounded-xl px-4 py-3 flex items-center gap-3 text-sm" style={{ background: B.blueFaint, border: `1px solid ${B.blueBorder}`, color: B.text }}>
+            <span className="w-4 h-4 rounded-full border-2 border-t-transparent animate-spin flex-shrink-0" style={{ borderColor: `${B.blue} transparent transparent transparent` }} />
+            <span>Vérification des informations en cours<span className="inline-flex gap-0.5 ml-1"><span className="animate-bounce" style={{ animationDelay: "0ms" }}>.</span><span className="animate-bounce" style={{ animationDelay: "150ms" }}>.</span><span className="animate-bounce" style={{ animationDelay: "300ms" }}>.</span></span></span>
+          </div>
+        )}
+
         {replacedExisting && (
           <div className="mb-4 rounded-xl px-4 py-3 text-sm" style={{ background: "rgba(234,179,8,0.08)", border: "1px solid rgba(234,179,8,0.25)", color: "#fbbf24" }}>
             Un guide existant dans votre panier a été remplacé par cette nouvelle mission.

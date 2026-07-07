@@ -14,7 +14,7 @@ export default function Home() {
           className="text-sm font-bold tracking-[0.25em] uppercase"
           style={{ color: "#2a2a3a" }}
         >
-          TravelGuide
+          TRAVEL IA
         </span>
       </header>
 
