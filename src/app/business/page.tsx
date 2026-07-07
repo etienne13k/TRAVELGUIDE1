@@ -8,6 +8,7 @@ export default function BusinessPage() {
   const [cartCount, setCartCount] = useState(0);
 
   useEffect(() => {
+    localStorage.setItem("tgai_mode", "business");
     const refresh = () => setCartCount(getCartCount());
     refresh();
     window.addEventListener(CART_UPDATED_EVENT, refresh);

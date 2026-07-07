@@ -345,6 +345,7 @@ export default function Home() {
   const tx = translations[lang];
 
   useEffect(() => {
+    localStorage.setItem("tgai_mode", "personal");
     const refreshCartCount = () => setCartCount(getCartCount());
 
     refreshCartCount();

@@ -194,6 +194,7 @@ function BusinessQuestionnaireContent() {
   const topRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    localStorage.setItem("tgai_mode", "business");
     const stored = localStorage.getItem("tgai_session_user");
     if (stored) {
       try {
