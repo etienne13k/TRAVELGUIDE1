@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState, Suspense } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { addCartItem, loadCart, updateCartItem } from "@/lib/cart";
+import { addCartItem, CART_PLANS, loadCart, updateCartItem } from "@/lib/cart";
 
 /* ─── Design tokens ─── */
 const B = {
@@ -60,7 +60,40 @@ const BUDGET_NIVEAUX = [
   { id: "policy", label: "Politique entreprise", sub: "Selon barème interne" },
 ];
 
-const PAYS_EXEMPLES = ["France", "Allemagne", "Espagne", "Italie", "Royaume-Uni", "États-Unis", "Japon", "Chine", "Belgique", "Suisse", "Pays-Bas", "Canada"];
+const PAYS_EXEMPLES = [
+  "Afghanistan","Afrique du Sud","Albanie","Algérie","Allemagne","Andorre","Angola","Antigua-et-Barbuda",
+  "Arabie Saoudite","Argentine","Arménie","Australie","Autriche","Azerbaïdjan",
+  "Bahamas","Bahreïn","Bangladesh","Barbade","Belgique","Belize","Bénin","Bhoutan","Biélorussie",
+  "Birmanie (Myanmar)","Bolivie","Bosnie-Herzégovine","Botswana","Brésil","Brunéi","Bulgarie","Burkina Faso","Burundi",
+  "Cabo Verde","Cambodge","Cameroun","Canada","République centrafricaine","Chili","Chine","Chypre","Colombie",
+  "Comores","Congo","Corée du Nord","Corée du Sud","Costa Rica","Côte d'Ivoire","Croatie","Cuba",
+  "Danemark","Djibouti","Dominique","République dominicaine",
+  "Équateur","Égypte","Émirats arabes unis","Érythrée","Espagne","Estonie","Eswatini","Éthiopie",
+  "Fidji","Finlande","France",
+  "Gabon","Gambie","Géorgie","Ghana","Grèce","Grenade","Guatemala","Guinée","Guinée-Bissau","Guinée équatoriale","Guyana",
+  "Haïti","Honduras","Hongrie",
+  "Îles Marshall","Îles Salomon","Inde","Indonésie","Irak","Iran","Irlande","Islande","Israël","Italie",
+  "Jamaïque","Japon","Jordanie",
+  "Kazakhstan","Kenya","Kirghizstan","Kiribati","Kosovo","Koweït",
+  "Laos","Lesotho","Lettonie","Liban","Libéria","Libye","Liechtenstein","Lituanie","Luxembourg",
+  "Macédoine du Nord","Madagascar","Malaisie","Malawi","Maldives","Mali","Malte","Maroc","Maurice","Mauritanie",
+  "Mexique","Micronésie","Moldova","Monaco","Mongolie","Monténégro","Mozambique",
+  "Namibie","Nauru","Népal","Nicaragua","Niger","Nigéria","Norvège","Nouvelle-Zélande",
+  "Oman","Ouganda","Ouzbékistan",
+  "Pakistan","Palaos","Palestine","Panama","Papouasie-Nouvelle-Guinée","Paraguay","Pays-Bas","Pérou",
+  "Philippines","Pologne","Portugal",
+  "Qatar",
+  "Roumanie","Royaume-Uni","Russie","Rwanda",
+  "Saint-Kitts-et-Nevis","Sainte-Lucie","Saint-Marin","Saint-Vincent-et-les-Grenadines","Salvador",
+  "Samoa","São Tomé-et-Príncipe","Sénégal","Serbie","Seychelles","Sierra Leone","Singapour","Slovaquie",
+  "Slovénie","Somalie","Soudan","Soudan du Sud","Sri Lanka","Suède","Suisse","Suriname","Syrie",
+  "Tadjikistan","Tanzanie","Tchad","Thaïlande","Timor-Leste","Togo","Tonga","Trinité-et-Tobago","Tunisie",
+  "Turkménistan","Turquie","Tuvalu",
+  "Ukraine","Uruguay",
+  "Vanuatu","Vatican","Venezuela","Viêt Nam",
+  "Yémen",
+  "Zambie","Zimbabwe",
+];
 
 interface MissionAnswers {
   participants: number;
@@ -393,22 +426,27 @@ function BusinessQuestionnaireContent() {
     const existingCart = loadCart();
     if (existingCart.length > 0) setReplacedExisting(true);
 
+    const destination = answers.destination_city.trim() + (answers.destination_country ? `, ${answers.destination_country}` : "");
+    const dates = answers.arrival_date && answers.departure_date ? `${answers.arrival_date} → ${answers.departure_date}` : answers.arrival_date;
     const cartInput = {
-      plan: "business" as "3j",
-      destination: answers.destination_city + (answers.destination_country ? `, ${answers.destination_country}` : ""),
-      arrival_date: answers.arrival_date,
-      departure_date: answers.departure_date,
-      travel_dates: `${answers.arrival_date} → ${answers.departure_date}`,
-      traveler_type: answers.participants > 1 ? "group" : "solo",
-      traveler_adults: answers.participants,
-      traveler_children: 0,
-      children_ages: [],
-      budget: answers.budget_niveau,
-      budget_amount: "",
-      budget_currency: "€",
-      budget_scope: "total",
-      language: "fr",
-      criteria: { ...answers, mode: "business" },
+      planId: "3j" as const,
+      planLabel: CART_PLANS["3j"].label,
+      price: CART_PLANS["3j"].amount,
+      destination: destination || "Destination à préciser",
+      dates,
+      criteria: {
+        ...answers,
+        mode: "business",
+        traveler_type: answers.participants > 1 ? "group" : "solo",
+        traveler_adults: answers.participants,
+        traveler_children: 0,
+        children_ages: [] as string[],
+        budget: answers.budget_niveau,
+        budget_amount: "",
+        budget_currency: "€",
+        budget_scope: "total",
+        language: "fr",
+      },
     };
 
     try {
@@ -418,7 +456,7 @@ function BusinessQuestionnaireContent() {
       if (existingItem?.id) {
         updateCartItem(existingItem.id, cartInput);
       } else {
-        addCartItem(cartInput as Parameters<typeof addCartItem>[0]);
+        addCartItem(cartInput);
       }
       router.push("/cart");
     } catch (err) {
@@ -515,29 +553,32 @@ function BusinessQuestionnaireContent() {
               </div>
             </Card>
 
-            <Card title="Destination">
+            <Card title="Départ & destination">
               <div className="space-y-4">
-                <div id="f-destination_city">
-                  <Label required>Ville de destination</Label>
-                  <input style={inputCls(!!errors.destination_city)} value={answers.destination_city}
-                    onChange={e => { setAnswers(p => ({ ...p, destination_city: e.target.value })); if (errors.destination_city) setErrors(p => ({ ...p, destination_city: "" })); }}
-                    placeholder="ex. Francfort, New York, Tokyo" />
-                  <FieldErr msg={errors.destination_city} />
-                </div>
-                <div>
-                  <Label hint="(optionnel)">Pays</Label>
-                  <select value={answers.destination_country} onChange={e => setAnswers(p => ({ ...p, destination_country: e.target.value }))}
-                    style={{ ...inputCls(false), cursor: "pointer", appearance: "none" as const }}>
-                    <option value="">Sélectionner...</option>
-                    {PAYS_EXEMPLES.map(c => <option key={c} value={c}>{c}</option>)}
-                  </select>
-                </div>
                 <div id="f-departure_city">
                   <Label required>Ville de départ</Label>
                   <input style={inputCls(!!errors.departure_city)} value={answers.departure_city}
                     onChange={e => { setAnswers(p => ({ ...p, departure_city: e.target.value })); if (errors.departure_city) setErrors(p => ({ ...p, departure_city: "" })); }}
-                    placeholder="ex. Paris, Lyon, Bordeaux" />
+                    placeholder="ex. Paris, Lyon, Montréal" />
+                  <p className="mt-1.5 text-xs" style={{ color: B.muted }}>La ville depuis laquelle vous partez.</p>
                   <FieldErr msg={errors.departure_city} />
+                </div>
+                <div id="f-destination_city">
+                  <Label required>Ville d&apos;arrivée</Label>
+                  <div className="flex flex-col sm:flex-row gap-2">
+                    <input
+                      style={{ ...inputCls(!!errors.destination_city), flex: 1 }}
+                      value={answers.destination_city}
+                      onChange={e => { setAnswers(p => ({ ...p, destination_city: e.target.value })); if (errors.destination_city) setErrors(p => ({ ...p, destination_city: "" })); }}
+                      placeholder="ex. Francfort, New York, Tokyo" />
+                    <select value={answers.destination_country} onChange={e => setAnswers(p => ({ ...p, destination_country: e.target.value }))}
+                      style={{ ...inputCls(false), cursor: "pointer", appearance: "none" as const, flex: "0 0 auto", width: "auto", minWidth: 120 }}>
+                      <option value="">Pays...</option>
+                      {PAYS_EXEMPLES.map(c => <option key={c} value={c}>{c}</option>)}
+                    </select>
+                  </div>
+                  <p className="mt-1.5 text-xs" style={{ color: B.muted }}>La ville et le pays de votre mission (siège client, lieu du congrès...).</p>
+                  <FieldErr msg={errors.destination_city} />
                 </div>
               </div>
             </Card>
