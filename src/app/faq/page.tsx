@@ -19,8 +19,8 @@ const FAQ_FR = [
   {
     cat: "Prix & Paiement",
     items: [
-      { q: "Quelles sont les offres disponibles ?", a: "Nous proposons 4 offres : Guide 3 jours (3€), Guide 7 jours (7€), Guide 14 jours (12€) et Guide 1 mois (18€). Tous les prix sont en TTC, TVA non applicable (micro-entreprise)." },
-      { q: "Comment fonctionne le code promo WELCOME ?", a: "Le code WELCOME offre -40% sur votre première commande. Pour l'activer, vérifiez votre numéro de téléphone dans votre espace compte — cela débloque automatiquement le code. Il est valable une seule fois par compte." },
+      { q: "Quelles sont les offres disponibles ?", a: "Nous proposons 4 offres : Guide 3 jours (3€), Guide 7 jours (6€), Guide 14 jours (12€) et Guide 1 mois (18€). Tous les prix sont en TTC, TVA non applicable (micro-entreprise)." },
+      { q: "Comment fonctionne le code promo WELCOME ?", a: "Le code WELCOME offre -25% sur votre première commande. Pour l'activer, vérifiez votre numéro de téléphone dans votre espace compte — cela débloque automatiquement le code. Il est valable une seule fois par compte." },
       { q: "Le paiement est-il sécurisé ?", a: "Oui. Les paiements sont traités exclusivement par Stripe, certifié PCI-DSS niveau 1 (le standard de sécurité le plus élevé pour les paiements en ligne). Nous ne voyons jamais votre numéro de carte bancaire." },
       { q: "Puis-je me faire rembourser ?", a: "Si votre guide n'est pas livré dans les 48 heures, vous avez droit à un remboursement intégral. Une fois le guide livré, le remboursement n'est pas possible (contenu numérique à exécution immédiate), sauf défaut grave signalé dans les 7 jours. Consultez nos CGV pour tous les détails." },
     ],
@@ -66,8 +66,8 @@ const FAQ_EN = [
   {
     cat: "Pricing & Payment",
     items: [
-      { q: "What plans are available?", a: "We offer 4 plans: 3-day guide (€3), 7-day guide (€7), 14-day guide (€12) and 1-month guide (€18). All prices are all-inclusive." },
-      { q: "How does the WELCOME promo code work?", a: "The WELCOME code gives -40% off your first order. To activate it, verify your phone number in your account — this automatically unlocks the code. Valid once per account." },
+      { q: "What plans are available?", a: "We offer 4 plans: 3-day guide (€3), 7-day guide (€6), 14-day guide (€12) and 1-month guide (€18). All prices are all-inclusive." },
+      { q: "How does the WELCOME promo code work?", a: "The WELCOME code gives -25% off your first order. To activate it, verify your phone number in your account — this automatically unlocks the code. Valid once per account." },
       { q: "Is payment secure?", a: "Yes. Payments are processed exclusively by Stripe, PCI-DSS level 1 certified. We never see your card number." },
       { q: "Can I get a refund?", a: "If your guide is not delivered within 48 hours, you are entitled to a full refund. Once delivered, refunds are not possible (immediate digital content), except for serious defects reported within 7 days. See our Terms of Sale for full details." },
     ],
@@ -88,18 +88,18 @@ export default function FAQPage() {
   const data = lang === "fr" ? FAQ_FR : FAQ_EN;
 
   return (
-    <div className="min-h-screen bg-white" style={{ fontFamily: "var(--font-dm-sans), system-ui, sans-serif" }}>
-      <header className="sticky top-0 z-10 bg-white/95 backdrop-blur border-b border-gray-100 shadow-[0_1px_8px_rgba(0,0,0,0.04)]">
+    <div className="min-h-screen bg-[#0e1310]" style={{ fontFamily: "var(--font-dm-sans), system-ui, sans-serif" }}>
+      <header className="sticky top-0 z-10 bg-[#0e1310]/95 backdrop-blur border-b border-[#232c20]">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
-          <Link href="/" className="text-sm text-[#425C47]/70 hover:text-[#425C47] transition-colors font-medium">
-            ← {lang === "fr" ? "Retour au site" : "Back to site"}
+          <Link href="/" className="text-sm text-[#7a9076] hover:text-[#d8e3d5] transition-colors font-medium">
+            {lang === "fr" ? "← Retour au site" : "← Back to site"}
           </Link>
-          <span className="font-bold text-[#425C47]" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>TravelGuide AI</span>
-          <div className="flex items-center gap-1 border border-[#425C47]/20 rounded-lg p-0.5">
-            <button onClick={() => setLang("fr")} className={`rounded-md px-2 py-0.5 transition-all ${lang === "fr" ? "bg-[#425C47]/15 shadow-sm" : "opacity-40 hover:opacity-70"}`}>
+          <span className="font-bold text-[#d8e3d5]" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>TravelGuide AI</span>
+          <div className="flex items-center gap-1 border border-[#232c20] rounded-lg p-0.5">
+            <button onClick={() => setLang("fr")} className={`rounded-md px-2 py-0.5 transition-all ${lang === "fr" ? "bg-[#232c20]" : "opacity-40 hover:opacity-70"}`}>
               <img src="https://flagcdn.com/w40/fr.png" width="24" height="16" alt="FR" style={{display:"inline",borderRadius:"2px"}} />
             </button>
-            <button onClick={() => setLang("en")} className={`rounded-md px-2 py-0.5 transition-all ${lang === "en" ? "bg-[#425C47]/15 shadow-sm" : "opacity-40 hover:opacity-70"}`}>
+            <button onClick={() => setLang("en")} className={`rounded-md px-2 py-0.5 transition-all ${lang === "en" ? "bg-[#232c20]" : "opacity-40 hover:opacity-70"}`}>
               <img src="https://flagcdn.com/w40/gb.png" width="24" height="16" alt="GB" style={{display:"inline",borderRadius:"2px"}} />
             </button>
           </div>
@@ -108,16 +108,15 @@ export default function FAQPage() {
 
       <main className="max-w-3xl mx-auto px-4 sm:px-6 py-12">
         <div className="text-center mb-12">
-          <div className="inline-flex items-center gap-2 bg-[#425C47]/8 border border-[#425C47]/15 rounded-full px-4 py-1.5 mb-4">
-            <span>💬</span>
-            <span className="text-xs font-bold text-[#425C47] uppercase tracking-wide">
+          <div className="inline-flex items-center gap-2 bg-[#161c14] border border-[#232c20] rounded-full px-4 py-1.5 mb-4">
+            <span className="text-xs font-bold text-[#7a9076] uppercase tracking-wide">
               {lang === "fr" ? "Questions fréquentes" : "Frequently Asked Questions"}
             </span>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-bold text-[#425C47] mb-3" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
+          <h1 className="text-3xl sm:text-4xl font-bold text-[#d8e3d5] mb-3" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
             {lang === "fr" ? "Tout ce que vous voulez savoir" : "Everything you need to know"}
           </h1>
-          <p className="text-[#425C47]/60 text-base max-w-lg mx-auto">
+          <p className="text-[#7a9076] text-base max-w-lg mx-auto">
             {lang === "fr"
               ? "Des réponses claires sur notre service, la livraison, le paiement et vos données."
               : "Clear answers about our service, delivery, payment and your data."}
@@ -127,23 +126,23 @@ export default function FAQPage() {
         <div className="space-y-10">
           {data.map((cat) => (
             <div key={cat.cat}>
-              <h2 className="text-sm font-bold uppercase tracking-widest text-[#C9A84C] mb-4 px-1">{cat.cat}</h2>
+              <h2 className="text-xs font-bold uppercase tracking-widest text-[#c9a84c] mb-4 px-1">{cat.cat}</h2>
               <div className="space-y-2">
                 {cat.items.map((item, i) => {
                   const key = `${cat.cat}-${i}`;
                   const open = openItem === key;
                   return (
-                    <div key={key} className="rounded-2xl border border-gray-100 overflow-hidden shadow-sm">
+                    <div key={key} className="rounded-2xl border border-[#232c20] overflow-hidden bg-[#161c14]">
                       <button
                         type="button"
                         onClick={() => setOpenItem(open ? null : key)}
-                        className="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-[#F5F7F5] transition-colors"
+                        className="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-[#1e2820] transition-colors"
                       >
-                        <span className="font-semibold text-[#425C47] text-sm pr-4">{item.q}</span>
-                        <span className={`text-[#C9A84C] text-xl font-bold flex-shrink-0 transition-transform duration-200 ${open ? "rotate-45" : ""}`}>+</span>
+                        <span className="font-semibold text-[#d8e3d5] text-sm pr-4">{item.q}</span>
+                        <span className={`text-[#c9a84c] text-xl font-bold flex-shrink-0 transition-transform duration-200 ${open ? "rotate-45" : ""}`}>+</span>
                       </button>
                       {open && (
-                        <div className="px-5 pb-5 pt-4 text-sm text-[#425C47]/75 leading-relaxed border-t border-gray-100 bg-white">
+                        <div className="px-5 pb-5 pt-4 text-sm text-[#7a9076] leading-relaxed border-t border-[#232c20]">
                           {item.a}
                         </div>
                       )}
@@ -155,28 +154,27 @@ export default function FAQPage() {
           ))}
         </div>
 
-        <div className="mt-14 rounded-2xl bg-[#425C47] text-white p-8 text-center">
-          <div className="text-2xl mb-3">✈️</div>
-          <h3 className="font-bold text-lg mb-2" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
+        <div className="mt-14 rounded-2xl bg-[#161c14] border border-[#232c20] p-8 text-center">
+          <h3 className="font-bold text-lg mb-2 text-[#d8e3d5]" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
             {lang === "fr" ? "Vous n'avez pas trouvé votre réponse ?" : "Didn't find your answer?"}
           </h3>
-          <p className="text-white/70 text-sm mb-5">
+          <p className="text-[#7a9076] text-sm mb-5">
             {lang === "fr" ? "Notre équipe répond sous 48h." : "Our team replies within 48 hours."}
           </p>
           <Link
             href="/contact"
-            className="inline-block bg-[#C9A84C] text-white font-bold px-6 py-3 rounded-xl text-sm hover:bg-[#b8942e] transition-colors"
+            className="inline-block bg-[#c9a84c] text-[#0e1310] font-bold px-6 py-3 rounded-xl text-sm hover:bg-[#b8962e] transition-colors"
           >
-            {lang === "fr" ? "Nous contacter →" : "Contact us →"}
+            {lang === "fr" ? "Nous contacter" : "Contact us"}
           </Link>
         </div>
 
-        <div className="mt-10 text-center text-xs text-[#425C47]/40">
+        <div className="mt-10 text-center text-xs text-[#4a6447]">
           <p>
             {lang === "fr" ? "Voir aussi : " : "See also: "}
-            <Link href="/cgv" className="underline hover:text-[#425C47]">{lang === "fr" ? "CGV" : "Terms of Sale"}</Link>
+            <Link href="/cgv" className="underline hover:text-[#7a9076]">{lang === "fr" ? "CGV" : "Terms of Sale"}</Link>
             {" · "}
-            <Link href="/privacy" className="underline hover:text-[#425C47]">{lang === "fr" ? "Politique de confidentialité" : "Privacy Policy"}</Link>
+            <Link href="/privacy" className="underline hover:text-[#7a9076]">{lang === "fr" ? "Politique de confidentialité" : "Privacy Policy"}</Link>
           </p>
         </div>
       </main>

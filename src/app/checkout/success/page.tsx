@@ -42,7 +42,10 @@ function SuccessContent() {
   const [loading, setLoading] = useState(Boolean(sessionId));
 
   useEffect(() => {
-    if (sessionId) clearCart();
+    if (sessionId) {
+      clearCart();
+      localStorage.removeItem("tgai_promo");
+    }
 
     let cancelled = false;
 

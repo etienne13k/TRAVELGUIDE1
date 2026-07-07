@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -33,6 +33,7 @@ function CartContent() {
   const [checkoutProfileUrl, setCheckoutProfileUrl] = useState<string | null>(null);
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [termsError, setTermsError] = useState<string | null>(null);
+  const autoAppliedRef = useRef(false);
 
   useEffect(() => {
     queueMicrotask(() => {
@@ -45,7 +46,14 @@ function CartContent() {
   const total = getCartTotal(items);
   const firstPlanId = items[0]?.planId;
 
-  // Pas d'auto-remplissage — l'utilisateur saisit WELCOME manuellement
+  // Auto-activate promo when cart loads with a saved promo code
+  useEffect(() => {
+    if (!autoAppliedRef.current && items.length > 0 && promoCode.trim() && promoState === "idle") {
+      autoAppliedRef.current = true;
+      handlePromo();
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [items.length, promoCode]);
 
   function handleRemove(itemId: string) {
     removeCartItem(itemId);

@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import LangToggle from "@/components/LangToggle";
-import { addCartItem, CART_PLANS, getCartItem, updateCartItem, type CartItemInput } from "@/lib/cart";
+import { addCartItem, CART_PLANS, getCartItem, loadCart, updateCartItem, type CartItemInput } from "@/lib/cart";
 
 /* ──────────────────────────────────────────────────────────
    PLAN DATA
@@ -712,8 +712,9 @@ function QuestionnaireContent() {
     const updatedItem = editItemId ? updateCartItem(editItemId,cartInput) : null;
     if (editItemId&&updatedItem){router.push("/cart");return;}
     if (editItemId&&!updatedItem){setSubmitError("Cet article n'existe plus.");setSubmitting(false);return;}
+    const existingItems = loadCart();
     addCartItem(cartInput);
-    setCartNotice("Ajouté au panier avec succès.");
+    setCartNotice(existingItems.length > 0 ? "Votre nouveau guide a remplacé l'ancien article dans votre panier." : "Ajouté au panier avec succès.");
     setSubmitting(false);
     window.scrollTo({top:0,behavior:"smooth"});
   }

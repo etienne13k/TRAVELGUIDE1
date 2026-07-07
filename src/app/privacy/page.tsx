@@ -3,8 +3,6 @@
 import { useState } from "react";
 import Link from "next/link";
 
-type Lang = "fr" | "en";
-
 const SECTIONS_FR = [
   {
     id: "qui",
@@ -70,10 +68,10 @@ Notre IA entraînée n'utilise pas les données soumises pour s'améliorer. Les 
 | Analytics | Amélioration du service | Intérêt légitime |
 
 **Ce que nous ne faisons JAMAIS :**
-- ❌ Revendre vos données à des tiers
-- ❌ Utiliser votre e-mail à des fins publicitaires sans votre consentement
-- ❌ Partager vos informations avec des annonceurs
-- ❌ Créer des profils publicitaires`,
+- Revendre vos données à des tiers
+- Utiliser votre e-mail à des fins publicitaires sans votre consentement
+- Partager vos informations avec des annonceurs
+- Créer des profils publicitaires`,
   },
   {
     id: "newsletter",
@@ -128,7 +126,7 @@ Aucun autre tiers n'a accès à vos données personnelles.`,
 
 **Pour exercer vos droits :** Contactez-nous à travel-guide@nanocorp.app avec une preuve d'identité. Nous répondons sous 30 jours.
 
-En cas de litige, vous pouvez également saisir la **CNIL** : [cnil.fr](https://www.cnil.fr)`,
+En cas de litige, vous pouvez également saisir la **CNIL** : cnil.fr`,
   },
   {
     id: "cookies",
@@ -151,78 +149,106 @@ Cette politique peut être mise à jour. La date de dernière modification est i
 ];
 
 export default function PrivacyPage() {
-  const [lang, setLang] = useState<Lang>("fr");
   const [activeSection, setActiveSection] = useState<string>("qui");
 
-  return (
-    <div className="min-h-screen bg-white" style={{ fontFamily: "var(--font-dm-sans), system-ui, sans-serif" }}>
+  function renderBody(text: string) {
+    const lines = text.split("\n");
+    return lines.map((line, i) => {
+      if (line.startsWith("| ")) return null;
+      const bold = line.replace(/\*\*(.*?)\*\*/g, "<strong class='text-[#b8cdb4]'>$1</strong>");
+      if (line.startsWith("- ")) return <li key={i} className="ml-4 list-disc" dangerouslySetInnerHTML={{ __html: bold.slice(2) }} />;
+      if (/^\d+\. /.test(line)) return <li key={i} className="ml-4 list-decimal" dangerouslySetInnerHTML={{ __html: bold.replace(/^\d+\. /, "") }} />;
+      if (line.startsWith("> ")) return (
+        <blockquote key={i} className="border-l-4 border-[#c9a84c]/40 pl-4 my-3 bg-[#1e2820] py-2 pr-2 rounded-r text-sm italic text-[#7a9076]">
+          {line.slice(2)}
+        </blockquote>
+      );
+      if (line.trim() === "") return <br key={i} />;
+      return <p key={i} className="mb-1" dangerouslySetInnerHTML={{ __html: bold }} />;
+    });
+  }
 
-      {/* Header */}
-      <header className="sticky top-0 z-10 bg-white/95 backdrop-blur border-b border-gray-100 shadow-[0_1px_8px_rgba(0,0,0,0.04)]">
+  function renderSection(body: string) {
+    const blocks = body.split("\n\n");
+    return blocks.map((block, j) => {
+      if (block.trim().startsWith("|")) {
+        const rows = block.trim().split("\n").filter(r => !r.match(/^\|[-\s|]+$/));
+        const headers = rows[0].split("|").filter(Boolean).map(h => h.trim());
+        const dataRows = rows.slice(1);
+        return (
+          <div key={j} className="overflow-x-auto my-3">
+            <table className="w-full text-xs border-collapse">
+              <thead>
+                <tr className="bg-[#232c20]">
+                  {headers.map((h, k) => <th key={k} className="px-3 py-2 text-left font-semibold text-[#d8e3d5]">{h}</th>)}
+                </tr>
+              </thead>
+              <tbody>
+                {dataRows.map((row, k) => {
+                  const cells = row.split("|").filter(Boolean).map(c => c.trim());
+                  return (
+                    <tr key={k} className={k % 2 === 0 ? "bg-[#111810]" : "bg-[#161c14]"}>
+                      {cells.map((cell, l) => (
+                        <td key={l} className="px-3 py-2 border-b border-[#232c20] text-[#7a9076]" dangerouslySetInnerHTML={{ __html: cell.replace(/\*\*(.*?)\*\*/g, "<strong class='text-[#b8cdb4]'>$1</strong>") }} />
+                      ))}
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        );
+      }
+      return (
+        <div key={j} className="mb-2 space-y-1">
+          {renderBody(block)}
+        </div>
+      );
+    });
+  }
+
+  return (
+    <div className="min-h-screen bg-[#0e1310]" style={{ fontFamily: "var(--font-dm-sans), system-ui, sans-serif" }}>
+      <header className="sticky top-0 z-10 bg-[#0e1310]/95 backdrop-blur border-b border-[#232c20]">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 text-sm text-[#425C47]/70 hover:text-[#425C47] transition-colors font-medium">
+          <Link href="/" className="text-sm text-[#7a9076] hover:text-[#d8e3d5] transition-colors font-medium">
             ← Retour au site
           </Link>
-          <span className="font-bold text-[#425C47]" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
-            TravelGuide AI
-          </span>
-          <div className="flex items-center gap-1 border border-[#425C47]/20 rounded-lg p-0.5">
-            <button
-              onClick={() => setLang("fr")}
-              title="Passer en français"
-              className={`rounded-md px-2 py-0.5 transition-all ${lang === "fr" ? "bg-[#425C47]/15 shadow-sm" : "opacity-40 hover:opacity-70"}`}
-            >
-              <img src="https://flagcdn.com/w40/fr.png" width="24" height="16" alt="FR" style={{display:"inline",borderRadius:"2px"}} />
-            </button>
-            <button
-              onClick={() => setLang("en")}
-              title="Switch to English"
-              className={`rounded-md px-2 py-0.5 transition-all ${lang === "en" ? "bg-[#425C47]/15 shadow-sm" : "opacity-40 hover:opacity-70"}`}
-            >
-              <img src="https://flagcdn.com/w40/gb.png" width="24" height="16" alt="GB" style={{display:"inline",borderRadius:"2px"}} />
-            </button>
-          </div>
+          <span className="font-bold text-[#d8e3d5]" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>TravelGuide AI</span>
+          <div className="w-24" />
         </div>
       </header>
 
       <main className="max-w-5xl mx-auto px-4 sm:px-6 py-12">
-
-        {/* Hero */}
         <div className="mb-12 text-center">
-          <div className="inline-flex items-center gap-2 bg-[#425C47]/8 border border-[#425C47]/15 rounded-full px-4 py-1.5 mb-4">
-            <span>🛡️</span>
-            <span className="text-xs font-bold text-[#425C47] uppercase tracking-wide">RGPD conforme · Juin 2026</span>
+          <div className="inline-flex items-center gap-2 bg-[#161c14] border border-[#232c20] rounded-full px-4 py-1.5 mb-4">
+            <span className="text-xs font-bold text-[#7a9076] uppercase tracking-wide">RGPD conforme · Juin 2026</span>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-bold text-[#425C47] mb-3" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
+          <h1 className="text-3xl sm:text-4xl font-bold text-[#d8e3d5] mb-3" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
             Politique de Confidentialité
           </h1>
-          <p className="text-[#425C47]/60 max-w-xl mx-auto text-base">
+          <p className="text-[#7a9076] max-w-xl mx-auto text-base">
             Transparent sur ce que nous faisons de vos données. Aucune surprise, aucune revente.
           </p>
         </div>
 
-        {/* Résumé rapide */}
         <div className="grid sm:grid-cols-3 gap-4 mb-14">
           {[
-            { icon: "🚫", title: "Zéro revente", desc: "Vos données ne sont jamais vendues à des tiers ou annonceurs." },
-            { icon: "🤖", title: "IA sans données perso", desc: "Notre IA entraînée reçoit uniquement vos préférences de voyage, pas votre email ni téléphone." },
-            { icon: "📧", title: "Email = commande only", desc: "On vous écrit uniquement pour votre guide et votre commande. Newsletter = opt-in." },
+            { title: "Zéro revente", desc: "Vos données ne sont jamais vendues à des tiers ou annonceurs." },
+            { title: "IA sans données perso", desc: "Notre IA entraînée reçoit uniquement vos préférences de voyage, pas votre email ni téléphone." },
+            { title: "Email = commande only", desc: "On vous écrit uniquement pour votre guide et votre commande. Newsletter = opt-in." },
           ].map(card => (
-            <div key={card.title} className="rounded-2xl border border-gray-100 bg-[#F5F7F5] p-5 text-center shadow-sm">
-              <div className="text-3xl mb-2">{card.icon}</div>
-              <div className="font-bold text-[#425C47] text-sm mb-1">{card.title}</div>
-              <p className="text-xs text-[#425C47]/60 leading-relaxed">{card.desc}</p>
+            <div key={card.title} className="rounded-2xl border border-[#232c20] bg-[#161c14] p-5 text-center">
+              <div className="font-bold text-[#d8e3d5] text-sm mb-1">{card.title}</div>
+              <p className="text-xs text-[#7a9076] leading-relaxed">{card.desc}</p>
             </div>
           ))}
         </div>
 
-        {/* Politique complète */}
         <div className="grid lg:grid-cols-[220px_1fr] gap-8">
-
-          {/* Sommaire sticky */}
           <nav className="hidden lg:block">
-            <div className="sticky top-24 rounded-2xl border border-gray-100 bg-[#F5F7F5] p-4">
-              <p className="text-xs font-bold uppercase tracking-widest text-[#425C47]/50 mb-3">Sommaire</p>
+            <div className="sticky top-24 rounded-2xl border border-[#232c20] bg-[#161c14] p-4">
+              <p className="text-xs font-bold uppercase tracking-widest text-[#4a6447] mb-3">Sommaire</p>
               <ul className="space-y-1">
                 {SECTIONS_FR.map(s => (
                   <li key={s.id}>
@@ -231,8 +257,8 @@ export default function PrivacyPage() {
                       onClick={() => setActiveSection(s.id)}
                       className={`block text-xs py-1.5 px-2 rounded-lg transition-colors ${
                         activeSection === s.id
-                          ? "bg-[#425C47] text-white font-semibold"
-                          : "text-[#425C47]/65 hover:text-[#425C47] hover:bg-white"
+                          ? "bg-[#232c20] text-[#d8e3d5] font-semibold"
+                          : "text-[#7a9076] hover:text-[#d8e3d5] hover:bg-[#1e2820]"
                       }`}
                     >
                       {s.title.replace(/^\d+\.\s/, "")}
@@ -243,66 +269,26 @@ export default function PrivacyPage() {
             </div>
           </nav>
 
-          {/* Contenu */}
           <div className="space-y-10">
-            <div className="rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4 text-sm text-amber-900">
-              <span className="font-bold">⚠️ Information importante :</span> N&apos;incluez jamais d&apos;informations sensibles (données médicales précises, coordonnées bancaires, mots de passe) dans les notes libres du questionnaire. Ces données seraient traitées par l&apos;IA sans les garanties adaptées.
+            <div className="rounded-2xl border border-[#c9a84c]/20 bg-[#c9a84c]/5 px-5 py-4 text-sm text-[#c9a84c]">
+              <span className="font-bold">Information importante :</span> N&apos;incluez jamais d&apos;informations sensibles (données médicales précises, coordonnées bancaires, mots de passe) dans les notes libres du questionnaire. Ces données seraient traitées par l&apos;IA sans les garanties adaptées.
             </div>
 
             {SECTIONS_FR.map(section => (
               <section key={section.id} id={section.id}>
-                <h2 className="text-lg font-bold text-[#425C47] mb-3 pb-2 border-b border-gray-100" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
+                <h2 className="text-lg font-bold text-[#d8e3d5] mb-3 pb-2 border-b border-[#232c20]" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
                   {section.title}
                 </h2>
-                <div className="text-sm text-[#425C47]/75 leading-relaxed space-y-3">
-                  {section.body.split("\n\n").map((paragraph, j) => {
-                    if (paragraph.startsWith("|")) {
-                      const rows = paragraph.trim().split("\n").filter(r => !r.match(/^\|[-\s|]+$/));
-                      const headers = rows[0].split("|").filter(Boolean).map(h => h.trim());
-                      const dataRows = rows.slice(1);
-                      return (
-                        <div key={j} className="overflow-x-auto">
-                          <table className="w-full text-xs border-collapse">
-                            <thead>
-                              <tr className="bg-[#425C47] text-white">
-                                {headers.map((h, k) => <th key={k} className="px-3 py-2 text-left font-semibold">{h}</th>)}
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {dataRows.map((row, k) => {
-                                const cells = row.split("|").filter(Boolean).map(c => c.trim());
-                                return (
-                                  <tr key={k} className={k % 2 === 0 ? "bg-white" : "bg-[#F5F7F5]"}>
-                                    {cells.map((cell, l) => (
-                                      <td key={l} className="px-3 py-2 border-b border-gray-100" dangerouslySetInnerHTML={{ __html: cell.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>") }} />
-                                    ))}
-                                  </tr>
-                                );
-                              })}
-                            </tbody>
-                          </table>
-                        </div>
-                      );
-                    }
-                    return (
-                      <p key={j} dangerouslySetInnerHTML={{
-                        __html: paragraph
-                          .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
-                          .replace(/\n/g, "<br/>")
-                          .replace(/- (.*?)(<br\/>|$)/g, "• $1$2")
-                          .replace(/❌ /g, "<span class='text-red-500'>❌ </span>")
-                      }} />
-                    );
-                  })}
+                <div className="text-sm text-[#7a9076] leading-relaxed space-y-3">
+                  {renderSection(section.body)}
                 </div>
               </section>
             ))}
           </div>
         </div>
 
-        {/* Footer */}
-        <div className="mt-16 pt-8 border-t border-gray-100 text-center text-xs text-[#425C47]/40">
-          <p>© 2026 TravelGuide AI · <a href="mailto:travel-guide@nanocorp.app" className="underline hover:text-[#425C47]">travel-guide@nanocorp.app</a></p>
+        <div className="mt-16 pt-8 border-t border-[#232c20] text-center text-xs text-[#4a6447]">
+          <p>© 2026 TravelGuide AI · <a href="mailto:travel-guide@nanocorp.app" className="underline hover:text-[#7a9076]">travel-guide@nanocorp.app</a></p>
           <p className="mt-1">Pour exercer vos droits RGPD, contactez-nous. Nous répondons sous 30 jours.</p>
         </div>
       </main>

@@ -62,7 +62,7 @@ Le guide est généré dans la langue choisie par le Client lors du questionnair
 | Offre | Durée du voyage | Prix TTC |
 |---|---|---|
 | Guide 3 jours | 1 à 3 jours | 3,00 € |
-| Guide 7 jours | 4 à 7 jours | 7,00 € |
+| Guide 7 jours | 4 à 7 jours | 6,00 € |
 | Guide 14 jours | 8 à 14 jours | 12,00 € |
 | Guide 1 mois | 15 à 30 jours | 18,00 € |
 
@@ -100,7 +100,7 @@ Conformément à l'article L. 221-28, 13° du Code de la consommation, le droit 
 
 **6.3 Clause de renonciation — Obligatoire à la commande**
 
-> ☐ Je reconnais avoir été informé(e) que ma commande porte sur un contenu numérique dont la livraison commence immédiatement après le paiement et la validation du questionnaire. En cochant cette case, je consens expressément à l'exécution immédiate du contrat et je renonce expressément et irrévocablement à mon droit de rétractation de 14 jours, conformément à l'article L. 221-28 du Code de la consommation.
+> Je reconnais avoir été informé(e) que ma commande porte sur un contenu numérique dont la livraison commence immédiatement après le paiement et la validation du questionnaire. En cochant cette case, je consens expressément à l'exécution immédiate du contrat et je renonce expressément et irrévocablement à mon droit de rétractation de 14 jours, conformément à l'article L. 221-28 du Code de la consommation.
 
 Cette case est obligatoire pour valider la commande. La renonciation est enregistrée et horodatée avec l'adresse IP du Client.`,
       },
@@ -267,7 +267,7 @@ By validating an order, the Customer acknowledges having read and accepted these
         body: `| Plan | Trip Duration | Price (incl. all taxes) |
 |---|---|---|
 | 3-day guide | 1–3 day trips | €3.00 |
-| 7-day guide | 4–7 day trips | €7.00 |
+| 7-day guide | 4–7 day trips | €6.00 |
 | 14-day guide | 8–14 day trips | €12.00 |
 | 1-month guide | 15–30 day trips | €18.00 |
 
@@ -297,7 +297,7 @@ An order confirmation email is sent upon receipt and validation of payment.`,
 
 **Mandatory waiver checkbox:**
 
-> ☐ I acknowledge that my order concerns digital content whose delivery begins immediately after payment and questionnaire validation. By checking this box, I expressly consent to the immediate performance of the contract and expressly and irrevocably waive my 14-day right of withdrawal under Article L. 221-28 of the French Consumer Code.
+> I acknowledge that my order concerns digital content whose delivery begins immediately after payment and questionnaire validation. By checking this box, I expressly consent to the immediate performance of the contract and expressly and irrevocably waive my 14-day right of withdrawal under Article L. 221-28 of the French Consumer Code.
 
 This checkbox is mandatory. The waiver is recorded with a timestamp and IP address.`,
       },
@@ -364,23 +364,15 @@ function renderBody(text: string) {
   const lines = text.split("\n");
   return lines.map((line, i) => {
     if (line.startsWith("| ")) return null;
-    const bold = line.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
-    if (line.startsWith("- ")) {
-      return <li key={i} className="ml-4 list-disc" dangerouslySetInnerHTML={{ __html: bold.slice(2) }} />;
-    }
-    if (/^\d+\. /.test(line)) {
-      return <li key={i} className="ml-4 list-decimal" dangerouslySetInnerHTML={{ __html: bold.replace(/^\d+\. /, "") }} />;
-    }
-    if (line.startsWith("> ")) {
-      return (
-        <blockquote key={i} className="border-l-4 border-[#E8A87C] pl-4 my-3 bg-amber-50 py-2 pr-2 rounded-r text-sm italic">
-          {line.slice(2)}
-        </blockquote>
-      );
-    }
+    const bold = line.replace(/\*\*(.*?)\*\*/g, "<strong class='text-[#b8cdb4]'>$1</strong>");
+    if (line.startsWith("- ")) return <li key={i} className="ml-4 list-disc" dangerouslySetInnerHTML={{ __html: bold.slice(2) }} />;
+    if (/^\d+\. /.test(line)) return <li key={i} className="ml-4 list-decimal" dangerouslySetInnerHTML={{ __html: bold.replace(/^\d+\. /, "") }} />;
+    if (line.startsWith("> ")) return (
+      <blockquote key={i} className="border-l-4 border-[#c9a84c]/40 pl-4 my-3 bg-[#1e2820] py-2 pr-2 rounded-r text-sm italic text-[#7a9076]">
+        {line.slice(2)}
+      </blockquote>
+    );
     if (line.trim() === "") return <br key={i} />;
-    const hasTable = text.includes("| ");
-    if (hasTable && i === 0 && line.startsWith("|")) return null;
     return <p key={i} className="mb-1" dangerouslySetInnerHTML={{ __html: bold }} />;
   });
 }
@@ -396,17 +388,17 @@ function renderSection(body: string) {
         <div key={j} className="overflow-x-auto my-3">
           <table className="w-full text-xs border-collapse">
             <thead>
-              <tr className="bg-[#425C47] text-white">
-                {headers.map((h, k) => <th key={k} className="px-3 py-2 text-left font-semibold">{h}</th>)}
+              <tr className="bg-[#232c20]">
+                {headers.map((h, k) => <th key={k} className="px-3 py-2 text-left font-semibold text-[#d8e3d5]">{h}</th>)}
               </tr>
             </thead>
             <tbody>
               {dataRows.map((row, k) => {
                 const cells = row.split("|").filter(Boolean).map(c => c.trim());
                 return (
-                  <tr key={k} className={k % 2 === 0 ? "bg-white" : "bg-[#F5F7F5]"}>
+                  <tr key={k} className={k % 2 === 0 ? "bg-[#111810]" : "bg-[#161c14]"}>
                     {cells.map((cell, l) => (
-                      <td key={l} className="px-3 py-2 border-b border-gray-100" dangerouslySetInnerHTML={{ __html: cell.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>") }} />
+                      <td key={l} className="px-3 py-2 border-b border-[#232c20] text-[#7a9076]" dangerouslySetInnerHTML={{ __html: cell.replace(/\*\*(.*?)\*\*/g, "<strong class='text-[#b8cdb4]'>$1</strong>") }} />
                     ))}
                   </tr>
                 );
@@ -429,18 +421,18 @@ export default function CGVPage() {
   const t = content[lang];
 
   return (
-    <div className="min-h-screen bg-[#F8F4EF]" style={{ fontFamily: "var(--font-dm-sans, system-ui, sans-serif)" }}>
-      <header className="sticky top-0 z-10 bg-[#F8F4EF]/95 backdrop-blur border-b border-[#425C47]/10 px-6 py-4">
+    <div className="min-h-screen bg-[#0e1310]" style={{ fontFamily: "var(--font-dm-sans, system-ui, sans-serif)" }}>
+      <header className="sticky top-0 z-10 bg-[#0e1310]/95 backdrop-blur border-b border-[#232c20] px-6 py-4">
         <div className="max-w-3xl mx-auto flex items-center justify-between">
-          <Link href="/" className="text-sm text-[#425C47]/60 hover:text-[#425C47] transition-colors">
+          <Link href="/" className="text-sm text-[#7a9076] hover:text-[#d8e3d5] transition-colors">
             {t.back}
           </Link>
-          <span className="font-bold text-[#425C47]" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>TravelGuide AI</span>
-          <div className="flex items-center gap-1 border border-[#425C47]/20 rounded-lg p-0.5">
-            <button onClick={() => setLang("fr")} title="Passer en français" className={`rounded-md px-2 py-0.5 transition-all ${lang === "fr" ? "bg-[#425C47]/15 shadow-sm" : "opacity-40 hover:opacity-70"}`}>
+          <span className="font-bold text-[#d8e3d5]" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>TravelGuide AI</span>
+          <div className="flex items-center gap-1 border border-[#232c20] rounded-lg p-0.5">
+            <button onClick={() => setLang("fr")} title="Passer en français" className={`rounded-md px-2 py-0.5 transition-all ${lang === "fr" ? "bg-[#232c20]" : "opacity-40 hover:opacity-70"}`}>
               <img src="https://flagcdn.com/w40/fr.png" width="24" height="16" alt="FR" style={{display:"inline",borderRadius:"2px"}} />
             </button>
-            <button onClick={() => setLang("en")} title="Switch to English" className={`rounded-md px-2 py-0.5 transition-all ${lang === "en" ? "bg-[#425C47]/15 shadow-sm" : "opacity-40 hover:opacity-70"}`}>
+            <button onClick={() => setLang("en")} title="Switch to English" className={`rounded-md px-2 py-0.5 transition-all ${lang === "en" ? "bg-[#232c20]" : "opacity-40 hover:opacity-70"}`}>
               <img src="https://flagcdn.com/w40/gb.png" width="24" height="16" alt="GB" style={{display:"inline",borderRadius:"2px"}} />
             </button>
           </div>
@@ -449,31 +441,31 @@ export default function CGVPage() {
 
       <main className="max-w-3xl mx-auto px-6 py-12">
         <div className="mb-10">
-          <h1 className="text-3xl font-bold text-[#425C47] mb-2" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
+          <h1 className="text-3xl font-bold text-[#d8e3d5] mb-2" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
             {t.title}
           </h1>
-          <p className="text-sm text-[#425C47]/50">{t.subtitle}</p>
-          <p className="mt-3 text-xs text-[#425C47]/40 italic border-l-2 border-[#E8A87C] pl-3">{t.note}</p>
+          <p className="text-sm text-[#7a9076]">{t.subtitle}</p>
+          <p className="mt-3 text-xs text-[#4a6447] italic border-l-2 border-[#c9a84c]/30 pl-3">{t.note}</p>
         </div>
 
         <div className="space-y-8">
           {t.sections.map((section) => (
             <section key={section.id} id={section.id} className="scroll-mt-20">
-              <h2 className="text-lg font-semibold text-[#425C47] mb-3 pb-1 border-b border-[#425C47]/10">
+              <h2 className="text-lg font-semibold text-[#d8e3d5] mb-3 pb-1 border-b border-[#232c20]">
                 {section.title}
               </h2>
-              <div className="text-sm text-[#425C47]/75 leading-relaxed">
+              <div className="text-sm text-[#7a9076] leading-relaxed">
                 {renderSection(section.body)}
               </div>
             </section>
           ))}
         </div>
 
-        <div className="mt-16 pt-8 border-t border-[#425C47]/10 text-center text-xs text-[#425C47]/40">
+        <div className="mt-16 pt-8 border-t border-[#232c20] text-center text-xs text-[#4a6447]">
           <p>TravelGuide AI — NanoCorp · {SITE_URL}</p>
           <p className="mt-1">
             {lang === "fr" ? `Pour toute question : ` : `For any question: `}
-            <a href={`mailto:${CONTACT}`} className="underline hover:text-[#425C47]">{CONTACT}</a>
+            <a href={`mailto:${CONTACT}`} className="underline hover:text-[#7a9076]">{CONTACT}</a>
           </p>
         </div>
       </main>
