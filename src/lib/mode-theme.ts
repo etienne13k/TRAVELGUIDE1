@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 
 export interface Theme {
   bg: string;
@@ -68,10 +68,11 @@ export const BUSINESS: Theme = {
 export function useMode(): { T: Theme; isBusiness: boolean } {
   const [isBusiness, setIsBusiness] = useState(false);
 
-  useEffect(() => {
-    const mode = localStorage.getItem("tgai_mode");
-    setIsBusiness(mode === "business");
+  useLayoutEffect(() => {
+    setIsBusiness(localStorage.getItem("tgai_mode") === "business");
+  }, []);
 
+  useEffect(() => {
     const onStorage = (e: StorageEvent) => {
       if (e.key === "tgai_mode") setIsBusiness(e.newValue === "business");
     };
