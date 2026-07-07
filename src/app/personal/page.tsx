@@ -19,14 +19,14 @@ const translations = {
   fr: {
     banner_messages: [
       "🏷️ -25% sur votre premier guide avec le code WELCOME",
-      "✈️ Guide dès 5€ · Abonnement illimité 13€/mois · Livraison 48h",
+      "✈️ Jusqu'à 6€ économisés · Livraison 48h · Sans abonnement",
       "🌍 Paris · Tokyo · Bali · Bangkok · New York · et bien plus",
     ],
     nav_cta: "Créer mon guide",
     hero_title: "TravelGuide",
     hero_sub: "Vous savez où aller — ou laissez l'IA vous suggérer la destination parfaite. Guide personnalisé, livré en PDF.",
     hero_cta: "Créer mon guide",
-    hero_sub_cta: "À partir de 5€ · Abonnement 13€/mois · Livraison sous 48h",
+    hero_sub_cta: "À partir de 3€ · Sans abonnement · Livraison sous 48h",
     how_title: "Comment ça marche",
     how_steps: [
       {
@@ -45,82 +45,82 @@ const translations = {
         desc: "PDF professionnel livré dans votre boîte mail sous 24h. Prêt à partir.",
       },
     ],
-    pricing_title: "Tarifs simples, transparents",
-    pricing_sub: "Guide 7 jours à 5€ ou abonnement illimité à 13€/mois — deux formules indépendantes.",
+    pricing_title: "Choisissez votre aventure",
+    pricing_sub:
+      "Chaque plan inclut tout ce que comprend le plan précédent, plus des fonctionnalités supplémentaires.",
     gift_tooltip: "🏷️ -25% avec le code WELCOME",
     gift_unlocked_tooltip: "✅ Code WELCOME disponible !",
     plans: [
       {
-        name: "1 semaine",
-        duration: "Jusqu'à 7 jours",
-        price: "5€",
-        oldPrice: "",
-        savings: "1 tranche",
-        desc: "City trip, week-end prolongé ou court séjour.",
+        name: "Guide Express",
+        duration: "3 jours",
+        price: "3€",
+        oldPrice: "5€",
+        savings: "Économisez 2€",
+        desc: "Parfait pour un city trip ou un week-end prolongé.",
         inherited: null,
         features: [
           "Itinéraire jour par jour",
-          "Restaurants & activités sélectionnés",
-          "Conseils pratiques (météo, transport, budget)",
+          "Restaurants sélectionnés",
+          "Activités incontournables",
+          "Conseils pratiques (budget, météo, transport)",
           "Livraison PDF par email",
         ],
         popular: false,
         badge: null as null | { label: string; color: string },
-        cta: "Commencer →",
+        cta: "Choisir ce plan →",
+        plan_key: "3j",
+      },
+      {
+        name: "Guide Complet",
+        duration: "7 jours",
+        price: "6€",
+        oldPrice: "9€",
+        savings: "Économisez 3€",
+        desc: "L'équilibre parfait pour une semaine de vacances.",
+        inherited: "Tout le plan 3 jours +",
+        features: [
+          "Excursions depuis la ville",
+          "Hébergements recommandés par quartier",
+        ],
+        popular: false,
+        badge: null as null | { label: string; color: string },
+        cta: "Choisir ce plan →",
         plan_key: "7j",
       },
       {
-        name: "2 semaines",
-        duration: "Jusqu'à 14 jours",
+        name: "Guide Immersif",
+        duration: "14 jours",
         price: "10€",
-        oldPrice: "",
-        savings: "2 tranches",
-        desc: "Vacances complètes, exploration d'une région.",
-        inherited: null,
+        oldPrice: "15€",
+        savings: "Économisez 5€",
+        desc: "Deux semaines pour une vraie immersion culturelle.",
+        inherited: "Tout le plan 7 jours +",
         features: [
-          "Tout le plan 1 semaine",
-          "Excursions depuis la ville principale",
-          "Hébergements recommandés par quartier",
+          "Carte interactive des points clés",
+          "Itinéraire organisé par zones géographiques",
         ],
-        popular: true,
-        badge: null as null | { label: string; color: string },
-        cta: "Commencer →",
+        popular: false,
+        badge: { label: "🔮 Premium", color: "indigo" },
+        cta: "Choisir ce plan →",
         plan_key: "14j",
       },
       {
-        name: "3 semaines",
-        duration: "Jusqu'à 21 jours",
-        price: "15€",
-        oldPrice: "",
-        savings: "3 tranches",
-        desc: "Grand voyage, road trip ou immersion culturelle.",
-        inherited: null,
-        features: [
-          "Tout le plan 2 semaines",
-          "Multi-destinations & itinéraire par zones",
-          "Conseils saisonnalité et événements locaux",
-        ],
-        popular: false,
-        badge: { label: "Long séjour", color: "indigo" },
-        cta: "Commencer →",
-        plan_key: "21j",
-      },
-      {
-        name: "Abonnement",
+        name: "Guide Évasion",
         duration: "1 mois",
-        price: "13€",
-        oldPrice: "",
-        savings: "/mois",
-        desc: "Guides illimités pour tous vos voyages du mois.",
-        inherited: null,
+        price: "16€",
+        oldPrice: "22€",
+        savings: "Économisez 6€",
+        desc: "Pour digital nomads et globe-trotters.",
+        inherited: "Tout le plan 14 jours +",
         features: [
-          "Guides illimités ce mois",
-          "Toutes durées incluses",
-          "Idéal pour planifier plusieurs voyages",
+          "Multi-destinations",
+          "Planning semaine par semaine",
+          "Conseils saisonnalité et évènements locaux",
         ],
-        popular: false,
+        popular: true,
         badge: null as null | { label: string; color: string },
-        cta: "S'abonner →",
+        cta: "Choisir ce plan →",
         plan_key: "1mois",
       },
     ],
@@ -205,82 +205,81 @@ const translations = {
         desc: "Professional PDF delivered to your inbox within 48h. Ready to explore.",
       },
     ],
-    pricing_title: "Simple, transparent pricing",
-    pricing_sub: "7-day guide at €5 or unlimited subscription at €13/month — two independent plans.",
+    pricing_title: "Choose your adventure",
+    pricing_sub: "Each plan includes everything from the previous plan, plus additional features.",
     gift_tooltip: "🏷️ -25% with code WELCOME",
     gift_unlocked_tooltip: "✅ WELCOME code available!",
     plans: [
       {
-        name: "1 week",
-        duration: "Up to 7 days",
-        price: "€5",
-        oldPrice: "",
-        savings: "1 block",
-        desc: "City trip, long weekend or short stay.",
+        name: "Express Guide",
+        duration: "3 days",
+        price: "€3",
+        oldPrice: "€5",
+        savings: "Save €2",
+        desc: "Perfect for a city trip or long weekend.",
         inherited: null,
         features: [
           "Day-by-day itinerary",
-          "Curated restaurants & activities",
-          "Practical tips (weather, transport, budget)",
+          "Curated restaurants",
+          "Must-do activities",
+          "Practical tips (budget, weather, transport)",
           "PDF delivery by email",
         ],
         popular: false,
         badge: null as null | { label: string; color: string },
-        cta: "Get started →",
+        cta: "Choose this plan →",
+        plan_key: "3j",
+      },
+      {
+        name: "Complete Guide",
+        duration: "7 days",
+        price: "€6",
+        oldPrice: "€9",
+        savings: "Save €3",
+        desc: "The perfect balance for a vacation week.",
+        inherited: "Everything in 3 days +",
+        features: [
+          "Day trips from the city",
+          "Recommended neighborhoods & hotels",
+        ],
+        popular: false,
+        badge: null as null | { label: string; color: string },
+        cta: "Choose this plan →",
         plan_key: "7j",
       },
       {
-        name: "2 weeks",
-        duration: "Up to 14 days",
+        name: "Immersive Guide",
+        duration: "14 days",
         price: "€10",
-        oldPrice: "",
-        savings: "2 blocks",
-        desc: "Full vacation, regional exploration.",
-        inherited: null,
+        oldPrice: "€15",
+        savings: "Save €5",
+        desc: "Two weeks for genuine cultural immersion.",
+        inherited: "Everything in 7 days +",
         features: [
-          "Everything in 1 week",
-          "Day trips from the main city",
-          "Recommended neighborhoods & hotels",
+          "Interactive map of key highlights",
+          "Itinerary organized by geographic zones",
         ],
-        popular: true,
-        badge: null as null | { label: string; color: string },
-        cta: "Get started →",
+        popular: false,
+        badge: { label: "🔮 Premium", color: "indigo" },
+        cta: "Choose this plan →",
         plan_key: "14j",
       },
       {
-        name: "3 weeks",
-        duration: "Up to 21 days",
-        price: "€15",
-        oldPrice: "",
-        savings: "3 blocks",
-        desc: "Grand trip, road trip or cultural immersion.",
-        inherited: null,
+        name: "Évasion Guide",
+        duration: "1 month",
+        price: "€16",
+        oldPrice: "€22",
+        savings: "Save €6",
+        desc: "For digital nomads and globe-trotters.",
+        inherited: "Everything in 14 days +",
         features: [
-          "Everything in 2 weeks",
-          "Multi-destination & zone-based itinerary",
+          "Multi-destination trips",
+          "Week-by-week planning",
           "Seasonal tips & local events",
         ],
-        popular: false,
-        badge: { label: "Long stay", color: "indigo" },
-        cta: "Get started →",
-        plan_key: "21j",
-      },
-      {
-        name: "Subscription",
-        duration: "1 month",
-        price: "€13",
-        oldPrice: "",
-        savings: "/month",
-        desc: "Unlimited guides for all your trips this month.",
-        inherited: null,
-        features: [
-          "Unlimited guides this month",
-          "All durations included",
-          "Perfect for planning multiple trips",
-        ],
-        popular: false,
+        popular: true,
         badge: null as null | { label: string; color: string },
-        cta: "Subscribe →",
+        cta: "Choose this plan →",
         plan_key: "1mois",
       },
     ],
@@ -521,7 +520,7 @@ export default function Home() {
                 <div className="bg-[#111810] border-b border-[#232c20] px-6 py-5">
                   <div className="flex items-center justify-between mb-3">
                     <span className="text-[9px] font-mono text-[#3a5037] tracking-[0.2em] uppercase">TravelGuide</span>
-                    <span className="text-[#C9A84C] font-bold text-base" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>5€</span>
+                    <span className="text-[#C9A84C] font-bold text-base" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>6€</span>
                   </div>
                   <div className="text-2xl font-bold text-[#d8e3d5] mb-0.5" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>Tokyo</div>
                   <div className="text-[#7a9076] text-xs mb-4">{tx.hero_card_subtitle}</div>
@@ -684,116 +683,135 @@ export default function Home() {
 
       {/* PRICING */}
       <section className="scroll-mt-28 py-14 sm:py-24 px-4 sm:px-6 bg-pattern-light" id="pricing">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-12">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
             <h2
               className="text-2xl sm:text-4xl lg:text-5xl font-bold mb-4 text-[#d8e3d5]"
               style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
             >
               {tx.pricing_title}
             </h2>
-            <p className="text-[#7a9076] max-w-xl mx-auto text-sm leading-relaxed">
-              {lang === "fr"
-                ? "Un guide à la carte ou un abonnement illimité — deux formules indépendantes."
-                : "A one-off guide or unlimited subscription — two independent plans."}
-            </p>
+            <p className="text-[#7a9076] max-w-2xl mx-auto text-sm leading-relaxed">{tx.pricing_sub}</p>
           </div>
-
-          {/* ABONNEMENT — featured */}
-          <div className="relative rounded-2xl bg-gradient-to-br from-[#1e3324] to-[#162818] border border-[#2a4433] p-8 sm:p-10 mb-6 shadow-[0_8px_40px_rgba(66,92,71,0.25)] overflow-hidden">
-            <div className="absolute top-0 right-0 w-64 h-64 rounded-full bg-[#c9a84c]/5 -translate-y-1/2 translate-x-1/2 pointer-events-none" />
-            <div className="absolute -top-3 left-8 bg-[#C9A84C] text-[#0e1310] text-[11px] font-bold px-4 py-1 rounded-full">
-              {lang === "fr" ? "★ Guides illimités" : "★ Unlimited guides"}
-            </div>
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 relative">
-              <div className="flex-1">
-                <p className="text-xs font-mono tracking-widest text-[#c9a84c]/60 uppercase mb-2">
-                  {lang === "fr" ? "Abonnement mensuel" : "Monthly subscription"}
-                </p>
-                <h3 className="text-2xl sm:text-3xl font-bold text-[#d8e3d5] mb-3" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
-                  {lang === "fr" ? "Abonnement TravelGuide" : "TravelGuide Subscription"}
-                </h3>
-                <ul className="space-y-1.5 text-sm text-white/70">
-                  {(lang === "fr"
-                    ? ["Guides illimités tout le mois","Toutes durées incluses (jusqu'à 1 mois)","Idéal si vous planifiez plusieurs voyages","Guides utilisables dès l'achat"]
-                    : ["Unlimited guides all month","All durations included (up to 1 month)","Perfect for planning multiple trips","Guides available immediately after purchase"]
-                  ).map(f => (
-                    <li key={f} className="flex items-center gap-2">
-                      <span className="text-[#C9A84C] font-bold text-xs">✓</span>{f}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div className="flex flex-col items-start sm:items-end gap-3 shrink-0">
-                <div>
-                  <div className="flex items-end gap-1">
-                    <span className="text-6xl font-black text-[#C9A84C]" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>13€</span>
-                    <span className="text-sm text-[#7a9076] mb-2">/mois</span>
-                  </div>
-                  <p className="text-xs text-[#5a7856] mt-1">{lang === "fr" ? "Résiliable à tout moment" : "Cancel anytime"}</p>
-                </div>
-                <a
-                  href={`/questionnaire?plan=1mois&lang=${lang}`}
-                  onClick={() => trackPurchase("Abonnement", "13€")}
-                  className="bg-[#C9A84C] text-[#0e1310] font-bold px-8 py-3 rounded-xl hover:bg-[#B8962E] transition-all hover:scale-105 text-sm whitespace-nowrap"
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            {tx.plans.map((plan) => {
+              const isInverted = plan.popular;
+              const isGiftPlan = !phoneStatus.welcomeUsed; // disparaît si déjà utilisé
+              const giftUnlocked = phoneStatus.loggedIn && phoneStatus.phoneVerified && !phoneStatus.welcomeUsed;
+              const giftTooltip = giftUnlocked ? tx.gift_unlocked_tooltip : tx.gift_tooltip;
+              return (
+                <div
+                  key={plan.name}
+                  className={`relative rounded-2xl p-6 border flex flex-col transition-all duration-300 hover:shadow-2xl hover:-translate-y-1.5 ${
+                    isInverted
+                      ? "bg-gradient-to-br from-[#1e3324] to-[#162818] text-white border-[#2a4433] shadow-[0_8px_32px_rgba(66,92,71,0.3)]"
+                      : "bg-[#161c14] text-[#d8e3d5] border-[#232c20]"
+                  }`}
                 >
-                  {lang === "fr" ? "S'abonner →" : "Subscribe →"}
-                </a>
-              </div>
-            </div>
-          </div>
+                  {/* Popular badge */}
+                  {plan.popular && (
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#C9A84C] text-white text-[11px] font-bold px-4 py-1 rounded-full whitespace-nowrap">
+                      ★ {tx.plan_popular_badge}
+                    </div>
+                  )}
+                  {/* Gift badge */}
+                  {isGiftPlan && (
+                    <div className="group absolute right-3 top-3 z-10">
+                      <div
+                        tabIndex={0}
+                        title={giftTooltip}
+                        aria-label={giftTooltip}
+                        className={`gift-badge flex h-10 w-10 items-center justify-center rounded-full border text-lg shadow-lg outline-none transition focus:ring-2 focus:ring-[#c9a84c]/40 ${
+                          giftUnlocked
+                            ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+                            : "border-[#c9a84c]/30 bg-[#fdf8f0] text-[#c9a84c]"
+                        }`}
+                      >
+                        🎁
+                      </div>
+                      <div className="pointer-events-none absolute right-0 top-full mt-2 w-52 rounded-xl border border-[#c9a84c]/25 bg-[#fdf8f0] px-3 py-2 text-xs font-bold text-[#7a5d19] opacity-0 shadow-xl transition-opacity group-hover:opacity-100 group-focus-within:opacity-100 sm:top-auto sm:bottom-full sm:mb-2 sm:mt-0">
+                        {giftTooltip}
+                      </div>
+                    </div>
+                  )}
 
-          {/* Séparateur */}
-          <div className="flex items-center gap-4 my-6">
-            <div className="flex-1 h-px bg-[#232c20]" />
-            <span className="text-xs text-[#3a5037] font-semibold uppercase tracking-wider">
-              {lang === "fr" ? "ou guide à la carte" : "or one-off guide"}
-            </span>
-            <div className="flex-1 h-px bg-[#232c20]" />
-          </div>
+                  {/* Premium badge */}
+                  {plan.badge && (
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap">
+                      <span
+                        className={`text-[11px] font-bold px-4 py-1 rounded-full ${
+                          plan.badge.color === "indigo"
+                            ? "bg-[#425C47] text-white"
+                            : "bg-[#C9A84C] text-white"
+                        }`}
+                      >
+                        {plan.badge.label}
+                      </span>
+                    </div>
+                  )}
 
-          {/* GUIDE 7J — à la carte */}
-          <div className="rounded-2xl bg-[#161c14] border border-[#232c20] p-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
-            <div className="flex-1">
-              <p className="text-xs font-mono tracking-widest text-[#4a6447] uppercase mb-2">
-                {lang === "fr" ? "Guide à la carte" : "One-off guide"}
-              </p>
-              <h3 className="text-2xl font-bold text-[#d8e3d5] mb-3" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
-                {lang === "fr" ? "Guide 7 jours" : "7-day Guide"}
-              </h3>
-              <ul className="space-y-1.5 text-sm text-[#7a9076]">
-                {(lang === "fr"
-                  ? ["Itinéraire jour par jour jusqu'à 7 jours","Restaurants & activités sélectionnés","Conseils pratiques (météo, transport, budget)","Livraison PDF par email sous 48h"]
-                  : ["Day-by-day itinerary up to 7 days","Curated restaurants & activities","Practical tips (weather, transport, budget)","PDF delivery by email within 48h"]
-                ).map(f => (
-                  <li key={f} className="flex items-center gap-2">
-                    <span className="text-[#C9A84C] font-bold text-xs">✓</span>{f}
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div className="flex flex-col items-start sm:items-end gap-3 shrink-0">
-              <div>
-                <div className="flex items-end gap-1">
-                  <span className="text-6xl font-black text-[#C9A84C]" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>5€</span>
+                  <div className={`text-xs font-mono tracking-wide mb-1 ${isInverted ? "text-white/45" : "text-[#4a6447]"}`}>
+                    {plan.duration.toUpperCase()}
+                  </div>
+
+                  {/* Price display */}
+                  <div className="mb-4">
+                    <div className="flex items-end gap-2">
+                      <span className={`text-sm line-through ${isInverted ? "text-white/40" : "text-gray-400"}`}>{plan.oldPrice}</span>
+                      <span
+                        className="text-5xl font-bold text-[#C9A84C]"
+                        style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
+                      >
+                        {plan.price}
+                      </span>
+                    </div>
+                    <span
+                      className={`mt-2 inline-flex rounded-full px-3 py-1 text-[11px] font-bold ${
+                        isInverted ? "bg-white/10 text-[#E8C060]" : "bg-[#C9A84C]/10 text-[#c9a84c]"
+                      }`}
+                    >
+                      {plan.savings}
+                    </span>
+                  </div>
+
+                  <div className="font-semibold text-base mb-4">{plan.name}</div>
+                  <p className={`text-sm leading-relaxed mb-6 ${isInverted ? "text-white/65" : "text-[#7a9076]"}`}>
+                    {plan.desc}
+                  </p>
+
+                  <ul className="space-y-2 mb-6 flex-1">
+                    {plan.inherited && (
+                      <li className="text-sm flex items-center gap-2 font-medium mb-3 text-[#C9A84C]">
+                        <span className="text-[#C9A84C] font-bold text-xs">↑</span>
+                        {plan.inherited}
+                      </li>
+                    )}
+                    {plan.features.map((f) => (
+                      <li
+                        key={f}
+                        className={`text-sm flex items-center gap-2 ${isInverted ? "text-white/80" : "text-[#7a9076]"}`}
+                      >
+                        <span className="text-[#C9A84C] font-bold text-xs">✓</span>
+                        {f}
+                      </li>
+                    ))}
+                  </ul>
+
+                  <a
+                    href={`/questionnaire?plan=${plan.plan_key}&lang=${lang}`}
+                    onClick={() => trackPurchase(plan.name, plan.price)}
+                    className={`block w-full text-center font-semibold py-3 rounded-xl transition-all hover:scale-105 text-sm ${
+                      isInverted
+                        ? "bg-[#C9A84C] text-[#0e1310] hover:bg-[#B8962E]"
+                        : "bg-[#425C47] text-[#d8e3d5] hover:bg-[#2e4133]"
+                    }`}
+                  >
+                    {plan.cta}
+                  </a>
                 </div>
-                <p className="text-xs text-[#5a7856] mt-1">{lang === "fr" ? "Paiement unique" : "One-time payment"}</p>
-              </div>
-              <a
-                href={`/questionnaire?plan=7j&lang=${lang}`}
-                onClick={() => trackPurchase("Guide 7j", "5€")}
-                className="bg-[#425C47] text-[#d8e3d5] font-bold px-8 py-3 rounded-xl hover:bg-[#2e4133] transition-all hover:scale-105 text-sm whitespace-nowrap"
-              >
-                {lang === "fr" ? "Commencer →" : "Get started →"}
-              </a>
-            </div>
+              );
+            })}
           </div>
-
-          <p className="text-center text-xs text-[#3a5037] mt-6">
-            {lang === "fr"
-              ? "Abonné ? Créez des guides gratuits directement depuis le questionnaire."
-              : "Already subscribed? Create free guides directly from the questionnaire."}
-          </p>
         </div>
       </section>
 

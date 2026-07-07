@@ -11,21 +11,26 @@ import { addCartItem, CART_PLANS, getCartItem, loadCart, updateCartItem, type Ca
 ────────────────────────────────────────────────────────── */
 
 const PLAN_KEY_MAP: Record<string, string> = {
-  basic: "7j", elite: "1mois",
-  "7": "7j", "30": "1mois",
+  basic: "3j", standard: "7j", premium: "14j", elite: "1mois",
+  "3": "3j", "7": "7j", "14": "14j", "30": "1mois",
 };
 
-const PLAN_ORDER = ["7j", "1mois"] as const;
+const PLAN_ORDER = ["3j", "7j", "14j", "1mois"] as const;
 type PlanKey = (typeof PLAN_ORDER)[number];
 type Lang = "fr" | "en";
 
-const PLANS: Record<PlanKey, { name: string; duration: string; price: string; priceN: number; isAbonnement: boolean }> = {
-  "7j":    { name: "Guide 7 jours",  duration: "Jusqu'à 7 jours",       price: "5€", priceN: 5,  isAbonnement: false },
-  "1mois": { name: "Abonnement actif", duration: "Guides illimités / mois", price: "0€", priceN: 0,  isAbonnement: true  },
+const PLANS: Record<PlanKey, { name: string; duration: string; oldPrice: string; price: string; priceN: number }> = {
+  "3j":    { name: "Guide Express",  duration: "3 jours",  oldPrice: "5€",  price: "3€",  priceN: 3  },
+  "7j":    { name: "Guide Complet",  duration: "7 jours",  oldPrice: "9€",  price: "6€",  priceN: 6  },
+  "14j":   { name: "Guide Immersif", duration: "14 jours", oldPrice: "15€", price: "10€", priceN: 10 },
+  "1mois": { name: "Guide Évasion",  duration: "1 mois",   oldPrice: "22€", price: "16€", priceN: 16 },
 };
 
+
 const PLAN_DATE_LIMITS: Record<PlanKey, { maxDays: number; label: string }> = {
-  "7j":    { maxDays: 7,  label: "7 jours" },
+  "3j": { maxDays: 3, label: "3 jours" },
+  "7j": { maxDays: 7, label: "7 jours" },
+  "14j": { maxDays: 14, label: "14 jours" },
   "1mois": { maxDays: 31, label: "1 mois" },
 };
 
@@ -530,46 +535,35 @@ function TravelDateCalendar({ planKey, startDate, endDate, onChange }: {
 
 function PlanSelector({ selectedPlanKey, onSelect }: { selectedPlanKey: PlanKey|null; onSelect: (p:PlanKey)=>void }) {
   return (
-    <section className="bg-[#161c14] rounded-xl border border-[#232c20] p-5 sm:p-6">
-      <p className="text-xs uppercase tracking-[0.18em] text-[#c9a84c] font-bold mb-1">Forfait</p>
-      <h2 className="text-lg sm:text-xl font-bold text-[#d8e3d5] mb-5" style={{fontFamily:"var(--font-playfair),Georgia,serif"}}>
-        {selectedPlanKey ? "Forfait sélectionné" : "Choisissez votre forfait"}
-      </h2>
-
-      <div className="grid sm:grid-cols-2 gap-3">
-        {/* Guide 7j */}
-        {(() => {
-          const selected = selectedPlanKey === "7j";
-          return (
-            <button type="button" onClick={() => onSelect("7j")} aria-pressed={selected}
-              className={["rounded-xl border-2 p-5 text-left transition-all duration-200",
-                selected ? "border-[#c9a84c] bg-[#1f2a1a]" : "border-[#232c20] bg-[#1a2218] hover:border-[#c9a84c]/40 hover:bg-[#1f2a1a]"].join(" ")}>
-              <span className="block text-[10px] font-bold text-[#4a6447] uppercase tracking-wider mb-2">Guide à la carte</span>
-              <div className="flex items-baseline gap-1.5 mb-1">
-                <span className="text-4xl font-black text-[#c9a84c]">5€</span>
-              </div>
-              <p className="text-sm font-semibold text-[#d8e3d5] mb-1">Guide 7 jours</p>
-              <p className="text-xs text-[#5a7856]">Jusqu'à 7 jours · paiement unique</p>
-            </button>
-          );
-        })()}
-
-        {/* Abonnement actif */}
-        {(() => {
-          const selected = selectedPlanKey === "1mois";
-          return (
-            <button type="button" onClick={() => onSelect("1mois")} aria-pressed={selected}
-              className={["rounded-xl border-2 p-5 text-left transition-all duration-200",
-                selected ? "border-[#c9a84c] bg-[#1f2a1a]" : "border-[#232c20] bg-[#1a2218] hover:border-[#c9a84c]/40 hover:bg-[#1f2a1a]"].join(" ")}>
-              <span className="block text-[10px] font-bold text-[#c9a84c] uppercase tracking-wider mb-2">Abonnement actif</span>
-              <div className="flex items-baseline gap-1.5 mb-1">
-                <span className="text-4xl font-black text-[#d8e3d5]">Gratuit</span>
-              </div>
-              <p className="text-sm font-semibold text-[#d8e3d5] mb-1">Inclus dans mon abonnement</p>
-              <p className="text-xs text-[#5a7856]">Guides illimités · abonnement 13€/mois requis</p>
-            </button>
-          );
-        })()}
+    <section className="bg-[#161c14] rounded-xl border border-[#232c20] p-5 sm:p-6 overflow-hidden">
+      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2 mb-5">
+        <div>
+          <p className="text-xs uppercase tracking-[0.18em] text-[#c9a84c] font-bold mb-1">Forfait</p>
+          <h2 className="text-lg sm:text-xl font-bold text-[#d8e3d5]" style={{fontFamily:"var(--font-playfair),Georgia,serif"}}>
+            {selectedPlanKey ? "Forfait sélectionné" : "Choisissez votre forfait"}
+          </h2>
+        </div>
+        <p className="text-xs text-[#4a6447]">Modifiable avant le paiement.</p>
+      </div>
+      <div className="-mx-5 sm:mx-0 overflow-x-auto pb-1 sm:overflow-visible">
+        <div className="flex gap-3 px-5 sm:px-0 sm:grid sm:grid-cols-4 min-w-max sm:min-w-0">
+          {PLAN_ORDER.map(planKey=>{
+            const p = PLANS[planKey];
+            const selected = selectedPlanKey===planKey;
+            return (
+              <button key={planKey} type="button" onClick={()=>onSelect(planKey)} aria-pressed={selected}
+                className={["w-36 sm:w-auto rounded-lg border-2 p-4 text-left transition-all duration-200 shrink-0",
+                  selected?"border-[#c9a84c] bg-[#1f2a1a]":"border-[#232c20] bg-[#1a2218] hover:border-[#c9a84c]/40 hover:bg-[#1f2a1a]"].join(" ")}>
+                <span className="block text-xs font-bold text-[#7a9076] uppercase tracking-wider">{p.duration}</span>
+                <span className="mt-2 flex items-baseline gap-2">
+                  <span className="text-xs text-[#3a5037] line-through">{p.oldPrice}</span>
+                  <span className="text-2xl font-black text-[#c9a84c]">{p.price}</span>
+                </span>
+                <span className="mt-1.5 block text-xs font-medium text-[#7a9076]">{p.name}</span>
+              </button>
+            );
+          })}
+        </div>
       </div>
     </section>
   );
@@ -825,11 +819,10 @@ function QuestionnaireContent() {
   function goPrev() { setStep(s=>Math.max(1,s-1)); window.scrollTo({top:0,behavior:"smooth"}); }
 
   function buildCartItemInput(planKey: PlanKey, selectedPlan: typeof PLANS[PlanKey]): CartItemInput {
-    const isSubscription = planKey === "1mois";
     return {
       planId: planKey,
-      planLabel: isSubscription ? "Inclus — Abonnement actif" : CART_PLANS[planKey].label,
-      price: isSubscription ? 0 : selectedPlan.priceN * 100,
+      planLabel: CART_PLANS[planKey].label,
+      price: selectedPlan.priceN*100,
       destination: answers.destination.trim() || "Destination à préciser",
       dates: answers.travel_dates||formatTravelDates(answers.arrival_date,answers.departure_date),
       criteria: {...answers},

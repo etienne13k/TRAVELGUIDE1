@@ -9,7 +9,7 @@ function getActiveCartKey(): string {
     : CART_STORAGE_KEY;
 }
 
-export const PLAN_KEYS = ["7j", "1mois"] as const;
+export const PLAN_KEYS = ["3j", "7j", "14j", "1mois"] as const;
 export type PlanKey = (typeof PLAN_KEYS)[number];
 
 export type CartCriteriaValue = string | string[] | number | boolean | null | undefined;
@@ -28,8 +28,10 @@ export type CartItem = {
 };
 
 export const CART_PLANS: Record<PlanKey, { label: string; duration: string; amount: number }> = {
-  "7j":    { label: "Guide Voyage — 7 jours", duration: "Jusqu'à 7 jours", amount: 500  },
-  "1mois": { label: "Abonnement Mensuel",      duration: "1 mois illimité", amount: 1300 },
+  "3j":    { label: "Guide Express",  duration: "3 jours", amount: 300  },
+  "7j":    { label: "Guide Complet",  duration: "7 jours", amount: 600  },
+  "14j":   { label: "Guide Immersif", duration: "14 jours", amount: 1000 },
+  "1mois": { label: "Guide Évasion",  duration: "1 mois",  amount: 1600 },
 };
 
 export type CartItemInput = Omit<CartItem, "id" | "createdAt" | "updatedAt">;
@@ -42,9 +44,13 @@ export function normalizePlanKey(value: unknown): PlanKey | null {
   if (typeof value !== "string") return null;
 
   const aliases: Record<string, PlanKey> = {
-    basic: "7j",
+    basic: "3j",
+    standard: "7j",
+    premium: "14j",
     elite: "1mois",
+    "3": "3j",
     "7": "7j",
+    "14": "14j",
     "30": "1mois",
   };
 
@@ -92,9 +98,17 @@ export function saveCart(items: CartItem[]): void {
 
 // Stripe Payment Links — one per plan
 export const STRIPE_PAYMENT_LINKS: Record<PlanKey, string> = {
+  "3j":    "https://buy.stripe.com/6oUbJ15ZXb3e8rx9KM0Ba01",
   "7j":    "https://buy.stripe.com/00wdR9fAxc7iePV8GI0Ba02",
+  "14j":   "https://buy.stripe.com/7sY3cv2NLefq8rxe120Ba03",
   "1mois": "https://buy.stripe.com/5kQ28r1JHfju239g9a0Ba04",
 };
+
+export function hasActiveSubscription(): boolean {
+  if (typeof window === "undefined") return false;
+  if (localStorage.getItem("tgai_has_subscription") === "true") return true;
+  return loadCart().some(i => i.planId === "1mois");
+}
 
 export function addCartItem(input: CartItemInput): CartItem {
   const timestamp = new Date().toISOString();
@@ -105,8 +119,16 @@ export function addCartItem(input: CartItemInput): CartItem {
     updatedAt: timestamp,
   };
 
-  // Only 1 item allowed — replace previous
-  saveCart([item]);
+  // For business mode: subscription (1mois) and guide (7j) can coexist
+  // For personal mode: only 1 item (guide replaces previous guide)
+  if (typeof window !== "undefined" && localStorage.getItem("tgai_mode") === "business") {
+    const existing = loadCart();
+    const isSubscription = input.planId === "1mois";
+    const kept = existing.filter(i => isSubscription ? i.planId !== "1mois" : i.planId === "1mois");
+    saveCart([...kept, item]);
+  } else {
+    saveCart([item]);
+  }
   return item;
 }
 

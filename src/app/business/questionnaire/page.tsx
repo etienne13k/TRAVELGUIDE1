@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { addCartItem, CART_PLANS, loadCart, updateCartItem } from "@/lib/cart";
+import { addCartItem, CART_PLANS, hasActiveSubscription, loadCart, updateCartItem } from "@/lib/cart";
 
 /* ─── Design tokens ─── */
 const B = {
@@ -194,8 +194,17 @@ function BusinessCalendar({ startDate, endDate, onChange, error, maxDays }: {
           <p className="text-xs" style={{ color: B.muted }}>Cliquez sur une date de début, puis une date de fin.</p>
         </div>
         <div className="rounded-lg px-4 py-2 text-center shrink-0" style={{ border: `1px solid rgba(59,130,246,0.3)`, background: B.card }}>
-          <p className="text-xl font-black" style={{ color: B.text }}>{selectedDays} <span className="text-sm font-medium" style={{ color: B.muted }}>j</span></p>
-          <p className="text-[10px] font-semibold uppercase tracking-[0.14em]" style={{ color: "#2563eb" }}>jours</p>
+          {!maxDays ? (
+            <>
+              <p className="text-lg font-black" style={{ color: B.blue }}>∞</p>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.14em]" style={{ color: "#2563eb" }}>illimité</p>
+            </>
+          ) : (
+            <>
+              <p className="text-xl font-black" style={{ color: B.text }}>{selectedDays} <span className="text-sm font-medium" style={{ color: B.muted }}>j</span></p>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.14em]" style={{ color: "#2563eb" }}>jours</p>
+            </>
+          )}
         </div>
       </div>
 
@@ -373,6 +382,7 @@ function BusinessQuestionnaireContent() {
   const isSoloLocked = searchParams.get("type") === "solo";
   const [step, setStep] = useState(1);
   const [answers, setAnswers] = useState<MissionAnswers>({ ...EMPTY });
+  const [hasSub, setHasSub] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [s2Errors, setS2Errors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
@@ -384,6 +394,7 @@ function BusinessQuestionnaireContent() {
   const topRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    setHasSub(hasActiveSubscription());
     if (isSoloLocked) setAnswers(p => ({ ...p, participants: 1 }));
     localStorage.setItem("tgai_mode", "business");
     const stored = localStorage.getItem("tgai_session_user");
@@ -603,16 +614,34 @@ function BusinessQuestionnaireContent() {
                     <p className="text-xs" style={{ color: B.muted }}>Jusqu'à 7 jours · paiement unique</p>
                   </button>
                   {/* Abonnement actif */}
-                  <button type="button" onClick={() => setAnswers(p => ({ ...p, selectedPlan: "1mois", arrival_date: "", departure_date: "" }))}
-                    className="rounded-xl p-5 text-left transition-all"
-                    style={{ border: `2px solid ${answers.selectedPlan === "1mois" ? B.blue : B.border}`, background: answers.selectedPlan === "1mois" ? B.blueFaint : B.cardDeep }}>
-                    <span className="block text-[10px] font-bold uppercase tracking-wider mb-2" style={{ color: B.blue }}>Abonnement actif</span>
-                    <div className="flex items-baseline gap-1 mb-1">
-                      <span className="text-4xl font-black" style={{ color: B.text }}>Gratuit</span>
-                    </div>
-                    <p className="text-sm font-semibold mb-1" style={{ color: B.text }}>Inclus dans mon abonnement</p>
-                    <p className="text-xs" style={{ color: B.muted }}>Guides illimités · abonnement 15€/mois requis</p>
-                  </button>
+                  <div>
+                    <button type="button"
+                      onClick={() => hasSub && setAnswers(p => ({ ...p, selectedPlan: "1mois", arrival_date: "", departure_date: "" }))}
+                      aria-disabled={!hasSub}
+                      className="rounded-xl p-5 text-left transition-all w-full"
+                      style={{
+                        border: `2px solid ${answers.selectedPlan === "1mois" ? B.blue : B.border}`,
+                        background: answers.selectedPlan === "1mois" ? B.blueFaint : B.cardDeep,
+                        opacity: hasSub ? 1 : 0.5,
+                        cursor: hasSub ? "pointer" : "not-allowed",
+                      }}>
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="block text-[10px] font-bold uppercase tracking-wider" style={{ color: B.blue }}>Abonnement actif</span>
+                        {!hasSub && <span className="text-[9px] font-bold px-2 py-0.5 rounded-full" style={{ color: B.blue, background: B.blueFaint, border: `1px solid ${B.blueBorder}` }}>🔒 Abonnés</span>}
+                      </div>
+                      <div className="flex items-baseline gap-1 mb-1">
+                        <span className="text-4xl font-black" style={{ color: B.text }}>Gratuit</span>
+                      </div>
+                      <p className="text-sm font-semibold mb-1" style={{ color: B.text }}>Inclus dans mon abonnement</p>
+                      <p className="text-xs" style={{ color: B.muted }}>Guides illimités · aucune limite de durée</p>
+                    </button>
+                    {!hasSub && (
+                      <p className="mt-2 text-xs text-center" style={{ color: B.muted }}>
+                        Pas encore abonné ?{" "}
+                        <a href="/business#pricing" className="font-semibold hover:underline" style={{ color: B.blue }}>S'abonner à 15€/mois →</a>
+                      </p>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
@@ -678,7 +707,7 @@ function BusinessQuestionnaireContent() {
                 <BusinessCalendar
                   startDate={answers.arrival_date}
                   endDate={answers.departure_date}
-                  maxDays={B_DATE_LIMITS[answers.selectedPlan]}
+                  maxDays={answers.selectedPlan === "1mois" ? undefined : B_DATE_LIMITS[answers.selectedPlan]}
                   onChange={(s, e) => {
                     setAnswers(p => ({ ...p, arrival_date: s, departure_date: e }));
                     if (errors.arrival_date || errors.departure_date) setErrors(p => ({ ...p, arrival_date: "", departure_date: "" }));
