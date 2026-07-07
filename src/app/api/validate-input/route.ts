@@ -1,12 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
-
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+import { Pool } from "pg";
 
 interface FieldToValidate {
   name: string;
   label: string;
   value: string;
+}
+
+async function getApiKey(): Promise<string | null> {
+  if (process.env.ANTHROPIC_API_KEY) return process.env.ANTHROPIC_API_KEY;
+  if (!process.env.DATABASE_URL) return null;
+  try {
+    const pool = new Pool({ connectionString: process.env.DATABASE_URL, ssl: { rejectUnauthorized: false } });
+    const res = await pool.query("SELECT value FROM app_config WHERE key = 'ANTHROPIC_API_KEY' LIMIT 1");
+    await pool.end();
+    return res.rows[0]?.value ?? null;
+  } catch { return null; }
 }
 
 export async function POST(req: NextRequest) {
@@ -26,6 +36,14 @@ export async function POST(req: NextRequest) {
     if (!fieldsText) {
       return NextResponse.json({ errors: {} });
     }
+
+    const apiKey = await getApiKey();
+    if (!apiKey) {
+      console.warn("[validate-input] No API key available");
+      return NextResponse.json({ errors: {} });
+    }
+
+    const client = new Anthropic({ apiKey });
 
     const message = await client.messages.create({
       model: "claude-haiku-4-5",
@@ -56,7 +74,6 @@ Si tout est valide, réponds : { "errors": {} }`,
 
     const text = message.content[0].type === "text" ? message.content[0].text : "{}";
 
-    // Extract JSON from response (may have surrounding text)
     const jsonMatch = text.match(/\{[\s\S]*\}/);
     if (!jsonMatch) {
       return NextResponse.json({ errors: {} });
@@ -66,7 +83,6 @@ Si tout est valide, réponds : { "errors": {} }`,
     return NextResponse.json({ errors: result.errors ?? {} });
   } catch (err) {
     console.error("[validate-input]", err);
-    // On error, don't block the user — return no errors
     return NextResponse.json({ errors: {} });
   }
 }
