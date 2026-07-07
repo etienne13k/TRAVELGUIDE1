@@ -792,6 +792,114 @@ export default function BusinessPage() {
         </div>
       </section>
 
+      {/* PRICING */}
+      <section className="py-14 sm:py-24 px-4 sm:px-6" id="pricing" style={{ background: B.bg }}>
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-2xl sm:text-4xl lg:text-5xl font-bold mb-4" style={{ color: B.text, fontFamily: "var(--font-playfair), Georgia, serif" }}>
+              {lang === "fr" ? "Tarifs professionnels" : "Professional pricing"}
+            </h2>
+            <p className="max-w-xl mx-auto text-sm leading-relaxed" style={{ color: B.muted }}>
+              {lang === "fr"
+                ? "Guide 7 jours à 5€ ou abonnement illimité à 15€/mois — deux formules indépendantes."
+                : "7-day guide at €5 or unlimited subscription at €15/month — two independent plans."}
+            </p>
+          </div>
+
+          {/* ABONNEMENT — featured */}
+          <div className="relative rounded-2xl p-8 sm:p-10 mb-6 overflow-hidden" style={{ background: `linear-gradient(135deg, ${B.dark2}, ${B.dark1})`, border: `1px solid ${B.accentBorder}` }}>
+            <div className="absolute top-0 right-0 w-64 h-64 rounded-full -translate-y-1/2 translate-x-1/2 pointer-events-none" style={{ background: "rgba(59,130,246,0.05)" }} />
+            <div className="absolute -top-3 left-8 text-white text-[11px] font-bold px-4 py-1 rounded-full" style={{ background: B.accent }}>
+              {lang === "fr" ? "★ Guides illimités" : "★ Unlimited guides"}
+            </div>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 relative">
+              <div className="flex-1">
+                <p className="text-[10px] font-mono tracking-widest uppercase mb-2" style={{ color: "rgba(59,130,246,0.6)" }}>
+                  {lang === "fr" ? "Abonnement mensuel" : "Monthly subscription"}
+                </p>
+                <h3 className="text-2xl sm:text-3xl font-bold mb-3" style={{ color: B.text, fontFamily: "var(--font-playfair), Georgia, serif" }}>
+                  {lang === "fr" ? "Abonnement Travel Business" : "Travel Business Subscription"}
+                </h3>
+                <ul className="space-y-1.5 text-sm" style={{ color: "rgba(255,255,255,0.65)" }}>
+                  {(lang === "fr"
+                    ? ["Guides illimités tous vos déplacements du mois","Toutes durées incluses (jusqu'à 1 mois)","Idéal pour des déplacements fréquents","Guides disponibles dès l'achat"]
+                    : ["Unlimited guides for all business trips this month","All durations included (up to 1 month)","Perfect for frequent travellers","Guides available immediately after purchase"]
+                  ).map(f => (
+                    <li key={f} className="flex items-center gap-2">
+                      <span className="font-bold text-xs" style={{ color: B.accent }}>✓</span>{f}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="flex flex-col items-start sm:items-end gap-3 shrink-0">
+                <div>
+                  <div className="flex items-end gap-1">
+                    <span className="text-6xl font-black" style={{ color: B.accent, fontFamily: "var(--font-playfair), Georgia, serif" }}>15€</span>
+                    <span className="text-sm mb-2" style={{ color: B.muted }}>/mois</span>
+                  </div>
+                  <p className="text-xs mt-1" style={{ color: B.faint }}>{lang === "fr" ? "Résiliable à tout moment" : "Cancel anytime"}</p>
+                </div>
+                <a href="/business/questionnaire?plan=1mois"
+                  className="font-bold px-8 py-3 rounded-xl text-sm whitespace-nowrap text-white transition-all hover:opacity-90 hover:scale-105"
+                  style={{ background: B.accent }}>
+                  {lang === "fr" ? "S'abonner →" : "Subscribe →"}
+                </a>
+              </div>
+            </div>
+          </div>
+
+          {/* Séparateur */}
+          <div className="flex items-center gap-4 my-6">
+            <div className="flex-1 h-px" style={{ background: B.border }} />
+            <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: B.faint }}>
+              {lang === "fr" ? "ou guide à la carte" : "or one-off guide"}
+            </span>
+            <div className="flex-1 h-px" style={{ background: B.border }} />
+          </div>
+
+          {/* GUIDE 7J */}
+          <div className="rounded-2xl p-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6" style={{ background: B.card, border: `1px solid ${B.border}` }}>
+            <div className="flex-1">
+              <p className="text-[10px] font-mono tracking-widest uppercase mb-2" style={{ color: B.faint }}>
+                {lang === "fr" ? "Guide à la carte" : "One-off guide"}
+              </p>
+              <h3 className="text-2xl font-bold mb-3" style={{ color: B.text, fontFamily: "var(--font-playfair), Georgia, serif" }}>
+                {lang === "fr" ? "Guide mission 7 jours" : "7-day mission guide"}
+              </h3>
+              <ul className="space-y-1.5 text-sm" style={{ color: B.muted }}>
+                {(lang === "fr"
+                  ? ["Programme mission jour par jour jusqu'à 7 jours","Hôtels business, restaurants clients","Transports & agenda optimisés","Livraison PDF sous 48h"]
+                  : ["Mission schedule day-by-day up to 7 days","Business hotels, client restaurants","Optimised transport & agenda","PDF delivery within 48h"]
+                ).map(f => (
+                  <li key={f} className="flex items-center gap-2">
+                    <span className="font-bold text-xs" style={{ color: B.accent }}>✓</span>{f}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="flex flex-col items-start sm:items-end gap-3 shrink-0">
+              <div>
+                <div className="flex items-end gap-1">
+                  <span className="text-6xl font-black" style={{ color: B.accent, fontFamily: "var(--font-playfair), Georgia, serif" }}>5€</span>
+                </div>
+                <p className="text-xs mt-1" style={{ color: B.faint }}>{lang === "fr" ? "Paiement unique" : "One-time payment"}</p>
+              </div>
+              <a href="/business/questionnaire"
+                className="font-bold px-8 py-3 rounded-xl text-sm whitespace-nowrap transition-all hover:scale-105"
+                style={{ background: B.border, color: B.text }}>
+                {lang === "fr" ? "Configurer ma mission →" : "Configure my mission →"}
+              </a>
+            </div>
+          </div>
+
+          <p className="text-center text-xs mt-6" style={{ color: B.faint }}>
+            {lang === "fr"
+              ? "Abonné ? Créez des guides gratuits directement depuis le questionnaire."
+              : "Already subscribed? Create free guides directly from the questionnaire."}
+          </p>
+        </div>
+      </section>
+
       {/* SOCIAL PROOF */}
       <section className="py-14 sm:py-24 px-4 sm:px-6 text-white" style={{ background: `linear-gradient(135deg, ${B.dark2}, ${B.dark1}, ${B.dark2})` }}>
         <div className="max-w-5xl mx-auto text-center">

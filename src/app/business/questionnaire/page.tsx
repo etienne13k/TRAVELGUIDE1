@@ -96,13 +96,8 @@ const PAYS_EXEMPLES = [
 ];
 
 /* ─── Business plan options ─── */
-const B_PLANS = [
-  { key: "7j",    label: "1 semaine",  duration: "Jusqu'à 7 jours",  price: 500,  priceLabel: "5€",  tranches: 1 },
-  { key: "14j",   label: "2 semaines", duration: "Jusqu'à 14 jours", price: 1000, priceLabel: "10€", tranches: 2 },
-  { key: "21j",   label: "3 semaines", duration: "Jusqu'à 21 jours", price: 1500, priceLabel: "15€", tranches: 3 },
-] as const;
-const B_DATE_LIMITS: Record<string, number> = { "7j": 7, "14j": 14, "21j": 21, "1mois": 31 };
-type BPlanKey = "7j" | "14j" | "21j" | "1mois";
+const B_DATE_LIMITS: Record<string, number> = { "7j": 7, "1mois": 31 };
+type BPlanKey = "7j" | "1mois";
 
 interface MissionAnswers {
   selectedPlan: BPlanKey;
@@ -474,12 +469,12 @@ function BusinessQuestionnaireContent() {
 
     const destination = answers.destination_city.trim() + (answers.destination_country ? `, ${answers.destination_country}` : "");
     const dates = answers.arrival_date && answers.departure_date ? `${answers.arrival_date} → ${answers.departure_date}` : answers.arrival_date;
-    const planKey = answers.selectedPlan as "7j" | "14j" | "21j" | "1mois";
+    const planKey = answers.selectedPlan as "7j" | "1mois";
     const isAbonnement = planKey === "1mois";
     const cartInput = {
       planId: planKey,
-      planLabel: isAbonnement ? "Abonnement Business — 1 mois" : CART_PLANS[planKey].label,
-      price: isAbonnement ? 1500 : CART_PLANS[planKey].amount,
+      planLabel: isAbonnement ? "Inclus — Abonnement Business actif" : CART_PLANS[planKey].label,
+      price: isAbonnement ? 0 : CART_PLANS[planKey].amount,
       destination: destination || "Destination à préciser",
       dates,
       criteria: {
@@ -595,42 +590,30 @@ function BusinessQuestionnaireContent() {
                 <p className="text-[10px] font-bold uppercase tracking-[0.22em]" style={{ color: B.blue }}>Forfait</p>
               </div>
               <div className="p-6">
-                <p className="text-xs mb-4" style={{ color: B.muted }}>5€ par tranche de 7 jours — pas obligé d'utiliser les 7 jours.</p>
-                <div className="grid grid-cols-3 gap-2 mb-3">
-                  {B_PLANS.map(plan => {
-                    const sel = answers.selectedPlan === plan.key;
-                    return (
-                      <button key={plan.key} type="button" onClick={() => setAnswers(p => ({ ...p, selectedPlan: plan.key as BPlanKey, arrival_date: "", departure_date: "" }))}
-                        className="rounded-xl p-3 text-left transition-all"
-                        style={{ border: `2px solid ${sel ? B.blue : B.border}`, background: sel ? B.blueFaint : B.cardDeep }}>
-                        <span className="block text-[10px] font-bold uppercase tracking-wider mb-1" style={{ color: B.muted }}>{plan.duration}</span>
-                        <span className="text-2xl font-black" style={{ color: B.blue }}>{plan.priceLabel}</span>
-                        <div className="mt-1.5 flex items-center gap-1">
-                          {Array.from({length: plan.tranches}).map((_,i) => <div key={i} className="h-1.5 flex-1 rounded-full" style={{ background: B.blue }} />)}
-                          {Array.from({length: 3 - plan.tranches}).map((_,i) => <div key={i} className="h-1.5 flex-1 rounded-full" style={{ background: B.border }} />)}
-                        </div>
-                        <span className="mt-1 block text-[10px]" style={{ color: B.faint }}>{plan.tranches} tranche{plan.tranches > 1 ? "s" : ""} × 5€</span>
-                      </button>
-                    );
-                  })}
+                <div className="grid sm:grid-cols-2 gap-3">
+                  {/* Guide 7j */}
+                  <button type="button" onClick={() => setAnswers(p => ({ ...p, selectedPlan: "7j", arrival_date: "", departure_date: "" }))}
+                    className="rounded-xl p-5 text-left transition-all"
+                    style={{ border: `2px solid ${answers.selectedPlan === "7j" ? B.blue : B.border}`, background: answers.selectedPlan === "7j" ? B.blueFaint : B.cardDeep }}>
+                    <span className="block text-[10px] font-bold uppercase tracking-wider mb-2" style={{ color: B.muted }}>Guide à la carte</span>
+                    <div className="flex items-baseline gap-1 mb-1">
+                      <span className="text-4xl font-black" style={{ color: B.blue }}>5€</span>
+                    </div>
+                    <p className="text-sm font-semibold mb-1" style={{ color: B.text }}>Guide 7 jours</p>
+                    <p className="text-xs" style={{ color: B.muted }}>Jusqu'à 7 jours · paiement unique</p>
+                  </button>
+                  {/* Abonnement actif */}
+                  <button type="button" onClick={() => setAnswers(p => ({ ...p, selectedPlan: "1mois", arrival_date: "", departure_date: "" }))}
+                    className="rounded-xl p-5 text-left transition-all"
+                    style={{ border: `2px solid ${answers.selectedPlan === "1mois" ? B.blue : B.border}`, background: answers.selectedPlan === "1mois" ? B.blueFaint : B.cardDeep }}>
+                    <span className="block text-[10px] font-bold uppercase tracking-wider mb-2" style={{ color: B.blue }}>Abonnement actif</span>
+                    <div className="flex items-baseline gap-1 mb-1">
+                      <span className="text-4xl font-black" style={{ color: B.text }}>Gratuit</span>
+                    </div>
+                    <p className="text-sm font-semibold mb-1" style={{ color: B.text }}>Inclus dans mon abonnement</p>
+                    <p className="text-xs" style={{ color: B.muted }}>Guides illimités · abonnement 15€/mois requis</p>
+                  </button>
                 </div>
-                <div className="flex items-center gap-3 my-3">
-                  <div className="flex-1 h-px" style={{ background: B.border }} />
-                  <span className="text-xs font-semibold" style={{ color: B.faint }}>ou</span>
-                  <div className="flex-1 h-px" style={{ background: B.border }} />
-                </div>
-                <button type="button" onClick={() => setAnswers(p => ({ ...p, selectedPlan: "1mois", arrival_date: "", departure_date: "" }))}
-                  className="w-full rounded-xl p-4 text-left flex items-center justify-between transition-all"
-                  style={{ border: `2px solid ${answers.selectedPlan === "1mois" ? B.blue : B.border}`, background: answers.selectedPlan === "1mois" ? B.blueFaint : B.cardDeep }}>
-                  <div>
-                    <span className="block text-xs font-bold uppercase tracking-wider mb-0.5" style={{ color: B.blue }}>Abonnement mensuel</span>
-                    <span className="text-sm" style={{ color: B.muted }}>Guides illimités · tous déplacements du mois</span>
-                  </div>
-                  <div className="text-right shrink-0 ml-4">
-                    <span className="text-2xl font-black" style={{ color: B.blue }}>15€</span>
-                    <span className="text-xs block" style={{ color: B.faint }}>/mois</span>
-                  </div>
-                </button>
               </div>
             </div>
 

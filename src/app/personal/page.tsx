@@ -46,7 +46,7 @@ const translations = {
       },
     ],
     pricing_title: "Tarifs simples, transparents",
-    pricing_sub: "5€ par tranche de 7 jours — pas obligé d'utiliser les 7 jours. Ou abonnez-vous pour des guides illimités.",
+    pricing_sub: "Guide 7 jours à 5€ ou abonnement illimité à 13€/mois — deux formules indépendantes.",
     gift_tooltip: "🏷️ -25% avec le code WELCOME",
     gift_unlocked_tooltip: "✅ Code WELCOME disponible !",
     plans: [
@@ -206,7 +206,7 @@ const translations = {
       },
     ],
     pricing_title: "Simple, transparent pricing",
-    pricing_sub: "€5 per 7-day block — no need to use all 7 days. Or subscribe for unlimited guides.",
+    pricing_sub: "7-day guide at €5 or unlimited subscription at €13/month — two independent plans.",
     gift_tooltip: "🏷️ -25% with code WELCOME",
     gift_unlocked_tooltip: "✅ WELCOME code available!",
     plans: [
@@ -521,7 +521,7 @@ export default function Home() {
                 <div className="bg-[#111810] border-b border-[#232c20] px-6 py-5">
                   <div className="flex items-center justify-between mb-3">
                     <span className="text-[9px] font-mono text-[#3a5037] tracking-[0.2em] uppercase">TravelGuide</span>
-                    <span className="text-[#C9A84C] font-bold text-base" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>6€</span>
+                    <span className="text-[#C9A84C] font-bold text-base" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>5€</span>
                   </div>
                   <div className="text-2xl font-bold text-[#d8e3d5] mb-0.5" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>Tokyo</div>
                   <div className="text-[#7a9076] text-xs mb-4">{tx.hero_card_subtitle}</div>
@@ -684,137 +684,116 @@ export default function Home() {
 
       {/* PRICING */}
       <section className="scroll-mt-28 py-14 sm:py-24 px-4 sm:px-6 bg-pattern-light" id="pricing">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-12">
             <h2
               className="text-2xl sm:text-4xl lg:text-5xl font-bold mb-4 text-[#d8e3d5]"
               style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
             >
               {tx.pricing_title}
             </h2>
-            <p className="text-[#7a9076] max-w-2xl mx-auto text-sm leading-relaxed">{tx.pricing_sub}</p>
+            <p className="text-[#7a9076] max-w-xl mx-auto text-sm leading-relaxed">
+              {lang === "fr"
+                ? "Un guide à la carte ou un abonnement illimité — deux formules indépendantes."
+                : "A one-off guide or unlimited subscription — two independent plans."}
+            </p>
           </div>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            {tx.plans.map((plan) => {
-              const isInverted = plan.popular;
-              const isGiftPlan = !phoneStatus.welcomeUsed; // disparaît si déjà utilisé
-              const giftUnlocked = phoneStatus.loggedIn && phoneStatus.phoneVerified && !phoneStatus.welcomeUsed;
-              const giftTooltip = giftUnlocked ? tx.gift_unlocked_tooltip : tx.gift_tooltip;
-              return (
-                <div
-                  key={plan.name}
-                  className={`relative rounded-2xl p-6 border flex flex-col transition-all duration-300 hover:shadow-2xl hover:-translate-y-1.5 ${
-                    isInverted
-                      ? "bg-gradient-to-br from-[#1e3324] to-[#162818] text-white border-[#2a4433] shadow-[0_8px_32px_rgba(66,92,71,0.3)]"
-                      : "bg-[#161c14] text-[#d8e3d5] border-[#232c20]"
-                  }`}
-                >
-                  {/* Popular badge */}
-                  {plan.popular && (
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#C9A84C] text-white text-[11px] font-bold px-4 py-1 rounded-full whitespace-nowrap">
-                      ★ {tx.plan_popular_badge}
-                    </div>
-                  )}
-                  {/* Gift badge */}
-                  {isGiftPlan && (
-                    <div className="group absolute right-3 top-3 z-10">
-                      <div
-                        tabIndex={0}
-                        title={giftTooltip}
-                        aria-label={giftTooltip}
-                        className={`gift-badge flex h-10 w-10 items-center justify-center rounded-full border text-lg shadow-lg outline-none transition focus:ring-2 focus:ring-[#c9a84c]/40 ${
-                          giftUnlocked
-                            ? "border-emerald-200 bg-emerald-50 text-emerald-700"
-                            : "border-[#c9a84c]/30 bg-[#fdf8f0] text-[#c9a84c]"
-                        }`}
-                      >
-                        🎁
-                      </div>
-                      <div className="pointer-events-none absolute right-0 top-full mt-2 w-52 rounded-xl border border-[#c9a84c]/25 bg-[#fdf8f0] px-3 py-2 text-xs font-bold text-[#7a5d19] opacity-0 shadow-xl transition-opacity group-hover:opacity-100 group-focus-within:opacity-100 sm:top-auto sm:bottom-full sm:mb-2 sm:mt-0">
-                        {giftTooltip}
-                      </div>
-                    </div>
-                  )}
 
-                  {/* Premium badge */}
-                  {plan.badge && (
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap">
-                      <span
-                        className={`text-[11px] font-bold px-4 py-1 rounded-full ${
-                          plan.badge.color === "indigo"
-                            ? "bg-[#425C47] text-white"
-                            : "bg-[#C9A84C] text-white"
-                        }`}
-                      >
-                        {plan.badge.label}
-                      </span>
-                    </div>
-                  )}
-
-                  <div className={`text-xs font-mono tracking-wide mb-1 ${isInverted ? "text-white/45" : "text-[#4a6447]"}`}>
-                    {plan.duration.toUpperCase()}
+          {/* ABONNEMENT — featured */}
+          <div className="relative rounded-2xl bg-gradient-to-br from-[#1e3324] to-[#162818] border border-[#2a4433] p-8 sm:p-10 mb-6 shadow-[0_8px_40px_rgba(66,92,71,0.25)] overflow-hidden">
+            <div className="absolute top-0 right-0 w-64 h-64 rounded-full bg-[#c9a84c]/5 -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+            <div className="absolute -top-3 left-8 bg-[#C9A84C] text-[#0e1310] text-[11px] font-bold px-4 py-1 rounded-full">
+              {lang === "fr" ? "★ Guides illimités" : "★ Unlimited guides"}
+            </div>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 relative">
+              <div className="flex-1">
+                <p className="text-xs font-mono tracking-widest text-[#c9a84c]/60 uppercase mb-2">
+                  {lang === "fr" ? "Abonnement mensuel" : "Monthly subscription"}
+                </p>
+                <h3 className="text-2xl sm:text-3xl font-bold text-[#d8e3d5] mb-3" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
+                  {lang === "fr" ? "Abonnement TravelGuide" : "TravelGuide Subscription"}
+                </h3>
+                <ul className="space-y-1.5 text-sm text-white/70">
+                  {(lang === "fr"
+                    ? ["Guides illimités tout le mois","Toutes durées incluses (jusqu'à 1 mois)","Idéal si vous planifiez plusieurs voyages","Guides utilisables dès l'achat"]
+                    : ["Unlimited guides all month","All durations included (up to 1 month)","Perfect for planning multiple trips","Guides available immediately after purchase"]
+                  ).map(f => (
+                    <li key={f} className="flex items-center gap-2">
+                      <span className="text-[#C9A84C] font-bold text-xs">✓</span>{f}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="flex flex-col items-start sm:items-end gap-3 shrink-0">
+                <div>
+                  <div className="flex items-end gap-1">
+                    <span className="text-6xl font-black text-[#C9A84C]" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>13€</span>
+                    <span className="text-sm text-[#7a9076] mb-2">/mois</span>
                   </div>
-
-                  {/* Price display */}
-                  <div className="mb-4">
-                    <div className="flex items-end gap-2">
-                      <span
-                        className="text-5xl font-bold text-[#C9A84C]"
-                        style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
-                      >
-                        {plan.price}
-                      </span>
-                      {plan.plan_key === "1mois" && (
-                        <span className="text-sm text-[#7a9076] mb-1">/mois</span>
-                      )}
-                    </div>
-                    <span
-                      className={`mt-2 inline-flex rounded-full px-3 py-1 text-[11px] font-bold ${
-                        isInverted ? "bg-white/10 text-[#E8C060]" : "bg-[#C9A84C]/10 text-[#c9a84c]"
-                      }`}
-                    >
-                      {plan.savings}
-                    </span>
-                  </div>
-
-                  <div className="font-semibold text-base mb-4">{plan.name}</div>
-                  <p className={`text-sm leading-relaxed mb-6 ${isInverted ? "text-white/65" : "text-[#7a9076]"}`}>
-                    {plan.desc}
-                  </p>
-
-                  <ul className="space-y-2 mb-6 flex-1">
-                    {plan.inherited && (
-                      <li className="text-sm flex items-center gap-2 font-medium mb-3 text-[#C9A84C]">
-                        <span className="text-[#C9A84C] font-bold text-xs">↑</span>
-                        {plan.inherited}
-                      </li>
-                    )}
-                    {plan.features.map((f) => (
-                      <li
-                        key={f}
-                        className={`text-sm flex items-center gap-2 ${isInverted ? "text-white/80" : "text-[#7a9076]"}`}
-                      >
-                        <span className="text-[#C9A84C] font-bold text-xs">✓</span>
-                        {f}
-                      </li>
-                    ))}
-                  </ul>
-
-                  <a
-                    href={`/questionnaire?plan=${plan.plan_key}&lang=${lang}`}
-                    onClick={() => trackPurchase(plan.name, plan.price)}
-                    className={`block w-full text-center font-semibold py-3 rounded-xl transition-all hover:scale-105 text-sm ${
-                      isInverted
-                        ? "bg-[#C9A84C] text-[#0e1310] hover:bg-[#B8962E]"
-                        : "bg-[#425C47] text-[#d8e3d5] hover:bg-[#2e4133]"
-                    }`}
-                  >
-                    {plan.cta}
-                  </a>
+                  <p className="text-xs text-[#5a7856] mt-1">{lang === "fr" ? "Résiliable à tout moment" : "Cancel anytime"}</p>
                 </div>
-              );
-            })}
+                <a
+                  href={`/questionnaire?plan=1mois&lang=${lang}`}
+                  onClick={() => trackPurchase("Abonnement", "13€")}
+                  className="bg-[#C9A84C] text-[#0e1310] font-bold px-8 py-3 rounded-xl hover:bg-[#B8962E] transition-all hover:scale-105 text-sm whitespace-nowrap"
+                >
+                  {lang === "fr" ? "S'abonner →" : "Subscribe →"}
+                </a>
+              </div>
+            </div>
           </div>
+
+          {/* Séparateur */}
+          <div className="flex items-center gap-4 my-6">
+            <div className="flex-1 h-px bg-[#232c20]" />
+            <span className="text-xs text-[#3a5037] font-semibold uppercase tracking-wider">
+              {lang === "fr" ? "ou guide à la carte" : "or one-off guide"}
+            </span>
+            <div className="flex-1 h-px bg-[#232c20]" />
+          </div>
+
+          {/* GUIDE 7J — à la carte */}
+          <div className="rounded-2xl bg-[#161c14] border border-[#232c20] p-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
+            <div className="flex-1">
+              <p className="text-xs font-mono tracking-widest text-[#4a6447] uppercase mb-2">
+                {lang === "fr" ? "Guide à la carte" : "One-off guide"}
+              </p>
+              <h3 className="text-2xl font-bold text-[#d8e3d5] mb-3" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
+                {lang === "fr" ? "Guide 7 jours" : "7-day Guide"}
+              </h3>
+              <ul className="space-y-1.5 text-sm text-[#7a9076]">
+                {(lang === "fr"
+                  ? ["Itinéraire jour par jour jusqu'à 7 jours","Restaurants & activités sélectionnés","Conseils pratiques (météo, transport, budget)","Livraison PDF par email sous 48h"]
+                  : ["Day-by-day itinerary up to 7 days","Curated restaurants & activities","Practical tips (weather, transport, budget)","PDF delivery by email within 48h"]
+                ).map(f => (
+                  <li key={f} className="flex items-center gap-2">
+                    <span className="text-[#C9A84C] font-bold text-xs">✓</span>{f}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="flex flex-col items-start sm:items-end gap-3 shrink-0">
+              <div>
+                <div className="flex items-end gap-1">
+                  <span className="text-6xl font-black text-[#C9A84C]" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>5€</span>
+                </div>
+                <p className="text-xs text-[#5a7856] mt-1">{lang === "fr" ? "Paiement unique" : "One-time payment"}</p>
+              </div>
+              <a
+                href={`/questionnaire?plan=7j&lang=${lang}`}
+                onClick={() => trackPurchase("Guide 7j", "5€")}
+                className="bg-[#425C47] text-[#d8e3d5] font-bold px-8 py-3 rounded-xl hover:bg-[#2e4133] transition-all hover:scale-105 text-sm whitespace-nowrap"
+              >
+                {lang === "fr" ? "Commencer →" : "Get started →"}
+              </a>
+            </div>
+          </div>
+
+          <p className="text-center text-xs text-[#3a5037] mt-6">
+            {lang === "fr"
+              ? "Abonné ? Créez des guides gratuits directement depuis le questionnaire."
+              : "Already subscribed? Create free guides directly from the questionnaire."}
+          </p>
         </div>
       </section>
 

@@ -9,7 +9,7 @@ function getActiveCartKey(): string {
     : CART_STORAGE_KEY;
 }
 
-export const PLAN_KEYS = ["7j", "14j", "21j", "1mois"] as const;
+export const PLAN_KEYS = ["7j", "1mois"] as const;
 export type PlanKey = (typeof PLAN_KEYS)[number];
 
 export type CartCriteriaValue = string | string[] | number | boolean | null | undefined;
@@ -28,10 +28,8 @@ export type CartItem = {
 };
 
 export const CART_PLANS: Record<PlanKey, { label: string; duration: string; amount: number }> = {
-  "7j":    { label: "Guide Voyage — 1 semaine",  duration: "Jusqu'à 7 jours",  amount: 500  },
-  "14j":   { label: "Guide Voyage — 2 semaines", duration: "Jusqu'à 14 jours", amount: 1000 },
-  "21j":   { label: "Guide Voyage — 3 semaines", duration: "Jusqu'à 21 jours", amount: 1500 },
-  "1mois": { label: "Abonnement Mensuel",         duration: "1 mois illimité",  amount: 1300 },
+  "7j":    { label: "Guide Voyage — 7 jours", duration: "Jusqu'à 7 jours", amount: 500  },
+  "1mois": { label: "Abonnement Mensuel",      duration: "1 mois illimité", amount: 1300 },
 };
 
 export type CartItemInput = Omit<CartItem, "id" | "createdAt" | "updatedAt">;
@@ -45,12 +43,8 @@ export function normalizePlanKey(value: unknown): PlanKey | null {
 
   const aliases: Record<string, PlanKey> = {
     basic: "7j",
-    standard: "14j",
-    premium: "21j",
     elite: "1mois",
     "7": "7j",
-    "14": "14j",
-    "21": "21j",
     "30": "1mois",
   };
 
@@ -98,9 +92,7 @@ export function saveCart(items: CartItem[]): void {
 
 // Stripe Payment Links — one per plan
 export const STRIPE_PAYMENT_LINKS: Record<PlanKey, string> = {
-  "3j":    "https://buy.stripe.com/6oUbJ15ZXb3e8rx9KM0Ba01",
   "7j":    "https://buy.stripe.com/00wdR9fAxc7iePV8GI0Ba02",
-  "14j":   "https://buy.stripe.com/7sY3cv2NLefq8rxe120Ba03",
   "1mois": "https://buy.stripe.com/5kQ28r1JHfju239g9a0Ba04",
 };
 
