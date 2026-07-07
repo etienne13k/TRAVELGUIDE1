@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useMode } from "@/lib/mode-theme";
 
 const CONTACT = "travel-guide@nanocorp.app";
 const SITE_URL = "https://travel-guide.nanocorp.app";
@@ -364,11 +365,11 @@ function renderBody(text: string) {
   const lines = text.split("\n");
   return lines.map((line, i) => {
     if (line.startsWith("| ")) return null;
-    const bold = line.replace(/\*\*(.*?)\*\*/g, "<strong class='text-[#b8cdb4]'>$1</strong>");
+    const bold = line.replace(/\*\*(.*?)\*\*/g, "<strong style='color:var(--cs)'>$1</strong>");
     if (line.startsWith("- ")) return <li key={i} className="ml-4 list-disc" dangerouslySetInnerHTML={{ __html: bold.slice(2) }} />;
     if (/^\d+\. /.test(line)) return <li key={i} className="ml-4 list-decimal" dangerouslySetInnerHTML={{ __html: bold.replace(/^\d+\. /, "") }} />;
     if (line.startsWith("> ")) return (
-      <blockquote key={i} className="border-l-4 border-[#c9a84c]/40 pl-4 my-3 bg-[#1e2820] py-2 pr-2 rounded-r text-sm italic text-[#7a9076]">
+      <blockquote key={i} className="border-l-4 pl-4 my-3 py-2 pr-2 rounded-r text-sm italic" style={{ borderColor: "var(--ca)", background: "var(--csh)", color: "var(--cm)" }}>
         {line.slice(2)}
       </blockquote>
     );
@@ -388,17 +389,17 @@ function renderSection(body: string) {
         <div key={j} className="overflow-x-auto my-3">
           <table className="w-full text-xs border-collapse">
             <thead>
-              <tr className="bg-[#232c20]">
-                {headers.map((h, k) => <th key={k} className="px-3 py-2 text-left font-semibold text-[#d8e3d5]">{h}</th>)}
+              <tr style={{ background: "var(--ce)" }}>
+                {headers.map((h, k) => <th key={k} className="px-3 py-2 text-left font-semibold" style={{ color: "var(--ct)" }}>{h}</th>)}
               </tr>
             </thead>
             <tbody>
               {dataRows.map((row, k) => {
                 const cells = row.split("|").filter(Boolean).map(c => c.trim());
                 return (
-                  <tr key={k} className={k % 2 === 0 ? "bg-[#111810]" : "bg-[#161c14]"}>
+                  <tr key={k} style={{ background: k % 2 === 0 ? "var(--cd)" : "var(--cc)" }}>
                     {cells.map((cell, l) => (
-                      <td key={l} className="px-3 py-2 border-b border-[#232c20] text-[#7a9076]" dangerouslySetInnerHTML={{ __html: cell.replace(/\*\*(.*?)\*\*/g, "<strong class='text-[#b8cdb4]'>$1</strong>") }} />
+                      <td key={l} className="px-3 py-2 border-b" style={{ borderColor: "var(--ce)", color: "var(--cm)" }} dangerouslySetInnerHTML={{ __html: cell.replace(/\*\*(.*?)\*\*/g, "<strong style='color:var(--cs)'>$1</strong>") }} />
                     ))}
                   </tr>
                 );
@@ -418,21 +419,24 @@ function renderSection(body: string) {
 
 export default function CGVPage() {
   const [lang, setLang] = useState<"fr" | "en">("fr");
+  const { isBusiness } = useMode();
   const t = content[lang];
+  const brandName = isBusiness ? "Travel Business IA" : "TravelGuide AI";
+  const backHref = isBusiness ? "/business" : "/personal";
 
   return (
-    <div className="min-h-screen bg-[#0e1310]" style={{ fontFamily: "var(--font-dm-sans, system-ui, sans-serif)" }}>
-      <header className="sticky top-0 z-10 bg-[#0e1310]/95 backdrop-blur border-b border-[#232c20] px-6 py-4">
+    <div className="min-h-screen" style={{ background: "var(--cb)", fontFamily: "var(--font-dm-sans), system-ui, sans-serif" }}>
+      <header className="sticky top-0 z-10 backdrop-blur border-b px-6 py-4" style={{ background: "var(--cb)", borderColor: "var(--ce)" }}>
         <div className="max-w-3xl mx-auto flex items-center justify-between">
-          <Link href="/" className="text-sm text-[#7a9076] hover:text-[#d8e3d5] transition-colors">
+          <Link href={backHref} className="text-sm transition-colors" style={{ color: "var(--cm)" }}>
             {t.back}
           </Link>
-          <span className="font-bold text-[#d8e3d5]" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>TravelGuide AI</span>
-          <div className="flex items-center gap-1 border border-[#232c20] rounded-lg p-0.5">
-            <button onClick={() => setLang("fr")} title="Passer en français" className={`rounded-md px-2 py-0.5 transition-all ${lang === "fr" ? "bg-[#232c20]" : "opacity-40 hover:opacity-70"}`}>
+          <span className="font-bold" style={{ fontFamily: "var(--font-playfair), Georgia, serif", color: "var(--ct)" }}>{brandName}</span>
+          <div className="flex items-center gap-1 rounded-lg p-0.5" style={{ border: "1px solid var(--ce)" }}>
+            <button onClick={() => setLang("fr")} title="Passer en français" className={`rounded-md px-2 py-0.5 transition-all ${lang !== "fr" ? "opacity-40 hover:opacity-70" : ""}`} style={lang === "fr" ? { background: "var(--ce)" } : {}}>
               <img src="https://flagcdn.com/w40/fr.png" width="24" height="16" alt="FR" style={{display:"inline",borderRadius:"2px"}} />
             </button>
-            <button onClick={() => setLang("en")} title="Switch to English" className={`rounded-md px-2 py-0.5 transition-all ${lang === "en" ? "bg-[#232c20]" : "opacity-40 hover:opacity-70"}`}>
+            <button onClick={() => setLang("en")} title="Switch to English" className={`rounded-md px-2 py-0.5 transition-all ${lang !== "en" ? "opacity-40 hover:opacity-70" : ""}`} style={lang === "en" ? { background: "var(--ce)" } : {}}>
               <img src="https://flagcdn.com/w40/gb.png" width="24" height="16" alt="GB" style={{display:"inline",borderRadius:"2px"}} />
             </button>
           </div>
@@ -441,31 +445,31 @@ export default function CGVPage() {
 
       <main className="max-w-3xl mx-auto px-6 py-12">
         <div className="mb-10">
-          <h1 className="text-3xl font-bold text-[#d8e3d5] mb-2" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
+          <h1 className="text-3xl font-bold mb-2" style={{ fontFamily: "var(--font-playfair), Georgia, serif", color: "var(--ct)" }}>
             {t.title}
           </h1>
-          <p className="text-sm text-[#7a9076]">{t.subtitle}</p>
-          <p className="mt-3 text-xs text-[#4a6447] italic border-l-2 border-[#c9a84c]/30 pl-3">{t.note}</p>
+          <p className="text-sm" style={{ color: "var(--cm)" }}>{t.subtitle}</p>
+          <p className="mt-3 text-xs italic border-l-2 pl-3" style={{ color: "var(--cf)", borderColor: "var(--ca)" }}>{t.note}</p>
         </div>
 
         <div className="space-y-8">
           {t.sections.map((section) => (
             <section key={section.id} id={section.id} className="scroll-mt-20">
-              <h2 className="text-lg font-semibold text-[#d8e3d5] mb-3 pb-1 border-b border-[#232c20]">
+              <h2 className="text-lg font-semibold mb-3 pb-1 border-b" style={{ color: "var(--ct)", borderColor: "var(--ce)" }}>
                 {section.title}
               </h2>
-              <div className="text-sm text-[#7a9076] leading-relaxed">
+              <div className="text-sm leading-relaxed" style={{ color: "var(--cm)" }}>
                 {renderSection(section.body)}
               </div>
             </section>
           ))}
         </div>
 
-        <div className="mt-16 pt-8 border-t border-[#232c20] text-center text-xs text-[#4a6447]">
-          <p>TravelGuide AI — NanoCorp · {SITE_URL}</p>
+        <div className="mt-16 pt-8 border-t text-center text-xs" style={{ borderColor: "var(--ce)", color: "var(--cf)" }}>
+          <p>{brandName} — NanoCorp · {SITE_URL}</p>
           <p className="mt-1">
             {lang === "fr" ? `Pour toute question : ` : `For any question: `}
-            <a href={`mailto:${CONTACT}`} className="underline hover:text-[#7a9076]">{CONTACT}</a>
+            <a href={`mailto:${CONTACT}`} className="underline" style={{ color: "var(--cf)" }}>{CONTACT}</a>
           </p>
         </div>
       </main>

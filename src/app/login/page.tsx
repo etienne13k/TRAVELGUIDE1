@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import LangToggle from "@/components/LangToggle";
+import { useMode } from "@/lib/mode-theme";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -11,6 +12,9 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const { isBusiness } = useMode();
+  const brandName = isBusiness ? "Travel Business IA" : "TravelGuide AI";
+  const backHref = isBusiness ? "/business" : "/personal";
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -39,28 +43,28 @@ export default function LoginPage() {
   return (
     <div
       className="min-h-screen flex items-center justify-center px-4"
-      style={{ background: "#0e1310", fontFamily: "var(--font-dm-sans), system-ui, sans-serif" }}
+      style={{ background: "var(--cb)", fontFamily: "var(--font-dm-sans), system-ui, sans-serif" }}
     >
       <div className="w-full max-w-md">
         <div className="flex items-center justify-between mb-8">
           <div />
-          <Link href="/" className="text-2xl font-bold" style={{ fontFamily: "var(--font-playfair), Georgia, serif", color: "#d8e3d5" }}>
-            TravelGuide AI
+          <Link href={backHref} className="text-2xl font-bold" style={{ fontFamily: "var(--font-playfair), Georgia, serif", color: "var(--ct)" }}>
+            {brandName}
           </Link>
           <LangToggle />
         </div>
 
-        <div className="rounded-2xl p-8" style={{ background: "#161c14", border: "1px solid #232c20" }}>
-          <h1 className="text-2xl font-bold mb-1" style={{ fontFamily: "var(--font-playfair), Georgia, serif", color: "#d8e3d5" }}>
+        <div className="rounded-2xl p-8" style={{ background: "var(--cc)", border: "1px solid var(--ce)" }}>
+          <h1 className="text-2xl font-bold mb-1" style={{ fontFamily: "var(--font-playfair), Georgia, serif", color: "var(--ct)" }}>
             Connexion
           </h1>
-          <p className="text-sm mb-6" style={{ color: "#7a9076" }}>
+          <p className="text-sm mb-6" style={{ color: "var(--cm)" }}>
             Accédez à votre espace client et suivez vos commandes.
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium mb-1" style={{ color: "#b8cdb4" }}>Email</label>
+              <label className="block text-sm font-medium mb-1" style={{ color: "var(--cs)" }}>Email</label>
               <input
                 type="email"
                 value={email}
@@ -68,15 +72,15 @@ export default function LoginPage() {
                 required
                 placeholder="vous@exemple.com"
                 className="w-full rounded-xl px-4 py-3 text-sm outline-none transition-all"
-                style={{ background: "#111810", border: "1.5px solid #232c20", color: "#d8e3d5" }}
-                onFocus={(e) => (e.target.style.borderColor = "#C9A84C")}
-                onBlur={(e) => (e.target.style.borderColor = "#232c20")}
+                style={{ background: "var(--cd)", border: "1.5px solid var(--ce)", color: "var(--ct)" }}
+                onFocus={(e) => (e.target.style.borderColor = "var(--ca)")}
+                onBlur={(e) => (e.target.style.borderColor = "var(--ce)")}
               />
             </div>
             <div>
               <div className="flex items-center justify-between mb-1">
-                <label className="block text-sm font-medium" style={{ color: "#b8cdb4" }}>Mot de passe</label>
-                <Link href="/forgot-password" className="text-xs" style={{ color: "#C9A84C" }}>
+                <label className="block text-sm font-medium" style={{ color: "var(--cs)" }}>Mot de passe</label>
+                <Link href="/forgot-password" className="text-xs" style={{ color: "var(--ca)" }}>
                   Mot de passe oublié ?
                 </Link>
               </div>
@@ -87,9 +91,9 @@ export default function LoginPage() {
                 required
                 placeholder="••••••••"
                 className="w-full rounded-xl px-4 py-3 text-sm outline-none transition-all"
-                style={{ background: "#111810", border: "1.5px solid #232c20", color: "#d8e3d5" }}
-                onFocus={(e) => (e.target.style.borderColor = "#C9A84C")}
-                onBlur={(e) => (e.target.style.borderColor = "#232c20")}
+                style={{ background: "var(--cd)", border: "1.5px solid var(--ce)", color: "var(--ct)" }}
+                onFocus={(e) => (e.target.style.borderColor = "var(--ca)")}
+                onBlur={(e) => (e.target.style.borderColor = "var(--ce)")}
               />
             </div>
 
@@ -103,15 +107,15 @@ export default function LoginPage() {
               type="submit"
               disabled={loading}
               className="w-full rounded-xl py-3 font-semibold text-sm transition-all"
-              style={{ background: loading ? "#2a3527" : "#425C47", color: "#d8e3d5" }}
+              style={{ background: loading ? "var(--ce)" : "var(--ck)", color: "var(--ct)" }}
             >
               {loading ? "Connexion…" : "Se connecter"}
             </button>
           </form>
 
-          <div className="mt-6 pt-6 text-center text-sm" style={{ borderTop: "1px solid #232c20", color: "#7a9076" }}>
+          <div className="mt-6 pt-6 text-center text-sm" style={{ borderTop: "1px solid var(--ce)", color: "var(--cm)" }}>
             Pas encore de compte ?{" "}
-            <Link href="/signup" className="font-semibold" style={{ color: "#C9A84C" }}>
+            <Link href="/signup" className="font-semibold" style={{ color: "var(--ca)" }}>
               Créer un compte
             </Link>
           </div>

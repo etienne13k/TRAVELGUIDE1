@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, Suspense } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { addCartItem, loadCart } from "@/lib/cart";
+import { addCartItem, loadCart, updateCartItem } from "@/lib/cart";
 
 /* ─── Design tokens ─── */
 const B = {
@@ -63,6 +63,7 @@ const BUDGET_NIVEAUX = [
 const PAYS_EXEMPLES = ["France", "Allemagne", "Espagne", "Italie", "Royaume-Uni", "États-Unis", "Japon", "Chine", "Belgique", "Suisse", "Pays-Bas", "Canada"];
 
 interface MissionAnswers {
+  mission_type: "" | "solo" | "team";
   destination_city: string;
   destination_country: string;
   departure_city: string;
@@ -80,9 +81,10 @@ interface MissionAnswers {
 }
 
 const EMPTY: MissionAnswers = {
+  mission_type: "",
   destination_city: "", destination_country: "", departure_city: "",
   arrival_date: "", departure_date: "", objectif: "",
-  colleagues: 0, hotel_type: "", transports: [], proximite: [],
+  colleagues: 1, hotel_type: "", transports: [], proximite: [],
   budget_niveau: "", requirements: "", notes: "", user_email: "",
 };
 
@@ -221,6 +223,7 @@ function BusinessQuestionnaireContent() {
   async function goNext() {
     if (step === 1) {
       const errs: Record<string, string> = {};
+      if (!answers.mission_type) errs.mission_type = "Veuillez choisir le type de déplacement.";
       if (!answers.destination_city.trim()) errs.destination_city = "Veuillez indiquer la ville de destination.";
       if (!answers.departure_city.trim()) errs.departure_city = "Veuillez indiquer votre ville de départ.";
       if (!answers.arrival_date) errs.arrival_date = "Veuillez sélectionner une date d'arrivée.";
@@ -278,8 +281,8 @@ function BusinessQuestionnaireContent() {
       arrival_date: answers.arrival_date,
       departure_date: answers.departure_date,
       travel_dates: `${answers.arrival_date} → ${answers.departure_date}`,
-      traveler_type: answers.colleagues > 0 ? "group" : "solo",
-      traveler_adults: 1 + answers.colleagues,
+      traveler_type: answers.mission_type === "team" ? "group" : "solo",
+      traveler_adults: answers.mission_type === "team" ? 1 + answers.colleagues : 1,
       traveler_children: 0,
       children_ages: [],
       budget: answers.budget_niveau,
@@ -373,6 +376,55 @@ function BusinessQuestionnaireContent() {
         {/* STEP 1 */}
         {step === 1 && (
           <>
+            {/* Mission type — solo vs team */}
+            <div className="mb-5" id="f-mission_type">
+              <p className="text-xs font-bold uppercase tracking-[0.2em] mb-3" style={{ color: B.blue }}>Type de déplacement</p>
+              <div className="grid sm:grid-cols-2 gap-4">
+                {([
+                  {
+                    id: "solo" as const,
+                    label: "Mission solo",
+                    desc: "Vous voyagez seul. Le guide est optimisé pour un déplacement individuel.",
+                    icon: (
+                      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+                      </svg>
+                    ),
+                  },
+                  {
+                    id: "team" as const,
+                    label: "Mission en équipe",
+                    desc: "Vous voyagez avec des collègues. Le guide intègre la logistique de groupe.",
+                    icon: (
+                      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="9" cy="8" r="3"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/>
+                        <circle cx="17" cy="8" r="3"/><path d="M15 20c0-1.7.7-3.3 2-4.5"/>
+                      </svg>
+                    ),
+                  },
+                ] as const).map(opt => {
+                  const selected = answers.mission_type === opt.id;
+                  return (
+                    <button
+                      key={opt.id}
+                      type="button"
+                      onClick={() => { setAnswers(p => ({ ...p, mission_type: opt.id })); if (errors.mission_type) setErrors(p => ({ ...p, mission_type: "" })); }}
+                      className="rounded-2xl p-5 text-left transition-all"
+                      style={{
+                        background: selected ? B.blueFaint : B.card,
+                        border: `2px solid ${selected ? B.blue : B.border}`,
+                      }}
+                    >
+                      <div className="mb-3" style={{ color: selected ? B.blue : B.muted }}>{opt.icon}</div>
+                      <p className="font-bold text-sm mb-1" style={{ color: selected ? B.blue : B.text }}>{opt.label}</p>
+                      <p className="text-xs leading-relaxed" style={{ color: B.muted }}>{opt.desc}</p>
+                    </button>
+                  );
+                })}
+              </div>
+              {errors.mission_type && <p className="mt-2 text-xs" style={{ color: B.errorText }}>{errors.mission_type}</p>}
+            </div>
+
             <Card title="Destination">
               <div className="space-y-4">
                 <div id="f-destination_city">
@@ -437,15 +489,17 @@ function BusinessQuestionnaireContent() {
               </div>
             </Card>
 
-            <Card title="Voyageurs">
-              <Label>Collègues en déplacement avec vous</Label>
-              <div className="flex items-center gap-4">
-                <Stepper value={answers.colleagues} min={0} max={20} onChange={v => setAnswers(p => ({ ...p, colleagues: v }))} />
-                <span className="text-sm" style={{ color: B.muted }}>
-                  {answers.colleagues === 0 ? "Voyage solo" : `${answers.colleagues} collègue${answers.colleagues > 1 ? "s" : ""}`}
-                </span>
-              </div>
-            </Card>
+            {answers.mission_type === "team" && (
+              <Card title="Équipe">
+                <Label>Nombre de collègues avec vous</Label>
+                <div className="flex items-center gap-4">
+                  <Stepper value={answers.colleagues} min={1} max={20} onChange={v => setAnswers(p => ({ ...p, colleagues: v }))} />
+                  <span className="text-sm" style={{ color: B.muted }}>
+                    {answers.colleagues === 1 ? "1 collègue" : `${answers.colleagues} collègues`}
+                  </span>
+                </div>
+              </Card>
+            )}
           </>
         )}
 
@@ -532,7 +586,7 @@ function BusinessQuestionnaireContent() {
                   { label: "Départ depuis", val: answers.departure_city },
                   { label: "Dates", val: `${answers.arrival_date} → ${answers.departure_date}${totalDays ? ` (${totalDays}j)` : ""}` },
                   { label: "Objectif", val: OBJECTIFS.find(o => o.id === answers.objectif)?.label ?? "" },
-                  { label: "Voyageurs", val: answers.colleagues === 0 ? "Solo" : `1 + ${answers.colleagues} collègue${answers.colleagues > 1 ? "s" : ""}` },
+                  { label: "Type", val: answers.mission_type === "solo" ? "Mission solo" : answers.mission_type === "team" ? `Mission en équipe (1 + ${answers.colleagues} collègue${answers.colleagues > 1 ? "s" : ""})` : "" },
                   { label: "Hébergement", val: HOTELS.find(o => o.id === answers.hotel_type)?.label ?? "" },
                   { label: "Budget / nuit", val: BUDGET_NIVEAUX.find(o => o.id === answers.budget_niveau)?.label ?? "" },
                 ].filter(r => r.val).map(row => (
@@ -615,7 +669,7 @@ function BusinessQuestionnaireContent() {
       </main>
 
       <footer style={{ borderTop: `1px solid ${B.border}`, background: B.bg }} className="py-6 text-center">
-        <p className="text-xs" style={{ color: B.faint }}>© 2026 TravelGuide AI — Mode Professionnel</p>
+        <p className="text-xs" style={{ color: B.faint }}>© 2026 Travel Business IA — Mode Professionnel</p>
       </footer>
     </div>
   );

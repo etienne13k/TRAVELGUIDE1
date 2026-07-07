@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { clearCart } from "@/lib/cart";
 import LangToggle from "@/components/LangToggle";
+import { useMode } from "@/lib/mode-theme";
 
 const PLAN_LABELS: Record<string, string> = {
   "3j": "Guide Express — 3 jours",
@@ -37,6 +38,8 @@ function formatTravelDates(summary: SessionItemSummary | null): string | null {
 
 function SuccessContent() {
   const searchParams = useSearchParams();
+  const { isBusiness } = useMode();
+  const backHref = isBusiness ? "/business" : "/personal";
   const sessionId = searchParams.get("session_id") ?? "";
   const [summary, setSummary] = useState<SessionSummary | null>(null);
   const [loading, setLoading] = useState(Boolean(sessionId));
@@ -81,68 +84,68 @@ function SuccessContent() {
 
   return (
     <div
-      className="min-h-screen bg-[#0e1310] flex items-center justify-center px-6 py-12"
-      style={{ fontFamily: "var(--font-dm-sans), system-ui, sans-serif" }}
+      className="min-h-screen flex items-center justify-center px-6 py-12"
+      style={{ background: "var(--cb)", fontFamily: "var(--font-dm-sans), system-ui, sans-serif" }}
     >
       <div className="fixed top-4 right-4 z-50"><LangToggle /></div>
       <div className="max-w-xl w-full">
-        <div className="rounded-[2rem] border border-[#232c20] bg-[#161c14] p-7 text-center">
+        <div className="rounded-[2rem] p-7 text-center" style={{ border: "1px solid var(--ce)", background: "var(--cc)" }}>
           <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-green-100 flex items-center justify-center">
             <svg className="w-10 h-10 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
             </svg>
           </div>
 
-          <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#C9A84C]">Commande confirmée</p>
+          <p className="text-xs font-bold uppercase tracking-[0.22em]" style={{ color: "var(--ca)" }}>Commande confirmée</p>
           <h1
-            className="mt-2 text-3xl font-bold text-[#d8e3d5]"
-            style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
+            className="mt-2 text-3xl font-bold"
+            style={{ fontFamily: "var(--font-playfair), Georgia, serif", color: "var(--ct)" }}
           >
             Paiement confirmé !
           </h1>
-          <p className="mt-3 text-sm leading-relaxed text-[#7a9076]">
+          <p className="mt-3 text-sm leading-relaxed" style={{ color: "var(--cm)" }}>
             Merci pour votre achat. Votre questionnaire et vos dates de voyage ont bien été transmis pour la création du guide.
           </p>
 
-          <div className="mt-7 rounded-3xl border border-[#232c20] bg-[#111810] p-5 text-left">
-            <h2 className="mb-4 text-sm font-bold uppercase tracking-[0.16em] text-[#4a6447]">
+          <div className="mt-7 rounded-3xl p-5 text-left" style={{ border: "1px solid var(--ce)", background: "var(--cd)" }}>
+            <h2 className="mb-4 text-sm font-bold uppercase tracking-[0.16em]" style={{ color: "var(--cf)" }}>
               Récapitulatif de commande
             </h2>
 
             {loading ? (
-              <div className="rounded-2xl bg-[#161c14] px-4 py-3 text-sm text-[#4a6447]">Chargement du récapitulatif…</div>
+              <div className="rounded-2xl px-4 py-3 text-sm" style={{ background: "var(--cc)", color: "var(--cf)" }}>Chargement du récapitulatif…</div>
             ) : (
-              <div className="space-y-3 text-sm text-[#d8e3d5]">
+              <div className="space-y-3 text-sm" style={{ color: "var(--ct)" }}>
                 {orderItems ? (
                   orderItems.map((item, index) => (
-                    <div key={`${item.destination ?? "guide"}-${index}`} className="rounded-2xl bg-[#161c14] border border-[#232c20] px-4 py-3">
+                    <div key={`${item.destination ?? "guide"}-${index}`} className="rounded-2xl px-4 py-3" style={{ background: "var(--cc)", border: "1px solid var(--ce)" }}>
                       <div className="flex items-start justify-between gap-4">
-                        <span className="font-semibold text-[#d8e3d5]">Guide #{index + 1}</span>
-                        <strong className="text-right text-[#C9A84C]">{item.plan ? PLAN_LABELS[item.plan] ?? item.plan : "Forfait confirmé"}</strong>
+                        <span className="font-semibold" style={{ color: "var(--ct)" }}>Guide #{index + 1}</span>
+                        <strong className="text-right" style={{ color: "var(--ca)" }}>{item.plan ? PLAN_LABELS[item.plan] ?? item.plan : "Forfait confirmé"}</strong>
                       </div>
-                      <p className="mt-2 text-[#7a9076]">{item.destination ?? "Destination transmise"}</p>
-                      <p className="mt-1 text-[#7a9076]">{formatTravelDates(item) ?? "Dates transmises"}</p>
+                      <p className="mt-2" style={{ color: "var(--cm)" }}>{item.destination ?? "Destination transmise"}</p>
+                      <p className="mt-1" style={{ color: "var(--cm)" }}>{formatTravelDates(item) ?? "Dates transmises"}</p>
                     </div>
                   ))
                 ) : (
                   <>
-                    <div className="flex items-start justify-between gap-4 rounded-2xl bg-[#161c14] border border-[#232c20] px-4 py-3">
-                      <span className="text-[#4a6447]">Forfait</span>
-                      <strong className="text-right text-[#d8e3d5]">{planLabel ?? "Forfait confirmé"}</strong>
+                    <div className="flex items-start justify-between gap-4 rounded-2xl px-4 py-3" style={{ background: "var(--cc)", border: "1px solid var(--ce)" }}>
+                      <span style={{ color: "var(--cf)" }}>Forfait</span>
+                      <strong className="text-right" style={{ color: "var(--ct)" }}>{planLabel ?? "Forfait confirmé"}</strong>
                     </div>
-                    <div className="flex items-start justify-between gap-4 rounded-2xl bg-[#161c14] border border-[#232c20] px-4 py-3">
-                      <span className="text-[#4a6447]">Destination</span>
-                      <strong className="text-right text-[#d8e3d5]">{summary?.destination ?? "Transmise dans le questionnaire"}</strong>
+                    <div className="flex items-start justify-between gap-4 rounded-2xl px-4 py-3" style={{ background: "var(--cc)", border: "1px solid var(--ce)" }}>
+                      <span style={{ color: "var(--cf)" }}>Destination</span>
+                      <strong className="text-right" style={{ color: "var(--ct)" }}>{summary?.destination ?? "Transmise dans le questionnaire"}</strong>
                     </div>
-                    <div className="flex items-start justify-between gap-4 rounded-2xl bg-[#161c14] border border-[#232c20] px-4 py-3">
-                      <span className="text-[#4a6447]">Dates de voyage</span>
-                      <strong className="text-right text-[#C9A84C]">{travelDates ?? "Transmises dans le questionnaire"}</strong>
+                    <div className="flex items-start justify-between gap-4 rounded-2xl px-4 py-3" style={{ background: "var(--cc)", border: "1px solid var(--ce)" }}>
+                      <span style={{ color: "var(--cf)" }}>Dates de voyage</span>
+                      <strong className="text-right" style={{ color: "var(--ca)" }}>{travelDates ?? "Transmises dans le questionnaire"}</strong>
                     </div>
                   </>
                 )}
-                <div className="flex items-start justify-between gap-4 rounded-2xl bg-[#161c14] border border-[#232c20] px-4 py-3">
-                  <span className="text-[#4a6447]">Email</span>
-                  <strong className="text-right text-[#d8e3d5]">{summary?.email ?? "Email de paiement"}</strong>
+                <div className="flex items-start justify-between gap-4 rounded-2xl px-4 py-3" style={{ background: "var(--cc)", border: "1px solid var(--ce)" }}>
+                  <span style={{ color: "var(--cf)" }}>Email</span>
+                  <strong className="text-right" style={{ color: "var(--ct)" }}>{summary?.email ?? "Email de paiement"}</strong>
                 </div>
               </div>
             )}
@@ -151,13 +154,15 @@ function SuccessContent() {
           <div className="mt-7 flex flex-col gap-3 sm:flex-row">
             <Link
               href="/account"
-              className="flex-1 rounded-xl bg-[#c9a84c] px-5 py-3 text-sm font-bold text-[#0e1310] transition-all hover:bg-[#b8962e]"
+              className="flex-1 rounded-xl px-5 py-3 text-sm font-bold transition-all"
+              style={{ background: "var(--ca)", color: "var(--cat)" }}
             >
               Voir mes commandes
             </Link>
             <Link
-              href="/"
-              className="flex-1 rounded-xl border border-[#232c20] px-5 py-3 text-sm font-bold text-[#b8cdb4] transition-colors hover:border-[#c9a84c]"
+              href={backHref}
+              className="flex-1 rounded-xl px-5 py-3 text-sm font-bold transition-colors"
+              style={{ border: "1px solid var(--ce)", color: "var(--cs)" }}
             >
               Retour à l’accueil
             </Link>
@@ -172,8 +177,8 @@ export default function SuccessPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-[#0e1310] flex items-center justify-center">
-          <div className="text-[#4a6447] text-sm">Chargement…</div>
+        <div className="min-h-screen flex items-center justify-center" style={{ background: "var(--cb)" }}>
+          <div className="text-sm" style={{ color: "var(--cf)" }}>Chargement…</div>
         </div>
       }
     >

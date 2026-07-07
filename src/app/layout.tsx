@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import ModeStyleInjector from "@/components/ModeStyleInjector";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -51,7 +52,7 @@ export default function RootLayout({
           defer
         />
       </head>
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col"><ModeStyleInjector />{children}</body>
     </html>
   );
 }

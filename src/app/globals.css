@@ -92,8 +92,52 @@ body {
   will-change: transform;
 }
 
-.banner-ticker-wrap:hover .animate-ticker {
+.banner-ticker-wrap:hover .animate-ticker,
+.business-ticker-wrap:hover .animate-ticker {
   animation-play-state: paused;
+}
+
+/* ── Mode-aware CSS custom properties ─────────────── */
+:root {
+  --cb:  #0e1310;
+  --cc:  #161c14;
+  --cd:  #111810;
+  --ch:  #1a2418;
+  --ce:  #232c20;
+  --ct:  #d8e3d5;
+  --cm:  #7a9076;
+  --cf:  #4a6447;
+  --cv:  #3a5037;
+  --ca:  #c9a84c;
+  --caf: rgba(201,168,76,0.12);
+  --cab: rgba(201,168,76,0.25);
+  --cah: #b8962e;
+  --cat: #0e1310;
+  --ck:  #425C47;
+  --ckh: #2e4133;
+  --cs:  #b8cdb4;
+  --csh: #1e2820;
+}
+
+html[data-mode="business"] {
+  --cb:  #08080d;
+  --cc:  #0f0f18;
+  --cd:  #0b0b12;
+  --ch:  #0d0d1a;
+  --ce:  #1a1a2e;
+  --ct:  #e2e8f0;
+  --cm:  #6b7a99;
+  --cf:  #2d3748;
+  --cv:  #1e2535;
+  --ca:  #3b82f6;
+  --caf: rgba(59,130,246,0.12);
+  --cab: rgba(59,130,246,0.28);
+  --cah: #2563eb;
+  --cat: #ffffff;
+  --ck:  #1e3a5f;
+  --ckh: #153059;
+  --cs:  #94a3b8;
+  --csh: #0d0d1a;
 }
 
 @keyframes gift-pulse {

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useMode } from "@/lib/mode-theme";
 
 type Lang = "fr" | "en";
 
@@ -85,21 +86,24 @@ const FAQ_EN = [
 export default function FAQPage() {
   const [lang, setLang] = useState<Lang>("fr");
   const [openItem, setOpenItem] = useState<string | null>(null);
+  const { isBusiness } = useMode();
   const data = lang === "fr" ? FAQ_FR : FAQ_EN;
+  const brandName = isBusiness ? "Travel Business IA" : "TravelGuide AI";
+  const backHref = isBusiness ? "/business" : "/personal";
 
   return (
-    <div className="min-h-screen bg-[#0e1310]" style={{ fontFamily: "var(--font-dm-sans), system-ui, sans-serif" }}>
-      <header className="sticky top-0 z-10 bg-[#0e1310]/95 backdrop-blur border-b border-[#232c20]">
+    <div className="min-h-screen" style={{ background: "var(--cb)", fontFamily: "var(--font-dm-sans), system-ui, sans-serif" }}>
+      <header className="sticky top-0 z-10 backdrop-blur border-b" style={{ background: "var(--cb)", borderColor: "var(--ce)" }}>
         <div className="max-w-3xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
-          <Link href="/" className="text-sm text-[#7a9076] hover:text-[#d8e3d5] transition-colors font-medium">
+          <Link href={backHref} className="text-sm font-medium transition-colors" style={{ color: "var(--cm)" }}>
             {lang === "fr" ? "← Retour au site" : "← Back to site"}
           </Link>
-          <span className="font-bold text-[#d8e3d5]" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>TravelGuide AI</span>
-          <div className="flex items-center gap-1 border border-[#232c20] rounded-lg p-0.5">
-            <button onClick={() => setLang("fr")} className={`rounded-md px-2 py-0.5 transition-all ${lang === "fr" ? "bg-[#232c20]" : "opacity-40 hover:opacity-70"}`}>
+          <span className="font-bold" style={{ fontFamily: "var(--font-playfair), Georgia, serif", color: "var(--ct)" }}>{brandName}</span>
+          <div className="flex items-center gap-1 rounded-lg p-0.5" style={{ border: "1px solid var(--ce)" }}>
+            <button onClick={() => setLang("fr")} className={`rounded-md px-2 py-0.5 transition-all ${lang === "fr" ? "" : "opacity-40 hover:opacity-70"}`} style={lang === "fr" ? { background: "var(--ce)" } : {}}>
               <img src="https://flagcdn.com/w40/fr.png" width="24" height="16" alt="FR" style={{display:"inline",borderRadius:"2px"}} />
             </button>
-            <button onClick={() => setLang("en")} className={`rounded-md px-2 py-0.5 transition-all ${lang === "en" ? "bg-[#232c20]" : "opacity-40 hover:opacity-70"}`}>
+            <button onClick={() => setLang("en")} className={`rounded-md px-2 py-0.5 transition-all ${lang === "en" ? "" : "opacity-40 hover:opacity-70"}`} style={lang === "en" ? { background: "var(--ce)" } : {}}>
               <img src="https://flagcdn.com/w40/gb.png" width="24" height="16" alt="GB" style={{display:"inline",borderRadius:"2px"}} />
             </button>
           </div>
@@ -108,15 +112,15 @@ export default function FAQPage() {
 
       <main className="max-w-3xl mx-auto px-4 sm:px-6 py-12">
         <div className="text-center mb-12">
-          <div className="inline-flex items-center gap-2 bg-[#161c14] border border-[#232c20] rounded-full px-4 py-1.5 mb-4">
-            <span className="text-xs font-bold text-[#7a9076] uppercase tracking-wide">
+          <div className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 mb-4" style={{ background: "var(--cc)", border: "1px solid var(--ce)" }}>
+            <span className="text-xs font-bold uppercase tracking-wide" style={{ color: "var(--cm)" }}>
               {lang === "fr" ? "Questions fréquentes" : "Frequently Asked Questions"}
             </span>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-bold text-[#d8e3d5] mb-3" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
+          <h1 className="text-3xl sm:text-4xl font-bold mb-3" style={{ fontFamily: "var(--font-playfair), Georgia, serif", color: "var(--ct)" }}>
             {lang === "fr" ? "Tout ce que vous voulez savoir" : "Everything you need to know"}
           </h1>
-          <p className="text-[#7a9076] text-base max-w-lg mx-auto">
+          <p className="text-base max-w-lg mx-auto" style={{ color: "var(--cm)" }}>
             {lang === "fr"
               ? "Des réponses claires sur notre service, la livraison, le paiement et vos données."
               : "Clear answers about our service, delivery, payment and your data."}
@@ -126,23 +130,26 @@ export default function FAQPage() {
         <div className="space-y-10">
           {data.map((cat) => (
             <div key={cat.cat}>
-              <h2 className="text-xs font-bold uppercase tracking-widest text-[#c9a84c] mb-4 px-1">{cat.cat}</h2>
+              <h2 className="text-xs font-bold uppercase tracking-widest mb-4 px-1" style={{ color: "var(--ca)" }}>{cat.cat}</h2>
               <div className="space-y-2">
                 {cat.items.map((item, i) => {
                   const key = `${cat.cat}-${i}`;
                   const open = openItem === key;
                   return (
-                    <div key={key} className="rounded-2xl border border-[#232c20] overflow-hidden bg-[#161c14]">
+                    <div key={key} className="rounded-2xl overflow-hidden" style={{ border: "1px solid var(--ce)", background: "var(--cc)" }}>
                       <button
                         type="button"
                         onClick={() => setOpenItem(open ? null : key)}
-                        className="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-[#1e2820] transition-colors"
+                        className="w-full flex items-center justify-between px-5 py-4 text-left transition-colors"
+                        style={{ color: "var(--ct)" }}
+                        onMouseEnter={e => (e.currentTarget.style.background = "var(--csh)")}
+                        onMouseLeave={e => (e.currentTarget.style.background = "")}
                       >
-                        <span className="font-semibold text-[#d8e3d5] text-sm pr-4">{item.q}</span>
-                        <span className={`text-[#c9a84c] text-xl font-bold flex-shrink-0 transition-transform duration-200 ${open ? "rotate-45" : ""}`}>+</span>
+                        <span className="font-semibold text-sm pr-4">{item.q}</span>
+                        <span className={`text-xl font-bold flex-shrink-0 transition-transform duration-200 ${open ? "rotate-45" : ""}`} style={{ color: "var(--ca)" }}>+</span>
                       </button>
                       {open && (
-                        <div className="px-5 pb-5 pt-4 text-sm text-[#7a9076] leading-relaxed border-t border-[#232c20]">
+                        <div className="px-5 pb-5 pt-4 text-sm leading-relaxed border-t" style={{ color: "var(--cm)", borderColor: "var(--ce)" }}>
                           {item.a}
                         </div>
                       )}
@@ -154,27 +161,30 @@ export default function FAQPage() {
           ))}
         </div>
 
-        <div className="mt-14 rounded-2xl bg-[#161c14] border border-[#232c20] p-8 text-center">
-          <h3 className="font-bold text-lg mb-2 text-[#d8e3d5]" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
+        <div className="mt-14 rounded-2xl p-8 text-center" style={{ background: "var(--cc)", border: "1px solid var(--ce)" }}>
+          <h3 className="font-bold text-lg mb-2" style={{ fontFamily: "var(--font-playfair), Georgia, serif", color: "var(--ct)" }}>
             {lang === "fr" ? "Vous n'avez pas trouvé votre réponse ?" : "Didn't find your answer?"}
           </h3>
-          <p className="text-[#7a9076] text-sm mb-5">
+          <p className="text-sm mb-5" style={{ color: "var(--cm)" }}>
             {lang === "fr" ? "Notre équipe répond sous 48h." : "Our team replies within 48 hours."}
           </p>
           <Link
             href="/contact"
-            className="inline-block bg-[#c9a84c] text-[#0e1310] font-bold px-6 py-3 rounded-xl text-sm hover:bg-[#b8962e] transition-colors"
+            className="inline-block font-bold px-6 py-3 rounded-xl text-sm transition-colors"
+            style={{ background: "var(--ca)", color: "var(--cat)" }}
+            onMouseEnter={e => ((e.target as HTMLElement).style.background = "var(--cah)")}
+            onMouseLeave={e => ((e.target as HTMLElement).style.background = "var(--ca)")}
           >
             {lang === "fr" ? "Nous contacter" : "Contact us"}
           </Link>
         </div>
 
-        <div className="mt-10 text-center text-xs text-[#4a6447]">
+        <div className="mt-10 text-center text-xs" style={{ color: "var(--cf)" }}>
           <p>
             {lang === "fr" ? "Voir aussi : " : "See also: "}
-            <Link href="/cgv" className="underline hover:text-[#7a9076]">{lang === "fr" ? "CGV" : "Terms of Sale"}</Link>
+            <Link href="/cgv" className="underline" style={{ color: "var(--cf)" }}>{lang === "fr" ? "CGV" : "Terms of Sale"}</Link>
             {" · "}
-            <Link href="/privacy" className="underline hover:text-[#7a9076]">{lang === "fr" ? "Politique de confidentialité" : "Privacy Policy"}</Link>
+            <Link href="/privacy" className="underline" style={{ color: "var(--cf)" }}>{lang === "fr" ? "Politique de confidentialité" : "Privacy Policy"}</Link>
           </p>
         </div>
       </main>

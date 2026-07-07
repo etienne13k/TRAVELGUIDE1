@@ -1,5 +1,13 @@
 export const CART_STORAGE_KEY = "spiregg_cart_items_v1";
+export const BUSINESS_CART_STORAGE_KEY = "spiregg_cart_items_business_v1";
 export const CART_UPDATED_EVENT = "spiregg_cart_updated";
+
+function getActiveCartKey(): string {
+  if (typeof window === "undefined") return CART_STORAGE_KEY;
+  return localStorage.getItem("tgai_mode") === "business"
+    ? BUSINESS_CART_STORAGE_KEY
+    : CART_STORAGE_KEY;
+}
 
 export const PLAN_KEYS = ["3j", "7j", "14j", "1mois"] as const;
 export type PlanKey = (typeof PLAN_KEYS)[number];
@@ -69,7 +77,7 @@ export function loadCart(): CartItem[] {
   if (typeof window === "undefined") return [];
 
   try {
-    const rawCart = window.localStorage.getItem(CART_STORAGE_KEY);
+    const rawCart = window.localStorage.getItem(getActiveCartKey());
     if (!rawCart) return [];
 
     const parsedCart: unknown = JSON.parse(rawCart);
@@ -84,7 +92,7 @@ export function loadCart(): CartItem[] {
 export function saveCart(items: CartItem[]): void {
   if (typeof window === "undefined") return;
 
-  window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
+  window.localStorage.setItem(getActiveCartKey(), JSON.stringify(items));
   window.dispatchEvent(new Event(CART_UPDATED_EVENT));
 }
 
