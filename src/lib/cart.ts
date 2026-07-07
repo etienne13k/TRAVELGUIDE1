@@ -9,7 +9,7 @@ function getActiveCartKey(): string {
     : CART_STORAGE_KEY;
 }
 
-export const PLAN_KEYS = ["3j", "7j", "14j", "1mois"] as const;
+export const PLAN_KEYS = ["7j", "14j", "21j", "1mois"] as const;
 export type PlanKey = (typeof PLAN_KEYS)[number];
 
 export type CartCriteriaValue = string | string[] | number | boolean | null | undefined;
@@ -28,10 +28,10 @@ export type CartItem = {
 };
 
 export const CART_PLANS: Record<PlanKey, { label: string; duration: string; amount: number }> = {
-  "3j":    { label: "Guide Express",  duration: "3 jours", amount: 300  },
-  "7j":    { label: "Guide Complet",  duration: "7 jours", amount: 600  },
-  "14j":   { label: "Guide Immersif", duration: "14 jours", amount: 1000 },
-  "1mois": { label: "Guide Évasion",  duration: "1 mois",  amount: 1600 },
+  "7j":    { label: "Guide Voyage — 1 semaine",  duration: "Jusqu'à 7 jours",  amount: 500  },
+  "14j":   { label: "Guide Voyage — 2 semaines", duration: "Jusqu'à 14 jours", amount: 1000 },
+  "21j":   { label: "Guide Voyage — 3 semaines", duration: "Jusqu'à 21 jours", amount: 1500 },
+  "1mois": { label: "Abonnement Mensuel",         duration: "1 mois illimité",  amount: 1300 },
 };
 
 export type CartItemInput = Omit<CartItem, "id" | "createdAt" | "updatedAt">;
@@ -44,13 +44,13 @@ export function normalizePlanKey(value: unknown): PlanKey | null {
   if (typeof value !== "string") return null;
 
   const aliases: Record<string, PlanKey> = {
-    basic: "3j",
-    standard: "7j",
-    premium: "14j",
+    basic: "7j",
+    standard: "14j",
+    premium: "21j",
     elite: "1mois",
-    "3": "3j",
     "7": "7j",
     "14": "14j",
+    "21": "21j",
     "30": "1mois",
   };
 
