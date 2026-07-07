@@ -322,20 +322,20 @@ function SectionCard({ title, children }: { title: string; children: React.React
   );
 }
 
-function Stepper({ value, min, max, onChange, label, sublabel }: {
-  value: number; min: number; max: number; onChange: (v: number) => void; label: string; sublabel?: string;
+function Stepper({ value, min, max, onChange, label, sublabel, disabled }: {
+  value: number; min: number; max: number; onChange: (v: number) => void; label: string; sublabel?: string; disabled?: boolean;
 }) {
   return (
-    <div className="flex items-center justify-between rounded-lg border border-[#2a3527] bg-[#1a2218] px-4 py-3">
+    <div className={`flex items-center justify-between rounded-lg border px-4 py-3 transition-colors ${disabled ? "border-[#1e2a1e] bg-[#111810] opacity-60" : "border-[#2a3527] bg-[#1a2218]"}`}>
       <div>
         <p className="text-sm font-semibold text-[#d8e3d5]">{label}</p>
         {sublabel && <p className="text-xs text-[#5a7856] mt-0.5">{sublabel}</p>}
       </div>
       <div className="flex items-center gap-4">
-        <button type="button" onClick={() => onChange(Math.max(min, value - 1))} disabled={value <= min}
+        <button type="button" onClick={() => onChange(Math.max(min, value - 1))} disabled={value <= min || disabled}
           className="flex h-8 w-8 items-center justify-center rounded-full border border-[#2a3527] text-lg font-bold text-[#9ab896] transition hover:border-[#c9a84c] hover:text-[#c9a84c] disabled:opacity-30 disabled:cursor-not-allowed">−</button>
         <span className="w-6 text-center text-lg font-black text-[#d8e3d5]">{value}</span>
-        <button type="button" onClick={() => onChange(Math.min(max, value + 1))} disabled={value >= max}
+        <button type="button" onClick={() => onChange(Math.min(max, value + 1))} disabled={value >= max || disabled}
           className="flex h-8 w-8 items-center justify-center rounded-full border border-[#2a3527] text-lg font-bold text-[#9ab896] transition hover:border-[#c9a84c] hover:text-[#c9a84c] disabled:opacity-30 disabled:cursor-not-allowed">+</button>
       </div>
     </div>
@@ -554,6 +554,7 @@ function QuestionnaireContent() {
   const [submitError, setSubmitError] = useState<string|null>(null);
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [step2Errors, setStep2Errors] = useState<Record<string,string>>({});
+  const [step3Errors, setStep3Errors] = useState<Record<string,string>>({});
   const [termsError, setTermsError] = useState<string|null>(null);
   const [cartNotice, setCartNotice] = useState<string|null>(null);
   const [isEditingCartItem, setIsEditingCartItem] = useState(false);
@@ -636,17 +637,28 @@ function QuestionnaireContent() {
     if (step===2) {
       const s2: Record<string,string> = {};
       if (!answers.budget) s2.budget = "Veuillez choisir un niveau de budget.";
-      if (answers.budget_amount && Number(answers.budget_amount) < 20 && Number(answers.budget_amount) > 0) {
-        s2.budget_amount = "Ce budget est insuffisant pour un voyage. Veuillez saisir un montant réaliste.";
+      if (answers.budget_amount && Number(answers.budget_amount) > 0) {
+        const amount = Number(answers.budget_amount);
+        const adults = answers.traveler_adults || 1;
+        const days = selectedPlanKey ? PLAN_DATE_LIMITS[selectedPlanKey].maxDays : 7;
+        const totalAmount = answers.budget_scope === "per_person" ? amount * adults : amount;
+        const perPersonPerDay = totalAmount / (adults * days);
+        if (perPersonPerDay < 25) {
+          s2.budget_amount = `Budget trop faible : ${Math.round(perPersonPerDay)}${answers.budget_currency}/pers/jour ne couvre pas un voyage réaliste (minimum 25${answers.budget_currency}/pers/jour). Vérifiez le montant saisi.`;
+        }
       }
       if (answers.accommodations.length===0) s2.accommodations = "Veuillez choisir au moins un type d'hébergement.";
       if (!answers.activity_pace) s2.activity_pace = "Veuillez choisir un rythme d'activités.";
       if (!answers.authenticity) s2.authenticity = "Veuillez choisir un style de découverte.";
       if (answers.transport.length===0) s2.transport = "Veuillez choisir au moins un moyen de transport.";
       if (answers.interests.length===0) s2.interests = "Veuillez choisir au moins un centre d'intérêt.";
+      if (answers.landscape.length===0) s2.landscape = "Veuillez choisir au moins un type de paysage.";
       if (!answers.climate) s2.climate = "Veuillez choisir un type de climat.";
       if (!answers.trip_vibe) s2.trip_vibe = "Veuillez choisir une ambiance de voyage.";
       if (!answers.trip_type) s2.trip_type = "Veuillez choisir un type de voyage.";
+      if (!answers.already_visited.trim()) s2.already_visited = "Indiquez les pays/villes déjà visités, ou écrivez « Aucun ».";
+      if (!answers.non_negotiables.trim()) s2.non_negotiables = "Indiquez vos incontournables, ou écrivez « Aucun ».";
+      if (!answers.things_to_avoid.trim()) s2.things_to_avoid = "Indiquez ce que vous souhaitez éviter, ou écrivez « Aucun ».";
       if (answers.language_spoken.length===0) s2.language_spoken = "Veuillez indiquer au moins une langue.";
       if (Object.keys(s2).length > 0) {
         setStep2Errors(s2);
@@ -677,11 +689,19 @@ function QuestionnaireContent() {
     setTermsError(null);
     if (!termsAccepted) { setTermsError(legalCopy.error); return; }
     if (!selectedPlanKey||!plan) { setSubmitError("Veuillez choisir votre forfait."); setStep(1); window.scrollTo({top:0,behavior:"smooth"}); return; }
-    if (!answers.user_email.trim() || !isValidEmail(answers.user_email)) {
-      setErrors({email:"Adresse e-mail invalide. Vérifiez le format (ex. nom@domaine.com)."});
-      scrollToError("field-email");
+
+    // Step 3 validation
+    const s3: Record<string,string> = {};
+    if (answers.diet.length===0) s3.diet = "Veuillez choisir au moins une option (y compris « Aucune restriction »).";
+    if (!answers.user_email.trim() || !isValidEmail(answers.user_email)) s3.email = "Adresse e-mail invalide. Vérifiez le format (ex. nom@domaine.com).";
+    if (Object.keys(s3).length > 0) {
+      setStep3Errors(s3);
+      const firstKey = Object.keys(s3)[0];
+      scrollToError(`s3-${firstKey}`);
       return;
     }
+    setStep3Errors({});
+
     if (!answers.destination.trim()) { setErrors({destination:"Veuillez indiquer votre destination."}); setStep(1); setTimeout(()=>scrollToError("field-destination"),100); return; }
     if (!answers.arrival_date) { setErrors({dates:"Veuillez sélectionner au moins une date."}); setStep(1); setTimeout(()=>scrollToError("field-dates"),100); return; }
     setErrors({});
@@ -866,16 +886,27 @@ function QuestionnaireContent() {
                   <div>
                     <QLabel required>Avec qui voyagez-vous ?</QLabel>
                     <div className="flex flex-wrap gap-2">
-                      {TRAVELER_TYPE.map(o=><Pill key={o.id} label={o.label} selected={answers.traveler_type===o.id} onClick={()=>{radio("traveler_type",o.id);setErrors(p=>({...p,traveler_type:""}));}}/>)}
+                      {TRAVELER_TYPE.map(o=>(
+                        <Pill key={o.id} label={o.label} selected={answers.traveler_type===o.id} onClick={()=>{
+                          const newVal = answers.traveler_type === o.id ? "" : o.id;
+                          setAnswers(p=>({...p, traveler_type: newVal, ...(newVal==="solo" ? {traveler_adults:1} : {})}));
+                          setErrors(p=>({...p,traveler_type:""}));
+                        }}/>
+                      ))}
                     </div>
                     <FieldError msg={errors.traveler_type} />
                   </div>
                   <div>
                     <QLabel>Nombre de voyageurs</QLabel>
                     <div className="space-y-2">
-                      <Stepper label="Adultes" sublabel="18 ans et plus" value={answers.traveler_adults} min={1} max={20} onChange={v=>setAnswers(p=>({...p,traveler_adults:v}))}/>
+                      <Stepper label="Adultes" sublabel="18 ans et plus" value={answers.traveler_adults} min={1} max={20} disabled={answers.traveler_type==="solo"} onChange={v=>setAnswers(p=>({...p,traveler_adults:v}))}/>
                       <Stepper label="Enfants" sublabel="Moins de 18 ans" value={answers.traveler_children} min={0} max={10} onChange={v=>setAnswers(p=>({...p,traveler_children:v}))}/>
                     </div>
+                    {answers.traveler_type==="solo"&&(
+                      <p className="mt-2 text-xs text-[#5a7856] border border-[#1a2218] bg-[#111810] rounded-lg px-3 py-2">
+                        Voyage solo — le nombre d&apos;adultes est fixé à 1.
+                      </p>
+                    )}
                     {answers.traveler_children>0&&(
                       <p className="mt-2 text-xs text-[#5a7856] border border-[#1a2218] bg-[#111810] rounded-lg px-3 py-2">
                         Précisez les âges des enfants dans les notes libres (étape 3) pour des activités adaptées.
@@ -943,11 +974,12 @@ function QuestionnaireContent() {
             {/* Décor & Environnement */}
             <SectionCard title="Décor et environnement">
               <div className="space-y-5">
-                <div>
-                  <QLabel hint="(plusieurs choix)">Type de paysage souhaité</QLabel>
+                <div id="s2-landscape">
+                  <QLabel required hint="(plusieurs choix)">Type de paysage souhaité</QLabel>
                   <div className="flex flex-wrap gap-2">
-                    {LANDSCAPE.map(o=><Pill key={o.id} label={o.label} selected={answers.landscape.includes(o.id)} onClick={()=>toggle("landscape",o.id)}/>)}
+                    {LANDSCAPE.map(o=><Pill key={o.id} label={o.label} selected={answers.landscape.includes(o.id)} onClick={()=>{toggle("landscape",o.id);setStep2Errors(p=>{const n={...p};delete n.landscape;return n;});}}/>)}
                   </div>
+                  <FieldError msg={step2Errors.landscape} />
                 </div>
                 <div id="s2-climate">
                   <QLabel required>Climat préféré</QLabel>
@@ -970,12 +1002,14 @@ function QuestionnaireContent() {
                   </div>
                   <FieldError msg={step2Errors.trip_type} />
                 </div>
-                <div>
-                  <QLabel hint="(optionnel)">Endroits déjà visités à éviter</QLabel>
+                <div id="s2-already_visited">
+                  <QLabel required>Pays ou villes déjà visités</QLabel>
                   <input type="text" value={answers.already_visited}
-                    onChange={e=>setAnswers(p=>({...p,already_visited:e.target.value}))}
-                    placeholder="ex. Thaïlande, Bali, Barcelone..."
-                    className="w-full border border-[#2a3527] rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-[#c9a84c] bg-[#0e1310] text-[#d8e3d5] placeholder-[#3a5037] transition-colors"/>
+                    onChange={e=>{setAnswers(p=>({...p,already_visited:e.target.value}));setStep2Errors(p=>{const n={...p};delete n.already_visited;return n;});}}
+                    placeholder="ex. Thaïlande, Bali, Barcelone... ou « Aucun »"
+                    className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none bg-[#0e1310] text-[#d8e3d5] placeholder-[#3a5037] transition-colors ${step2Errors.already_visited?"border-red-700 focus:border-red-500":"border-[#2a3527] focus:border-[#c9a84c]"}`}/>
+                  <p className="text-xs text-[#3a5037] mt-1.5">Écrivez « Aucun » si vous n&apos;avez pas de préférence.</p>
+                  <FieldError msg={step2Errors.already_visited} />
                 </div>
               </div>
             </SectionCard>
@@ -1068,21 +1102,23 @@ function QuestionnaireContent() {
             {/* Incontournables & à éviter */}
             <SectionCard title="Incontournables et à éviter">
               <div className="space-y-5">
-                <div>
-                  <QLabel hint="(optionnel)">2-3 choses absolument incontournables pour vous</QLabel>
+                <div id="s2-non_negotiables">
+                  <QLabel required>2-3 choses absolument incontournables pour vous</QLabel>
                   <textarea value={answers.non_negotiables}
-                    onChange={e=>{if(e.target.value.length<=300)setAnswers(p=>({...p,non_negotiables:e.target.value}));}}
-                    rows={2} placeholder="ex. voir le Mont Fuji, manger des sushis authentiques, quartier Shibuya..."
-                    className="w-full border border-[#2a3527] rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-[#c9a84c] bg-[#0e1310] text-[#d8e3d5] placeholder-[#3a5037] resize-none transition-colors"/>
+                    onChange={e=>{if(e.target.value.length<=300){setAnswers(p=>({...p,non_negotiables:e.target.value}));setStep2Errors(p=>{const n={...p};delete n.non_negotiables;return n;});}}}
+                    rows={2} placeholder="ex. voir le Mont Fuji, manger des sushis authentiques... ou « Aucun »"
+                    className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none bg-[#0e1310] text-[#d8e3d5] placeholder-[#3a5037] resize-none transition-colors ${step2Errors.non_negotiables?"border-red-700 focus:border-red-500":"border-[#2a3527] focus:border-[#c9a84c]"}`}/>
                   <p className="text-xs text-[#3a5037] text-right mt-1">{answers.non_negotiables.length}/300</p>
+                  <FieldError msg={step2Errors.non_negotiables} />
                 </div>
-                <div>
-                  <QLabel hint="(optionnel)">Ce que vous ne voulez absolument pas</QLabel>
+                <div id="s2-things_to_avoid">
+                  <QLabel required>Ce que vous ne voulez absolument pas</QLabel>
                   <textarea value={answers.things_to_avoid}
-                    onChange={e=>{if(e.target.value.length<=200)setAnswers(p=>({...p,things_to_avoid:e.target.value}));}}
-                    rows={2} placeholder="ex. pas de bus bondés, pas de musées, pas de plage touristique..."
-                    className="w-full border border-[#2a3527] rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-[#c9a84c] bg-[#0e1310] text-[#d8e3d5] placeholder-[#3a5037] resize-none transition-colors"/>
+                    onChange={e=>{if(e.target.value.length<=200){setAnswers(p=>({...p,things_to_avoid:e.target.value}));setStep2Errors(p=>{const n={...p};delete n.things_to_avoid;return n;});}}}
+                    rows={2} placeholder="ex. pas de bus bondés, pas de musées... ou « Aucun »"
+                    className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none bg-[#0e1310] text-[#d8e3d5] placeholder-[#3a5037] resize-none transition-colors ${step2Errors.things_to_avoid?"border-red-700 focus:border-red-500":"border-[#2a3527] focus:border-[#c9a84c]"}`}/>
                   <p className="text-xs text-[#3a5037] text-right mt-1">{answers.things_to_avoid.length}/200</p>
+                  <FieldError msg={step2Errors.things_to_avoid} />
                 </div>
               </div>
             </SectionCard>
@@ -1118,11 +1154,12 @@ function QuestionnaireContent() {
             <SectionCard title="Informations pratiques">
               <div className="space-y-5">
                 {/* Diet */}
-                <div>
-                  <QLabel hint="(optionnel — plusieurs choix)">Restrictions alimentaires</QLabel>
+                <div id="s3-diet">
+                  <QLabel required hint="(plusieurs choix)">Restrictions alimentaires</QLabel>
                   <div className="flex flex-wrap gap-2">
-                    {DIET.map(o=><Pill key={o.id} label={o.label} selected={answers.diet.includes(o.id)} onClick={()=>toggle("diet",o.id)}/>)}
+                    {DIET.map(o=><Pill key={o.id} label={o.label} selected={answers.diet.includes(o.id)} onClick={()=>{toggle("diet",o.id);setStep3Errors(p=>{const n={...p};delete n.diet;return n;});}}/>)}
                   </div>
+                  <FieldError msg={step3Errors.diet} />
                   {answers.diet.includes("allergies")&&(
                     <div className="mt-3">
                       <QLabel required>Précisez vos allergies alimentaires</QLabel>
@@ -1144,14 +1181,14 @@ function QuestionnaireContent() {
                 </div>
 
                 {/* Email */}
-                <div id="field-email">
+                <div id="s3-email">
                   <QLabel required>Adresse e-mail de réception du guide</QLabel>
                   <input type="email" value={answers.user_email}
-                    onChange={e=>{setAnswers(p=>({...p,user_email:e.target.value}));if(errors.email)setErrors(p=>({...p,email:""}));}}
+                    onChange={e=>{setAnswers(p=>({...p,user_email:e.target.value}));setStep3Errors(p=>{const n={...p};delete n.email;return n;});if(errors.email)setErrors(p=>({...p,email:""}));}}
                     placeholder="votre@adresse.com"
-                    className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none bg-[#0e1310] text-[#d8e3d5] placeholder-[#3a5037] transition-colors ${errors.email?"border-red-700 focus:border-red-500":"border-[#2a3527] focus:border-[#c9a84c]"}`}/>
+                    className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none bg-[#0e1310] text-[#d8e3d5] placeholder-[#3a5037] transition-colors ${(errors.email||step3Errors.email)?"border-red-700 focus:border-red-500":"border-[#2a3527] focus:border-[#c9a84c]"}`}/>
                   <p className="text-xs text-[#3a5037] mt-1.5">Votre guide PDF sera envoyé à cette adresse après génération.</p>
-                  <FieldError msg={errors.email} />
+                  <FieldError msg={errors.email||step3Errors.email} />
                 </div>
 
                 {/* Notes */}
