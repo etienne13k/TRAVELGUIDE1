@@ -122,7 +122,8 @@ const EMPTY: MissionAnswers = {
 
 /* ─── Calendar helpers ─── */
 const LAST_SELECTABLE = "2027-12-31";
-const WEEKDAY_LABELS = ["L","M","M","J","V","S","D"];
+const WEEKDAY_LABELS_B = ["L","M","M","J","V","S","D"];
+const MONTH_NAMES_B = ["janvier","février","mars","avril","mai","juin","juillet","août","septembre","octobre","novembre","décembre"];
 
 function toKey(d: Date): string {
   return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
@@ -150,19 +151,22 @@ function buildGrid(monthDate: Date): Array<{date:Date;key:string;inMonth:boolean
   });
 }
 
-/* ─── Business Calendar component ─── */
+/* ─── Business Calendar component — same design as personal, blue palette ─── */
 function BusinessCalendar({ startDate, endDate, onChange, error }: {
   startDate: string; endDate: string;
   onChange: (s: string, e: string) => void;
   error?: string;
 }) {
-  const [visibleMonth, setVisibleMonth] = React.useState(() => {
-    const t = new Date(); return new Date(t.getFullYear(), t.getMonth(), 1);
-  });
+  const todayKey = React.useMemo(() => toKey(new Date()), []);
+  const firstMonth = React.useMemo(() => { const t = parseKey(todayKey); return new Date(t.getFullYear(), t.getMonth(), 1); }, [todayKey]);
+  const [visibleMonth, setVisibleMonth] = React.useState(firstMonth);
   const [choosingEnd, setChoosingEnd] = React.useState(false);
   const [calErr, setCalErr] = React.useState<string|null>(null);
-  const todayKey = toKey(new Date());
+
+  const selectedDays = startDate && endDate ? countDays(startDate, endDate) : startDate ? 1 : 0;
   const cells = buildGrid(visibleMonth);
+  const curMonthKey = `${visibleMonth.getFullYear()}-${String(visibleMonth.getMonth()+1).padStart(2,"0")}`;
+  const firstMonthKey = `${firstMonth.getFullYear()}-${String(firstMonth.getMonth()+1).padStart(2,"0")}`;
 
   function select(key: string) {
     if (key < todayKey || key > LAST_SELECTABLE) return;
@@ -172,70 +176,91 @@ function BusinessCalendar({ startDate, endDate, onChange, error }: {
     onChange(startDate, key); setChoosingEnd(false); setCalErr(null);
   }
 
-  const monthLabel = visibleMonth.toLocaleDateString("fr-FR",{month:"long",year:"numeric"});
-
   return (
-    <div className="rounded-2xl overflow-hidden" style={{ border: `1px solid ${error ? B.errorBorder : B.border}`, background: B.cardDeep }}>
-      {/* Header */}
-      <div className="px-5 py-3 flex items-start justify-between" style={{ borderBottom: `1px solid ${B.border}` }}>
+    <div className="mt-0 rounded-xl p-4" style={{ border: `1px solid ${error ? B.errorBorder : B.border}`, background: B.cardDeep }}>
+      {/* Header: label + counter badge */}
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between mb-4">
         <div>
-          <p className="text-[10px] font-bold uppercase tracking-[0.2em] mb-0.5" style={{ color: B.blue }}>Calendrier de mission</p>
-          <p className="text-xs" style={{ color: B.muted }}>
-            {startDate && endDate && startDate !== endDate
-              ? `${fmtDateFr(startDate)} → ${fmtDateFr(endDate)}`
-              : startDate
-              ? `Départ : ${fmtDateFr(startDate)} — cliquez sur le retour`
-              : "Cliquez sur la date d'arrivée, puis de retour"}
-          </p>
+          <p className="text-xs font-bold uppercase tracking-[0.18em] mb-1" style={{ color: B.blue }}>Calendrier de mission</p>
+          <p className="text-xs" style={{ color: B.muted }}>Cliquez sur une date de début, puis une date de fin.</p>
         </div>
-        {startDate && endDate && (
-          <div className="rounded-lg px-3 py-1 text-center flex-shrink-0" style={{ background: B.blueFaint, border: `1px solid ${B.blueBorder}` }}>
-            <div className="font-bold text-sm" style={{ color: B.blue }}>{countDays(startDate,endDate)}</div>
-            <div className="text-[9px] uppercase tracking-wide" style={{ color: B.muted }}>jour{countDays(startDate,endDate)>1?"s":""}</div>
-          </div>
-        )}
+        <div className="rounded-lg px-4 py-2 text-center shrink-0" style={{ border: `1px solid rgba(59,130,246,0.3)`, background: B.card }}>
+          <p className="text-xl font-black" style={{ color: B.text }}>{selectedDays} <span className="text-sm font-medium" style={{ color: B.muted }}>j</span></p>
+          <p className="text-[10px] font-semibold uppercase tracking-[0.14em]" style={{ color: "#2563eb" }}>jours</p>
+        </div>
       </div>
-      {/* Nav */}
-      <div className="px-5 py-3 flex items-center justify-between" style={{ borderBottom: `1px solid ${B.border}` }}>
-        <button type="button" onClick={()=>setVisibleMonth(p=>new Date(p.getFullYear(),p.getMonth()-1,1))}
-          className="w-8 h-8 rounded-lg flex items-center justify-center text-sm transition-colors"
-          style={{ background: B.border, color: B.text }}>←</button>
-        <span className="text-sm font-semibold capitalize" style={{ color: B.text }}>{monthLabel}</span>
-        <button type="button" onClick={()=>setVisibleMonth(p=>new Date(p.getFullYear(),p.getMonth()+1,1))}
-          className="w-8 h-8 rounded-lg flex items-center justify-center text-sm transition-colors"
-          style={{ background: B.border, color: B.text }}>→</button>
+
+      {/* Month nav */}
+      <div className="flex items-center justify-between rounded-lg px-3 py-2 mb-3" style={{ background: B.card, border: `1px solid ${B.border}`, color: B.text }}>
+        <button type="button" onClick={() => setVisibleMonth(p => new Date(p.getFullYear(), p.getMonth()-1, 1))}
+          disabled={curMonthKey <= firstMonthKey}
+          className="rounded px-3 py-1 text-lg font-bold transition-colors disabled:cursor-not-allowed"
+          style={{ color: curMonthKey <= firstMonthKey ? B.faint : B.text }}>←</button>
+        <p className="text-sm font-bold capitalize tracking-wide">
+          {MONTH_NAMES_B[visibleMonth.getMonth()]} {visibleMonth.getFullYear()}
+        </p>
+        <button type="button" onClick={() => setVisibleMonth(p => new Date(p.getFullYear(), p.getMonth()+1, 1))}
+          disabled={curMonthKey >= "2027-12"}
+          className="rounded px-3 py-1 text-lg font-bold transition-colors disabled:cursor-not-allowed"
+          style={{ color: curMonthKey >= "2027-12" ? B.faint : B.text }}>→</button>
       </div>
-      {/* Day labels */}
-      <div className="grid grid-cols-7 px-4 pt-3 pb-1">
-        {WEEKDAY_LABELS.map((l,i)=>(
-          <div key={i} className="text-center text-[10px] font-bold uppercase tracking-wide" style={{ color: B.muted }}>{l}</div>
+
+      {/* Weekday labels */}
+      <div className="grid grid-cols-7 gap-1 text-center text-[10px] font-bold uppercase tracking-[0.14em] mb-2" style={{ color: B.muted }}>
+        {WEEKDAY_LABELS_B.map((w,i) => (
+          <span key={i} style={i >= 5 ? { color: "rgba(59,130,246,0.6)" } : undefined}>{w}</span>
         ))}
       </div>
-      {/* Grid */}
-      <div className="grid grid-cols-7 gap-1 px-4 pb-4">
-        {cells.map(cell => {
-          if (!cell.inMonth) return <div key={cell.key} />;
-          const isPast = cell.key < todayKey;
-          const isFuture = cell.key > LAST_SELECTABLE;
-          const isStart = cell.key === startDate;
-          const isEnd = cell.key === endDate;
-          const inRange = startDate && endDate && cell.key > startDate && cell.key < endDate;
+
+      {/* Day grid */}
+      <div className="grid grid-cols-7 gap-1">
+        {cells.map(({ key, date, inMonth, isWeekend }) => {
+          if (!inMonth) return <div key={key} className="aspect-square" />;
+          const isPast = key < todayKey;
+          const isFuture = key > LAST_SELECTABLE;
           const disabled = isPast || isFuture;
+          const isStart = key === startDate;
+          const isEnd = key === endDate && endDate !== startDate;
+          const inRange = !!(startDate && endDate && key >= startDate && key <= endDate);
           return (
-            <button key={cell.key} type="button" disabled={disabled} onClick={()=>select(cell.key)}
-              className="h-9 w-full rounded-lg text-xs font-semibold transition-all disabled:cursor-not-allowed"
+            <button key={key} type="button" onClick={() => select(key)} disabled={disabled}
+              className={[
+                "relative aspect-square rounded-lg text-sm font-semibold transition-all duration-100",
+                disabled ? "cursor-not-allowed" : "cursor-pointer",
+              ].join(" ")}
               style={{
-                background: isStart||isEnd ? B.blue : inRange ? B.blueFaint : "transparent",
-                color: isStart||isEnd ? "#fff" : disabled ? B.faint : cell.isWeekend ? "#93c5fd" : B.text,
-                border: `1px solid ${isStart||isEnd ? B.blue : inRange ? B.blueBorder : "transparent"}`,
-                opacity: disabled ? 0.35 : 1,
+                background: disabled ? B.cardDeep : inRange ? B.blue : B.card,
+                color: disabled ? B.faint : inRange ? "#fff" : isWeekend ? "rgba(59,130,246,0.7)" : B.text,
+                outline: (isStart || isEnd) && !disabled ? `1px solid ${B.blue}` : undefined,
+                outlineOffset: (isStart || isEnd) && !disabled ? 1 : undefined,
               }}>
-              {cell.date.getDate()}
+              {date.getDate()}
             </button>
           );
         })}
       </div>
-      {(calErr||error) && <p className="px-5 pb-3 text-xs" style={{ color: B.errorText }}>{calErr||error}</p>}
+
+      {/* Footer */}
+      <div className="mt-3 flex items-center justify-between">
+        <p className="text-xs" style={{ color: B.faint }}>Disponible jusqu&apos;au 31 décembre 2027</p>
+        {(startDate || endDate) && (
+          <button type="button" onClick={() => { onChange("", ""); setChoosingEnd(false); setCalErr(null); }}
+            className="text-xs font-semibold transition-colors" style={{ color: B.muted }}>
+            Effacer
+          </button>
+        )}
+      </div>
+      {startDate && (
+        <div className="mt-2 rounded-lg px-4 py-2.5 text-sm" style={{ border: `1px solid ${B.border}`, background: B.card, color: B.text }}>
+          <strong style={{ color: B.blue }}>Dates :</strong>{" "}
+          {fmtDateFr(startDate)}{endDate && endDate !== startDate ? ` → ${fmtDateFr(endDate)}` : ""}
+        </div>
+      )}
+      {(calErr || error) && (
+        <p className="mt-2 rounded-lg px-4 py-2 text-xs font-semibold" style={{ border: "1px solid rgba(239,68,68,0.5)", background: "rgba(239,68,68,0.1)", color: B.errorText }}>
+          {calErr || error}
+        </p>
+      )}
     </div>
   );
 }
