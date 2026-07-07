@@ -229,7 +229,47 @@ function CartContent() {
         ) : (
           <div className="grid gap-8 lg:grid-cols-[1fr_360px]">
             <section className="space-y-4">
-              {items.map((item, index) => (
+              {items.map((item, index) => {
+                const isBusinessSub = item.planId === "1mois" && item.criteria?.mode === "business";
+                if (isBusinessSub) {
+                  return (
+                    <article
+                      key={item.id}
+                      className="overflow-hidden rounded-[1.75rem]"
+                      style={{ border: `1px solid ${T.accentBorder}`, background: T.card }}
+                    >
+                      <div className="px-5 py-5 flex items-center justify-between gap-4" style={{ background: T.cardHeader }}>
+                        <div className="flex items-center gap-4">
+                          <div className="w-11 h-11 rounded-2xl flex items-center justify-center flex-shrink-0" style={{ background: T.accentFaint, border: `1px solid ${T.accentBorder}` }}>
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={T.accent} strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+                              <rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/>
+                            </svg>
+                          </div>
+                          <div>
+                            <p className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: T.accent }}>Abonnement</p>
+                            <h2 className="text-lg font-bold" style={{ color: T.text, fontFamily: "var(--font-playfair), Georgia, serif" }}>
+                              Travel Business · 1 mois
+                            </h2>
+                            <p className="text-xs mt-0.5" style={{ color: T.muted }}>10 guides inclus · 7j max par guide</p>
+                          </div>
+                        </div>
+                        <strong className="rounded-full px-4 py-2 text-sm flex-shrink-0" style={{ background: T.accentFaint, border: `1px solid ${T.accentBorder}`, color: T.accent }}>
+                          {formatEuro(item.price)}
+                        </strong>
+                      </div>
+                      <div className="flex gap-3 px-5 py-4">
+                        <button
+                          type="button"
+                          onClick={() => handleRemove(item.id)}
+                          className="rounded-full border border-red-900/40 px-4 py-2 text-sm font-bold text-red-400 hover:bg-red-900/20"
+                        >
+                          Supprimer
+                        </button>
+                      </div>
+                    </article>
+                  );
+                }
+                return (
                 <article
                   key={item.id}
                   className="overflow-hidden rounded-[1.75rem]"
@@ -294,7 +334,8 @@ function CartContent() {
                     </button>
                   </div>
                 </article>
-              ))}
+                );
+              })}
             </section>
 
             <aside
@@ -311,7 +352,11 @@ function CartContent() {
               <div className="mt-5 space-y-3 pb-5" style={{ borderBottom: `1px solid ${T.border}` }}>
                 {items.map((item) => (
                   <div key={item.id} className="flex justify-between gap-4 text-sm" style={{ color: T.muted }}>
-                    <span>{CART_PLANS[item.planId].duration} · {item.destination}</span>
+                    <span>
+                      {item.planId === "1mois" && item.criteria?.mode === "business"
+                        ? "Abonnement Travel Business · 1 mois"
+                        : `${CART_PLANS[item.planId].duration} · ${item.destination}`}
+                    </span>
                     <span className="font-semibold" style={{ color: T.modifyBtn }}>{formatEuro(item.price)}</span>
                   </div>
                 ))}

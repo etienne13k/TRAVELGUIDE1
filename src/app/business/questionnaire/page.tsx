@@ -96,7 +96,7 @@ const PAYS_EXEMPLES = [
 ];
 
 /* ─── Business plan options ─── */
-const B_DATE_LIMITS: Record<string, number> = { "7j": 7, "1mois": 31 };
+const B_DATE_LIMITS: Record<string, number> = { "7j": 7, "1mois": 7 };
 type BPlanKey = "7j" | "1mois";
 
 interface MissionAnswers {
@@ -639,7 +639,7 @@ function BusinessQuestionnaireContent() {
                         <span className="text-4xl font-black" style={{ color: B.text }}>Gratuit</span>
                       </div>
                       <p className="text-sm font-semibold mb-1" style={{ color: B.text }}>Inclus dans mon abonnement</p>
-                      <p className="text-xs" style={{ color: B.muted }}>Guides illimités · aucune limite de durée</p>
+                      <p className="text-xs" style={{ color: B.muted }}>10 guides inclus / mois · 7j max par guide</p>
                     </button>
                     {!hasSub && (
                       <p className="mt-2 text-xs text-center" style={{ color: B.muted }}>
@@ -713,7 +713,7 @@ function BusinessQuestionnaireContent() {
                 <BusinessCalendar
                   startDate={answers.arrival_date}
                   endDate={answers.departure_date}
-                  maxDays={answers.selectedPlan === "1mois" ? undefined : B_DATE_LIMITS[answers.selectedPlan]}
+                  maxDays={B_DATE_LIMITS[answers.selectedPlan]}
                   onChange={(s, e) => {
                     setAnswers(p => ({ ...p, arrival_date: s, departure_date: e }));
                     if (errors.arrival_date || errors.departure_date) setErrors(p => ({ ...p, arrival_date: "", departure_date: "" }));
