@@ -412,9 +412,9 @@ export default function Home() {
       {/* NAV */}
       <nav className="fixed top-12 w-full z-50 bg-[#0e1310]/95 backdrop-blur-md border-b border-[#232c20]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
-          <div className="text-xl font-bold tracking-tight text-[#d8e3d5]" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
+          <Link href="/" className="text-xl font-bold tracking-tight text-[#d8e3d5] transition-colors duration-200 hover:text-[#c9a84c]" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
             TravelGuide
-          </div>
+          </Link>
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-1 border border-[#232c20] rounded-lg p-0.5">
               <button

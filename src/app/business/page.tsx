@@ -269,12 +269,14 @@ export default function BusinessPage() {
         style={{ background: `${B.bg}f2`, borderBottom: `1px solid ${B.border}` }}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
-          <div
-            className="text-xl font-bold tracking-tight"
+          <Link href="/"
+            className="text-xl font-bold tracking-tight transition-colors duration-200"
             style={{ color: B.text, fontFamily: "var(--font-playfair), Georgia, serif" }}
+            onMouseEnter={e => (e.currentTarget.style.color = "#93c5fd")}
+            onMouseLeave={e => (e.currentTarget.style.color = B.text)}
           >
             Travel Business
-          </div>
+          </Link>
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-1 rounded-lg p-0.5" style={{ border: `1px solid ${B.border}` }}>
               <button

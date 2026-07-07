@@ -511,9 +511,11 @@ function BusinessQuestionnaireContent() {
       {/* Header */}
       <header style={{ borderBottom: `1px solid ${B.border}`, background: B.bg }} className="sticky top-0 z-40">
         <div className="max-w-3xl mx-auto px-6 py-4 flex items-center justify-between">
-          <Link href="/business" className="flex items-center gap-2">
-            <span className="text-xs font-bold uppercase tracking-[0.18em]" style={{ color: B.blue }}>Travel</span>
-            <span className="text-xs font-bold uppercase tracking-[0.18em]" style={{ color: B.text }}>Business</span>
+          <Link href="/" className="text-base font-bold transition-colors duration-200"
+            style={{ fontFamily: "var(--font-playfair), Georgia, serif", color: B.text }}
+            onMouseEnter={e => (e.currentTarget.style.color = "#93c5fd")}
+            onMouseLeave={e => (e.currentTarget.style.color = B.text)}>
+            Travel Business
           </Link>
           <Link href="/" className="text-xs" style={{ color: B.faint }}>← Mode personnel</Link>
         </div>
