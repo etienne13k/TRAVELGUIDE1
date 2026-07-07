@@ -688,11 +688,11 @@ function QuestionnaireContent() {
     return false;
   }
 
-  function heuristicValidate(fields: { name: string; label: string; value: string }[]): Record<string,string> {
+  function heuristicValidate(fields: { name: string; value: string }[]): Record<string,string> {
     const errs: Record<string,string> = {};
     for (const f of fields) {
       if (f.value.trim() && isLikelyGibberish(f.value)) {
-        errs[f.name] = `"${f.value.trim()}" ne semble pas être un lieu réel. Veuillez vérifier la saisie.`;
+        errs[f.name] = `La saisie "${f.value.trim()}" ne semble pas cohérente. Veuillez vérifier.`;
       }
     }
     return errs;
@@ -701,7 +701,7 @@ function QuestionnaireContent() {
   async function goNext() {
     if (step===1) {
       const nextErrors: Record<string,string> = {};
-      if (!answers.destination.trim()) nextErrors.destination = "Veuillez indiquer votre destination.";
+      if (!answers.destination_arrival_city.trim()) nextErrors.destination_arrival_city = "Veuillez indiquer votre ville d'arrivée.";
       if (!answers.departure_city.trim()) nextErrors.departure_city = "Veuillez indiquer votre ville de départ.";
       if (!answers.scope_type) nextErrors.scope_type = "Veuillez choisir comment vous souhaitez explorer.";
       if (!answers.arrival_date) nextErrors.dates = "Veuillez sélectionner au moins une date.";
@@ -714,13 +714,13 @@ function QuestionnaireContent() {
       }
       // Client-side heuristic check first (no API key needed)
       const textFields = [
-        { name: "destination", label: "Destination", value: answers.destination },
         { name: "departure_city", label: "Ville de départ", value: answers.departure_city },
         ...(answers.destination_arrival_city.trim() && answers.arrival_city_country
           ? [{ name: "destination_arrival_city", label: `Ville d'arrivée "${answers.destination_arrival_city}" dans le pays "${answers.arrival_city_country}"`, value: `${answers.destination_arrival_city} (${answers.arrival_city_country})` }]
           : answers.destination_arrival_city.trim()
           ? [{ name: "destination_arrival_city", label: "Ville d'arrivée", value: answers.destination_arrival_city }]
           : []),
+        ...(answers.nearby_cities.trim() ? [{ name: "nearby_cities", label: "Villes alentour", value: answers.nearby_cities }] : []),
       ];
       const heuristicErrs = heuristicValidate(textFields);
       if (Object.keys(heuristicErrs).length > 0) {
@@ -786,6 +786,7 @@ function QuestionnaireContent() {
         { name: "already_visited", label: "Pays/villes déjà visités", value: answers.already_visited },
         { name: "non_negotiables", label: "Incontournables", value: answers.non_negotiables },
         { name: "things_to_avoid", label: "Choses à éviter", value: answers.things_to_avoid },
+        ...(answers.neighborhood_vibe.trim() ? [{ name: "neighborhood_vibe", label: "Quartier ou ambiance", value: answers.neighborhood_vibe }] : []),
       ].filter(f => f.value.trim() && !["aucun","none"].includes(f.value.trim().toLowerCase()));
       const heuristicErrs2 = heuristicValidate(s2TextFields);
       if (Object.keys(heuristicErrs2).length > 0) {
@@ -958,21 +959,6 @@ function QuestionnaireContent() {
               <p className="text-[#5a7856] text-sm">Indiquez votre destination, votre lieu de départ et vos dates.</p>
             </div>
 
-            {/* Destination */}
-            <div id="field-destination">
-              <SectionCard title="Destination">
-                <QLabel required>Où souhaitez-vous aller ?</QLabel>
-                <input
-                  type="text"
-                  value={answers.destination}
-                  onChange={e=>{setAnswers(p=>({...p,destination:e.target.value}));if(errors.destination)setErrors(p=>({...p,destination:""}));}}
-                  placeholder="Ville, pays ou région — ex. Tokyo, Bali, Sicile"
-                  className={inputCls("destination")}
-                />
-                <FieldError msg={errors.destination} />
-              </SectionCard>
-            </div>
-
             {/* Départ & arrivée */}
             <SectionCard title="Départ & arrivée">
               <div className="space-y-4">
@@ -994,13 +980,20 @@ function QuestionnaireContent() {
                     <input
                       type="text"
                       value={answers.destination_arrival_city}
-                      onChange={e=>{setAnswers(p=>({...p,destination_arrival_city:e.target.value}));if(errors.destination_arrival_city)setErrors(p=>({...p,destination_arrival_city:""}));}}
+                      onChange={e=>{
+                        const city = e.target.value;
+                        setAnswers(p=>({...p,destination_arrival_city:city,destination:city?(p.arrival_city_country?`${city}, ${p.arrival_city_country}`:city):""}));
+                        if(errors.destination_arrival_city)setErrors(p=>({...p,destination_arrival_city:""}));
+                      }}
                       placeholder="ex. Tokyo, Bangkok, Rome"
                       className={`flex-1 border rounded-lg px-4 py-3 text-sm focus:outline-none bg-[#0e1310] text-[#d8e3d5] placeholder-[#3a5037] transition-colors ${errors.destination_arrival_city?"border-red-700 focus:border-red-500":"border-[#2a3527] focus:border-[#c9a84c]"}`}
                     />
                     <select
                       value={answers.arrival_city_country}
-                      onChange={e=>setAnswers(p=>({...p,arrival_city_country:e.target.value}))}
+                      onChange={e=>{
+                        const country = e.target.value;
+                        setAnswers(p=>({...p,arrival_city_country:country,destination:p.destination_arrival_city?(country?`${p.destination_arrival_city}, ${country}`:p.destination_arrival_city):""}))}
+                      }
                       className="sm:w-48 border border-[#2a3527] rounded-lg px-3 py-3 text-sm focus:outline-none focus:border-[#c9a84c] bg-[#0e1310] text-[#d8e3d5] transition-colors appearance-none cursor-pointer"
                     >
                       <option value="">Pays...</option>
@@ -1029,16 +1022,17 @@ function QuestionnaireContent() {
                   <FieldError msg={errors.scope_type} />
                 </div>
                 {answers.scope_type==="city"&&(
-                  <div>
+                  <div id="field-nearby_cities">
                     <QLabel hint="(optionnel)">Villes ou sites alentour à inclure</QLabel>
                     <input
                       type="text"
                       value={answers.nearby_cities}
-                      onChange={e=>setAnswers(p=>({...p,nearby_cities:e.target.value}))}
+                      onChange={e=>{setAnswers(p=>({...p,nearby_cities:e.target.value}));if(errors.nearby_cities)setErrors(p=>({...p,nearby_cities:""}));}}
                       placeholder="ex. Nikko, Kamakura, Yokohama — villes proches de Tokyo"
-                      className="w-full border border-[#2a3527] rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-[#c9a84c] bg-[#0e1310] text-[#d8e3d5] placeholder-[#3a5037] transition-colors"
+                      className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-[#c9a84c] bg-[#0e1310] text-[#d8e3d5] placeholder-[#3a5037] transition-colors ${errors.nearby_cities?"border-red-500/60":"border-[#2a3527]"}`}
                     />
                     <p className="text-xs text-[#3a5037] mt-1.5">Si vous souhaitez inclure des excursions depuis la ville principale.</p>
+                    <FieldError msg={errors.nearby_cities} />
                   </div>
                 )}
                 {answers.scope_type==="country"&&(
@@ -1253,12 +1247,13 @@ function QuestionnaireContent() {
                     </div>
                     <FieldError msg={step2Errors.accommodations} />
                   </div>
-                  <div>
+                  <div id="s2-neighborhood_vibe">
                     <QLabel hint="(optionnel)">Quartier ou ambiance préférés</QLabel>
                     <input type="text" value={answers.neighborhood_vibe}
-                      onChange={e=>setAnswers(p=>({...p,neighborhood_vibe:e.target.value}))}
+                      onChange={e=>{setAnswers(p=>({...p,neighborhood_vibe:e.target.value}));if(step2Errors.neighborhood_vibe)setStep2Errors(p=>{const n={...p};delete n.neighborhood_vibe;return n;});}}
                       placeholder="ex. centre historique, proche de la plage, quartier branché..."
-                      className="w-full border border-[#2a3527] rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-[#c9a84c] bg-[#0e1310] text-[#d8e3d5] placeholder-[#3a5037] transition-colors"/>
+                      className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-[#c9a84c] bg-[#0e1310] text-[#d8e3d5] placeholder-[#3a5037] transition-colors ${step2Errors.neighborhood_vibe?"border-red-500/60":"border-[#2a3527]"}`}/>
+                    <FieldError msg={step2Errors.neighborhood_vibe} />
                   </div>
                 </div>
               </SectionCard>
