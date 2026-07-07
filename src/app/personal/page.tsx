@@ -1062,7 +1062,12 @@ export default function Home() {
       {/* BOTTOM CTA */}
       <section className="py-14 sm:py-24 px-4 sm:px-6 bg-gradient-to-br from-[#1a2e1f] via-[#2e4133] to-[#1a2e1f] text-white text-center">
         <div className="max-w-2xl mx-auto">
-          <div className="text-5xl mb-6">✈️</div>
+          <div className="w-16 h-16 mx-auto mb-6 rounded-2xl flex items-center justify-center" style={{ background: "rgba(201,168,76,0.15)", border: "1px solid rgba(201,168,76,0.3)" }}>
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#C9A84C" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="1" y="7" width="22" height="14" rx="2" ry="2"/>
+              <path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/>
+            </svg>
+          </div>
           <h2
             className="text-2xl sm:text-4xl lg:text-5xl font-bold mb-5"
             style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}

@@ -475,6 +475,12 @@ function BusinessQuestionnaireContent() {
     setTermsError(null);
     if (!termsAccepted) { setTermsError("Veuillez accepter les conditions générales de vente pour continuer."); return; }
 
+    // Block free subscription plan if not subscribed
+    if (answers.selectedPlan === "1mois" && !hasSub) {
+      setSubmitError("Cette option est réservée aux abonnés actifs. Abonnez-vous à 15€/mois depuis la page Travel Business.");
+      return;
+    }
+
     const existingCart = loadCart();
     if (existingCart.length > 0) setReplacedExisting(true);
 

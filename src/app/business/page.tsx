@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { CART_UPDATED_EVENT, getCartCount } from "@/lib/cart";
+import { addCartItem, CART_UPDATED_EVENT, getCartCount } from "@/lib/cart";
 
 type Lang = "fr" | "en";
 
@@ -247,6 +247,20 @@ export default function BusinessPage() {
     window.addEventListener("tgai_lang_change", handleLangChange);
     return () => window.removeEventListener("tgai_lang_change", handleLangChange);
   }, []);
+
+  function handleSubscribe() {
+    localStorage.setItem("tgai_mode", "business");
+    localStorage.setItem("tgai_has_subscription", "true");
+    addCartItem({
+      planId: "1mois",
+      planLabel: "Abonnement Travel Business — 1 mois",
+      price: 1500,
+      destination: "—",
+      dates: "1 mois",
+      criteria: { mode: "business" },
+    });
+    window.location.href = "/cart";
+  }
 
   return (
     <div className="min-h-screen" style={{ color: B.faint, fontFamily: "var(--font-dm-sans), system-ui, sans-serif", background: B.bg }}>
@@ -839,11 +853,11 @@ export default function BusinessPage() {
                   </div>
                   <p className="text-xs mt-1" style={{ color: B.faint }}>{lang === "fr" ? "Résiliable à tout moment" : "Cancel anytime"}</p>
                 </div>
-                <a href="/business/questionnaire?plan=1mois"
+                <button type="button" onClick={handleSubscribe}
                   className="font-bold px-8 py-3 rounded-xl text-sm whitespace-nowrap text-white transition-all hover:opacity-90 hover:scale-105"
                   style={{ background: B.accent }}>
                   {lang === "fr" ? "S'abonner →" : "Subscribe →"}
-                </a>
+                </button>
               </div>
             </div>
           </div>
