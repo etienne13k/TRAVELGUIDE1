@@ -181,21 +181,21 @@ function BusinessCalendar({ startDate, endDate, onChange, error }: {
       {/* Grid */}
       <div className="grid grid-cols-7 gap-1 px-4 pb-4">
         {cells.map(cell => {
+          if (!cell.inMonth) return <div key={cell.key} />;
           const isPast = cell.key < todayKey;
           const isFuture = cell.key > LAST_SELECTABLE;
           const isStart = cell.key === startDate;
           const isEnd = cell.key === endDate;
           const inRange = startDate && endDate && cell.key > startDate && cell.key < endDate;
-          const disabled = isPast || isFuture || !cell.inMonth;
+          const disabled = isPast || isFuture;
           return (
             <button key={cell.key} type="button" disabled={disabled} onClick={()=>select(cell.key)}
-              className="h-9 w-full rounded-lg text-xs font-semibold transition-all"
+              className="h-9 w-full rounded-lg text-xs font-semibold transition-all disabled:cursor-not-allowed"
               style={{
                 background: isStart||isEnd ? B.blue : inRange ? B.blueFaint : "transparent",
-                color: isStart||isEnd ? "#fff" : disabled ? B.border : cell.isWeekend ? "#93c5fd" : B.text,
+                color: isStart||isEnd ? "#fff" : disabled ? B.faint : cell.isWeekend ? "#93c5fd" : B.text,
                 border: `1px solid ${isStart||isEnd ? B.blue : inRange ? B.blueBorder : "transparent"}`,
-                opacity: disabled ? 0.3 : 1,
-                cursor: disabled ? "not-allowed" : "pointer",
+                opacity: disabled ? 0.35 : 1,
               }}>
               {cell.date.getDate()}
             </button>
@@ -288,12 +288,12 @@ function isGibberish(text: string): boolean {
 function Stepper({ value, min, max, onChange }: { value: number; min: number; max: number; onChange: (v: number) => void }) {
   return (
     <div className="flex items-center gap-3">
-      <button type="button" onClick={() => onChange(Math.max(min, value - 1))}
-        className="w-9 h-9 rounded-full flex items-center justify-center font-bold text-lg transition-all"
+      <button type="button" disabled={value <= min} onClick={() => onChange(Math.max(min, value - 1))}
+        className="w-9 h-9 rounded-full flex items-center justify-center font-bold text-lg transition-all disabled:cursor-not-allowed disabled:opacity-30"
         style={{ background: B.blueFaint, border: `1px solid ${B.border}`, color: value <= min ? B.faint : B.blue }}>−</button>
       <span className="text-xl font-bold w-8 text-center" style={{ color: B.text }}>{value}</span>
-      <button type="button" onClick={() => onChange(Math.min(max, value + 1))}
-        className="w-9 h-9 rounded-full flex items-center justify-center font-bold text-lg transition-all"
+      <button type="button" disabled={value >= max} onClick={() => onChange(Math.min(max, value + 1))}
+        className="w-9 h-9 rounded-full flex items-center justify-center font-bold text-lg transition-all disabled:cursor-not-allowed disabled:opacity-30"
         style={{ background: B.blueFaint, border: `1px solid ${B.border}`, color: value >= max ? B.faint : B.blue }}>+</button>
     </div>
   );
