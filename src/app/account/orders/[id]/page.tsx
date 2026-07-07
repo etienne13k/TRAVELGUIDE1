@@ -124,7 +124,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
       {/* Navbar */}
       <nav className="sticky top-0 z-10 px-6 py-4 flex items-center justify-between" style={{ background: "#425C47" }}>
         <Link href="/" className="text-lg font-bold text-white" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
-          ✈️ TravelGuide AI
+          TravelGuide
         </Link>
         <div className="flex items-center gap-4">
           <Link href="/account" className="text-sm" style={{ color: "#C9A84C" }}>

@@ -290,7 +290,7 @@ Si tout semble normal, réponds : {"issues": [], "should_pause": false}`;
       const downloadUrl = `${baseUrl}/api/download-guide/${guideId}`;
 
       await resend.emails.send({
-        from: "TravelGuide AI <travel-guide@nanocorp.app>",
+        from: "TravelGuide <travel-guide@nanocorp.app>",
         to: input.email,
         subject: `Votre guide de voyage ${input.destination} est prêt ! ✈️`,
         html: buildEmailHtml(input, downloadUrl),
@@ -362,7 +362,7 @@ function buildEmailHtml(input: GuideInput, downloadUrl: string): string {
 <body>
   <div class="container">
     <div class="header">
-      <h1>TravelGuide AI</h1>
+      <h1>TravelGuide</h1>
       <p>Votre guide de voyage personnalisé est prêt</p>
     </div>
     <div class="body">
@@ -383,5 +383,5 @@ function buildEmailHtml(input: GuideInput, downloadUrl: string): string {
 }
 
 function buildDisclaimer(): string {
-  return "Ce guide a été généré par intelligence artificielle. Les informations fournies sont données à titre indicatif et peuvent ne pas être exactes ou à jour. TravelGuide AI ne saurait être tenu responsable d'éventuelles erreurs ou omissions. Nous vous recommandons de vérifier les horaires, prix et disponibilités directement auprès des établissements avant votre départ.";
+  return "Ce guide a été généré par intelligence artificielle. Les informations fournies sont données à titre indicatif et peuvent ne pas être exactes ou à jour. TravelGuide ne saurait être tenu responsable d'éventuelles erreurs ou omissions. Nous vous recommandons de vérifier les horaires, prix et disponibilités directement auprès des établissements avant votre départ.";
 }

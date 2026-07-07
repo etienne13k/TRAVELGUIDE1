@@ -44,12 +44,12 @@ export async function POST(req: NextRequest) {
     if (process.env.RESEND_API_KEY) {
       const resend = new Resend(process.env.RESEND_API_KEY);
       await resend.emails.send({
-        from: "TravelGuide AI <noreply@travelguide.ai>",
+        from: "TravelGuide <noreply@travelguide.ai>",
         to: normalizedEmail,
-        subject: "Réinitialisation de votre mot de passe — TravelGuide AI",
+        subject: "Réinitialisation de votre mot de passe — TravelGuide",
         html: `
           <div style="font-family: -apple-system, sans-serif; max-width: 480px; margin: 0 auto; padding: 32px 24px;">
-            <h1 style="color: #425C47; font-size: 24px; margin-bottom: 8px;">TravelGuide AI</h1>
+            <h1 style="color: #425C47; font-size: 24px; margin-bottom: 8px;">TravelGuide</h1>
             <p style="color: #7a7060; margin-bottom: 24px;">Réinitialisation de mot de passe</p>
             <p style="color: #425C47; margin-bottom: 16px;">
               Vous avez demandé à réinitialiser votre mot de passe. Cliquez sur le bouton ci-dessous pour en choisir un nouveau.

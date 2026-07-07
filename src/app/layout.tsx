@@ -23,11 +23,11 @@ const dmSans = DM_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "TravelGuide AI — Guides de voyage personnalisés dès 3€",
+  title: "TravelGuide — Guides de voyage personnalisés dès 3€",
   description:
     "Recevez dès 3€ un guide de voyage ultra-personnalisé généré par IA en PDF. Itinéraire, restaurants, activités — en 3j, 7j, 14j ou 1 mois.",
   openGraph: {
-    title: "TravelGuide AI — Guides de voyage dès 3€",
+    title: "TravelGuide — Guides de voyage dès 3€",
     description:
       "Recevez dès 3€ un guide de voyage ultra-personnalisé généré par IA en PDF. Itinéraire, restaurants, activités — en 3j, 7j, 14j ou 1 mois.",
     type: "website",

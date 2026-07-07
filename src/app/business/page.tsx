@@ -489,7 +489,7 @@ export default function BusinessPage() {
       </section>
 
       {/* TWO FLOWS */}
-      <section className="py-14 sm:py-20 px-4 sm:px-6" style={{ background: B.cardDeep }}>
+      <section id="mission" className="py-14 sm:py-20 px-4 sm:px-6" style={{ background: B.cardDeep }}>
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-12">
             <div
@@ -578,47 +578,6 @@ export default function BusinessPage() {
         </div>
       </section>
 
-      {/* PRICING PLACEHOLDER */}
-      <section className="py-14 sm:py-24 px-4 sm:px-6 bg-pattern-light" id="mission" style={{ background: B.bg }}>
-        <div className="max-w-3xl mx-auto text-center">
-          <h2
-            className="text-2xl sm:text-4xl lg:text-5xl font-bold mb-4"
-            style={{ color: B.text, fontFamily: "var(--font-playfair), Georgia, serif" }}
-          >
-            {tx.pricing_placeholder_title}
-          </h2>
-          <p className="max-w-xl mx-auto text-sm leading-relaxed mb-10" style={{ color: B.muted }}>
-            {tx.pricing_placeholder_sub}
-          </p>
-          <a
-            href="/business/questionnaire"
-            className="inline-block font-semibold px-10 py-4 rounded-full text-base text-white transition-all hover:scale-105 shadow-lg"
-            style={{ background: `linear-gradient(135deg, ${B.accent}, #6366f1)` }}
-          >
-            {tx.pricing_placeholder_cta} →
-          </a>
-          {/* Teaser cards skeleton */}
-          <div className="grid sm:grid-cols-3 gap-4 mt-12 opacity-30 pointer-events-none select-none">
-            {["Mission", "Équipe", "Premium"].map((name) => (
-              <div
-                key={name}
-                className="rounded-2xl p-6 border flex flex-col gap-3"
-                style={{ background: B.card, border: `1px solid ${B.border}` }}
-              >
-                <div className="h-3 rounded-full w-2/3 mx-auto" style={{ background: B.border }} />
-                <div className="h-8 rounded-full w-1/2 mx-auto" style={{ background: B.faint }} />
-                <div className="h-3 rounded-full w-3/4 mx-auto" style={{ background: B.border }} />
-                <div className="h-3 rounded-full w-1/2 mx-auto" style={{ background: B.border }} />
-                <div className="h-9 rounded-xl mt-2" style={{ background: B.border }} />
-              </div>
-            ))}
-          </div>
-          <p className="mt-5 text-xs" style={{ color: B.veryFaint }}>
-            {lang === "fr" ? "Tarification disponible prochainement" : "Pricing available soon"}
-          </p>
-        </div>
-      </section>
-
       {/* VISUAL EXAMPLES */}
       <section className="py-14 sm:py-24 px-4 sm:px-6" style={{ background: B.cardDeep }}>
         <div className="max-w-7xl mx-auto">
@@ -634,46 +593,69 @@ export default function BusinessPage() {
           <div className="grid lg:grid-cols-2 gap-8">
             {/* Cover mockup */}
             <div
-              className="text-white rounded-2xl overflow-hidden shadow-2xl p-10 min-h-[480px] flex flex-col justify-between relative"
-              style={{ background: `linear-gradient(135deg, ${B.dark1}, ${B.dark2})` }}
+              className="text-white rounded-2xl overflow-hidden shadow-2xl p-8 min-h-[480px] flex flex-col justify-between relative"
+              style={{ background: `linear-gradient(160deg, ${B.dark1} 0%, ${B.dark2} 60%, #0a0a1a 100%)` }}
             >
-              <div className="absolute inset-0 overflow-hidden opacity-5 pointer-events-none">
-                <div className="absolute top-0 right-0 w-64 h-64 rounded-full border-[60px] border-white -translate-y-1/3 translate-x-1/3" />
-                <div className="absolute bottom-0 left-0 w-48 h-48 rounded-full border-[40px] border-white translate-y-1/3 -translate-x-1/3" />
+              {/* Background geometric accents */}
+              <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                <div className="absolute top-0 right-0 w-72 h-72 rounded-full border-[80px] translate-x-1/3 -translate-y-1/3" style={{ borderColor: "rgba(59,130,246,0.06)" }} />
+                <div className="absolute bottom-0 left-0 w-56 h-56 rounded-full border-[50px] -translate-x-1/4 translate-y-1/4" style={{ borderColor: "rgba(59,130,246,0.04)" }} />
+                <div className="absolute top-1/2 left-1/2 w-96 h-96 rounded-full -translate-x-1/2 -translate-y-1/2" style={{ background: "radial-gradient(circle, rgba(59,130,246,0.04) 0%, transparent 70%)" }} />
               </div>
               <div className="relative">
-                <div className="text-[10px] font-mono tracking-widest mb-10" style={{ color: "rgba(255,255,255,0.25)" }}>
-                  {tx.example_cover_mono}
+                {/* Header bar */}
+                <div className="flex items-center justify-between mb-8">
+                  <div className="text-[9px] font-mono tracking-[0.3em] uppercase" style={{ color: "rgba(255,255,255,0.2)" }}>
+                    {tx.example_cover_mono}
+                  </div>
+                  <div className="text-[9px] font-bold px-2 py-0.5 rounded" style={{ background: "rgba(59,130,246,0.25)", color: "#3b82f6", border: "1px solid rgba(59,130,246,0.4)" }}>
+                    {lang === "fr" ? "GUIDE OFFICIEL" : "OFFICIAL GUIDE"}
+                  </div>
                 </div>
-                <div className="text-7xl mb-5">🇩🇪</div>
-                <h3
-                  className="text-6xl font-bold leading-none mb-2"
-                  style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
-                >
+                {/* City icon */}
+                <div className="mb-5 w-12 h-12 rounded-lg flex items-center justify-center" style={{ background: "rgba(59,130,246,0.15)", border: "1px solid rgba(59,130,246,0.3)" }}>
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                </div>
+                <h3 className="text-5xl font-bold leading-tight mb-1" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
                   {tx.example_cover_city}
                 </h3>
-                <div className="text-lg mb-1" style={{ color: "rgba(255,255,255,0.5)" }}>{tx.example_cover_country}</div>
-                <div className="text-sm font-medium italic" style={{ color: B.accent }}>{tx.example_cover_type}</div>
+                <div className="text-base mb-1" style={{ color: "rgba(255,255,255,0.45)" }}>{tx.example_cover_country}</div>
+                <div className="text-sm font-semibold mb-5" style={{ color: B.accent }}>{tx.example_cover_type}</div>
+                {/* Mission details */}
+                <div className="space-y-2">
+                  {[
+                    { label: lang === "fr" ? "Référence" : "Reference", val: "TBM-2024-0847" },
+                    { label: lang === "fr" ? "Objectif" : "Objective", val: lang === "fr" ? "Messe Frankfurt — IAA 2024" : "Messe Frankfurt — IAA 2024" },
+                    { label: lang === "fr" ? "Hôtel" : "Hotel", val: lang === "fr" ? "Hôtel d'affaires — 4★ Centre" : "Business Hotel — 4★ Centre" },
+                  ].map(row => (
+                    <div key={row.label} className="flex items-center gap-3 rounded-lg px-3 py-2" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)" }}>
+                      <span className="text-[9px] uppercase tracking-widest w-20 flex-shrink-0" style={{ color: "rgba(255,255,255,0.3)" }}>{row.label}</span>
+                      <span className="text-xs font-semibold" style={{ color: "rgba(255,255,255,0.75)" }}>{row.val}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
               <div className="relative">
-                <div className="flex gap-3 mb-6 flex-wrap">
+                <div className="flex gap-3 mb-5 flex-wrap">
                   {[
                     { val: "3", label: tx.example_cover_days_label },
                     { val: "2", label: tx.example_cover_travelers_label },
                     { val: "€180", label: tx.example_cover_budget_label },
+                    { val: lang === "fr" ? "4★" : "4★", label: lang === "fr" ? "Hôtel" : "Hotel" },
                   ].map((b) => (
-                    <div
-                      key={b.label}
-                      className="rounded-lg px-4 py-2.5 text-center"
-                      style={{ background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.10)" }}
-                    >
-                      <div className="font-bold text-sm">{b.val}</div>
-                      <div className="text-[10px]" style={{ color: "rgba(255,255,255,0.40)" }}>{b.label}</div>
+                    <div key={b.label} className="rounded-lg px-3 py-2 text-center flex-1 min-w-[60px]" style={{ background: "rgba(59,130,246,0.08)", border: "1px solid rgba(59,130,246,0.18)" }}>
+                      <div className="font-bold text-sm" style={{ color: "#93c5fd" }}>{b.val}</div>
+                      <div className="text-[9px] uppercase tracking-wide mt-0.5" style={{ color: "rgba(255,255,255,0.30)" }}>{b.label}</div>
                     </div>
                   ))}
                 </div>
-                <div className="text-[10px] font-mono" style={{ color: "rgba(255,255,255,0.20)" }}>
-                  {tx.example_cover_generated}
+                <div className="flex items-center justify-between">
+                  <div className="text-[9px] font-mono" style={{ color: "rgba(255,255,255,0.15)" }}>
+                    {tx.example_cover_generated}
+                  </div>
+                  <div className="text-[9px] font-bold px-2 py-0.5 rounded-full" style={{ color: "#4ade80", background: "rgba(74,222,128,0.1)", border: "1px solid rgba(74,222,128,0.25)" }}>
+                    {lang === "fr" ? "Livré — PDF" : "Delivered — PDF"}
+                  </div>
                 </div>
               </div>
             </div>
@@ -721,7 +703,7 @@ export default function BusinessPage() {
                     desc: lang === "fr"
                       ? "Lieu de rendez-vous habituel des délégués de la Messe. Buffet continental + café filtre. Ambiance discrète, idéale pour un brief rapide avant l'ouverture."
                       : "Usual meeting spot for Messe delegates. Continental buffet + filter coffee. Discreet atmosphere, ideal for a quick brief before the show opens.",
-                    tip: lang === "fr" ? "💡 ~€18/pers · Réservation recommandée la veille" : "💡 ~€18/pp · Reservation recommended the evening before",
+                    tip: lang === "fr" ? "~€18/pers · Réservation recommandée la veille" : "~€18/pp · Reservation recommended the evening before",
                     tag: lang === "fr" ? "Pratique" : "Practical",
                     color: "#6b7a99",
                   },
@@ -732,7 +714,7 @@ export default function BusinessPage() {
                     desc: lang === "fr"
                       ? "Secteur technologie et innovation. Priorisez les stands D12 (Google), E08 (SAP) et F22 (Siemens) selon votre secteur. Conférence keynote 11h salle Europa."
                       : "Technology and innovation sector. Prioritise stands D12 (Google), E08 (SAP) and F22 (Siemens) based on your sector. Keynote conference 11am in Europa hall.",
-                    tip: lang === "fr" ? "💡 Badge obligatoire · Vestiaire gratuit hall d'entrée" : "💡 Badge required · Free cloakroom at entrance hall",
+                    tip: lang === "fr" ? "Badge obligatoire · Vestiaire gratuit hall d'entrée" : "Badge required · Free cloakroom at entrance hall",
                     tag: "Business",
                     color: "#3b82f6",
                   },
@@ -743,7 +725,7 @@ export default function BusinessPage() {
                     desc: lang === "fr"
                       ? "Restaurant d'affaires à 5 min à pied. Cuisine européenne raffinée, cadre discret. Idéal pour un déjeuner de travail avec partenaires ou prospects. Menu d'affaires à €42."
                       : "Business restaurant 5 min walk away. Refined European cuisine, discreet setting. Ideal for working lunch with partners or prospects. Business menu at €42.",
-                    tip: lang === "fr" ? "💡 Réservation obligatoire · Parking souterrain à proximité" : "💡 Reservation required · Underground parking nearby",
+                    tip: lang === "fr" ? "Réservation obligatoire · Parking souterrain à proximité" : "Reservation required · Underground parking nearby",
                     tag: lang === "fr" ? "Clients" : "Clients",
                     color: "#3b82f6",
                   },
@@ -845,7 +827,9 @@ export default function BusinessPage() {
         style={{ background: `linear-gradient(135deg, ${B.bg} 0%, ${B.dark2} 50%, ${B.bg} 100%)` }}
       >
         <div className="max-w-2xl mx-auto">
-          <div className="text-5xl mb-6">💼</div>
+          <div className="w-14 h-14 mx-auto mb-6 rounded-xl flex items-center justify-center" style={{ background: "rgba(59,130,246,0.18)", border: "1px solid rgba(59,130,246,0.3)" }}>
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>
+          </div>
           <h2
             className="text-2xl sm:text-4xl lg:text-5xl font-bold mb-5"
             style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}

@@ -19,7 +19,7 @@ const inputStyle = {
 export default function SignupForm({ turnstileSiteKey }: SignupFormProps) {
   const router = useRouter();
   const { isBusiness } = useMode();
-  const brandName = isBusiness ? "Travel Business IA" : "TravelGuide AI";
+  const brandName = isBusiness ? "Travel Business IA" : "TravelGuide";
   const backHref = isBusiness ? "/business" : "/personal";
   const [email, setEmail] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");

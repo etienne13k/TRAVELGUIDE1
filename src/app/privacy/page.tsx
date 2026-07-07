@@ -152,7 +152,7 @@ Cette politique peut être mise à jour. La date de dernière modification est i
 export default function PrivacyPage() {
   const [activeSection, setActiveSection] = useState<string>("qui");
   const { isBusiness } = useMode();
-  const brandName = isBusiness ? "Travel Business IA" : "TravelGuide AI";
+  const brandName = isBusiness ? "Travel Business IA" : "TravelGuide";
   const backHref = isBusiness ? "/business" : "/personal";
 
   function renderBody(text: string) {
@@ -173,7 +173,7 @@ export default function PrivacyPage() {
   }
 
   function renderSection(body: string) {
-    const blocks = body.split("\n\n");
+    const blocks = body.replace(/TravelGuide AI/g, brandName).split("\n\n");
     return blocks.map((block, j) => {
       if (block.trim().startsWith("|")) {
         const rows = block.trim().split("\n").filter(r => !r.match(/^\|[-\s|]+$/));

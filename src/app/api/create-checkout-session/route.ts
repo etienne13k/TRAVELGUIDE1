@@ -5,10 +5,10 @@ import { CART_PLANS, normalizePlanKey, type PlanKey } from "@/lib/cart";
 import { isManagedPromoCode, normalizePromoCode, validateManagedPromoForUser } from "@/lib/promo";
 
 const PLANS = {
-  "3j":    { name: "TravelGuide AI — Guide Express (3 jours)",   amount:  300, maxDays: 3,  label: "3 jours" },
-  "7j":    { name: "TravelGuide AI — Guide Complet (7 jours)",   amount:  600, maxDays: 7,  label: "7 jours" },
-  "14j":   { name: "TravelGuide AI — Guide Immersif (14 jours)", amount: 1000, maxDays: 14, label: "14 jours" },
-  "1mois": { name: "TravelGuide AI — Guide Évasion (1 mois)",    amount: 1600, maxDays: 31, label: "1 mois" },
+  "3j":    { name: "TravelGuide — Guide Express (3 jours)",   amount:  300, maxDays: 3,  label: "3 jours" },
+  "7j":    { name: "TravelGuide — Guide Complet (7 jours)",   amount:  600, maxDays: 7,  label: "7 jours" },
+  "14j":   { name: "TravelGuide — Guide Immersif (14 jours)", amount: 1000, maxDays: 14, label: "14 jours" },
+  "1mois": { name: "TravelGuide — Guide Évasion (1 mois)",    amount: 1600, maxDays: 31, label: "1 mois" },
 } as const;
 
 type Answers = Record<string, unknown>;
@@ -267,7 +267,7 @@ export async function POST(req: NextRequest) {
       price_data: {
         currency: "eur",
         product_data: {
-          name: `Guide TravelGuide AI – ${item.destination || "Destination personnalisée"} ${PLANS[item.planKey].label}`,
+          name: `Guide TravelGuide – ${item.destination || "Destination personnalisée"} ${PLANS[item.planKey].label}`,
         },
         unit_amount: item.amount,
       },

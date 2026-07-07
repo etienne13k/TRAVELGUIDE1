@@ -73,7 +73,7 @@ export default function NewsletterPopup() {
             <div className="text-center py-2">
               <div className="text-3xl mb-2">🎉</div>
               <p className="font-bold text-[#425C47] text-sm">Vous êtes inscrit·e !</p>
-              <p className="text-xs text-[#425C47]/55 mt-1">Bienvenue dans la communauté TravelGuide AI.</p>
+              <p className="text-xs text-[#425C47]/55 mt-1">Bienvenue dans la communauté TravelGuide.</p>
             </div>
           ) : (
             <>

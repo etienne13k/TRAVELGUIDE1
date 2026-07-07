@@ -13,7 +13,7 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const { isBusiness } = useMode();
-  const brandName = isBusiness ? "Travel Business IA" : "TravelGuide AI";
+  const brandName = isBusiness ? "Travel Business IA" : "TravelGuide";
   const backHref = isBusiness ? "/business" : "/personal";
 
   async function handleSubmit(e: React.FormEvent) {

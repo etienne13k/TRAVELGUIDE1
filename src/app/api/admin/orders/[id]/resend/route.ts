@@ -54,7 +54,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   const destination = order.destination || guide.destination;
 
   await resend.emails.send({
-    from: "TravelGuide AI <guides@travelguide.ai>",
+    from: "TravelGuide <guides@travelguide.ai>",
     to: orderEmail,
     subject: `Votre guide de voyage ${destination} est disponible ✈️`,
     html: `<p>Bonjour,</p><p>Voici à nouveau votre guide personnalisé pour <strong>${destination}</strong>.</p><p><a href="${downloadUrl}">Télécharger le PDF</a></p>`,

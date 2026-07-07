@@ -88,7 +88,7 @@ function ResetPasswordForm() {
 
 export default function ResetPasswordPage() {
   const { isBusiness } = useMode();
-  const brandName = isBusiness ? "Travel Business IA" : "TravelGuide AI";
+  const brandName = isBusiness ? "Travel Business IA" : "TravelGuide";
   const backHref = isBusiness ? "/business" : "/personal";
 
   return (

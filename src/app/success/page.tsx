@@ -29,7 +29,7 @@ function SuccessContent() {
             className="text-lg font-bold text-[#d8e3d5]"
             style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
           >
-            TravelGuide AI
+            TravelGuide
           </Link>
         </div>
       </header>
@@ -139,7 +139,7 @@ function SuccessContent() {
 
       <footer className="border-t border-[#232c20] py-6 text-center">
         <p className="text-xs text-[#4a6447]">
-          © 2026 TravelGuide AI — Guides de voyage personnalisés par IA
+          © 2026 TravelGuide — Guides de voyage personnalisés par IA
         </p>
       </footer>
     </div>

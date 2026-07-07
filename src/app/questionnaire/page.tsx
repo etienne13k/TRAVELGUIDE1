@@ -49,7 +49,7 @@ const LEGAL_COPY: Record<Lang, {
 }> = {
   fr: {
     noticeTitle: "Information importante",
-    noticeBody: "Les horaires et jours d'ouverture des monuments et lieux recommandés dans votre guide sont fournis à titre indicatif. TravelGuide AI ne peut être tenu responsable en cas de fermeture exceptionnelle, de modification d'horaires ou d'événements imprévus affectant l'accès aux lieux mentionnés. Nous vous recommandons de vérifier les informations officielles avant chaque visite.",
+    noticeBody: "Les horaires et jours d'ouverture des monuments et lieux recommandés dans votre guide sont fournis à titre indicatif. TravelGuide ne peut être tenu responsable en cas de fermeture exceptionnelle, de modification d'horaires ou d'événements imprévus affectant l'accès aux lieux mentionnés. Nous vous recommandons de vérifier les informations officielles avant chaque visite.",
     termsPrefix: "J'ai lu et j'accepte les",
     termsLabel: "Conditions Générales de Vente",
     termsJoin: "ainsi que la",
@@ -60,7 +60,7 @@ const LEGAL_COPY: Record<Lang, {
   },
   en: {
     noticeTitle: "Important notice",
-    noticeBody: "Opening hours and schedules listed in your guide are provided for informational purposes only. TravelGuide AI cannot be held responsible for unexpected closures, schedule changes, or any unforeseen events. We recommend checking official sources before each visit.",
+    noticeBody: "Opening hours and schedules listed in your guide are provided for informational purposes only. TravelGuide cannot be held responsible for unexpected closures, schedule changes, or any unforeseen events. We recommend checking official sources before each visit.",
     termsPrefix: "I have read and agree to the",
     termsLabel: "Terms & Conditions",
     termsJoin: "and",
@@ -907,7 +907,7 @@ function QuestionnaireContent() {
         <div className="max-w-3xl mx-auto px-4 sm:px-6 py-3">
           <div className="flex items-center justify-between gap-3 mb-3">
             <Link href="/" className="font-bold text-[#d8e3d5] text-base shrink-0 hover:text-[#c9a84c] transition-colors" style={{fontFamily:"var(--font-playfair),Georgia,serif"}}>
-              TravelGuide AI
+              TravelGuide
             </Link>
             <LangToggle />
             <div className="flex items-center gap-2 border border-[#2a3527] rounded-full px-3 py-1.5 text-xs font-semibold text-[#9ab896]">
@@ -1541,7 +1541,7 @@ function QuestionnaireContent() {
 
       <footer className="border-t border-[#1a2218] py-6 mt-4">
         <div className="max-w-3xl mx-auto px-6 text-center">
-          <p className="text-xs text-[#3a5037]">© 2026 TravelGuide AI — Guides de voyage personnalisés</p>
+          <p className="text-xs text-[#3a5037]">© 2026 TravelGuide — Guides de voyage personnalisés</p>
         </div>
       </footer>
     </div>

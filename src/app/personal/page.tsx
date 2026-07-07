@@ -23,7 +23,7 @@ const translations = {
       "🌍 Paris · Tokyo · Bali · Bangkok · New York · et bien plus",
     ],
     nav_cta: "Créer mon guide",
-    hero_title: "TravelGuide AI",
+    hero_title: "TravelGuide",
     hero_sub: "Vous savez où aller — ou laissez l'IA vous suggérer la destination parfaite. Guide personnalisé, livré en PDF.",
     hero_cta: "Créer mon guide",
     hero_sub_cta: "À partir de 3€ · Sans abonnement · Livraison sous 48h",
@@ -127,7 +127,7 @@ const translations = {
     examples_title: "À quoi ressemble votre guide ?",
     examples_sub: "Un aperçu illustratif de la qualité et du niveau de détail que vous recevrez.",
     social_title: "Ils nous font confiance",
-    social_subtitle: "Des milliers de voyageurs font confiance à TravelGuide AI pour planifier leurs aventures.",
+    social_subtitle: "Des milliers de voyageurs font confiance à TravelGuide pour planifier leurs aventures.",
     social_stats: [
       { number: "4.9★", label: "note moyenne" },
       { number: "98%", label: "de satisfaction" },
@@ -135,9 +135,9 @@ const translations = {
       { number: "48h", label: "livraison garantie" },
     ],
     bottom_title: "Prêt pour votre prochain voyage ?",
-    bottom_sub: "Rejoignez des centaines de voyageurs qui ont optimisé leur aventure avec TravelGuide AI.",
+    bottom_sub: "Rejoignez des centaines de voyageurs qui ont optimisé leur aventure avec TravelGuide.",
     footer_tagline: "L'intelligence artificielle au service de vos aventures.",
-    footer_copy: "© 2026 TravelGuide AI",
+    footer_copy: "© 2026 TravelGuide",
     footer_cgv: "Conditions Générales de Vente",
     footer_privacy: "Politique de Confidentialité",
     hero_card_subtitle: "Japon · 7 jours",
@@ -183,7 +183,7 @@ const translations = {
       "🌍 Paris · Tokyo · Bali · Bangkok · New York · and much more",
     ],
     nav_cta: "Create my guide",
-    hero_title: "TravelGuide AI",
+    hero_title: "TravelGuide",
     hero_sub: "Know where you're going — or let the AI suggest your perfect destination. Personalised guide, delivered as PDF.",
     hero_cta: "Create my guide",
     hero_sub_cta: "From €3 · No subscription · Delivered in 48h",
@@ -286,7 +286,7 @@ const translations = {
     examples_title: "What does your guide look like?",
     examples_sub: "An illustrative preview of the quality and level of detail you will receive.",
     social_title: "They trust us",
-    social_subtitle: "Thousands of travelers trust TravelGuide AI to plan their adventures.",
+    social_subtitle: "Thousands of travelers trust TravelGuide to plan their adventures.",
     social_stats: [
       { number: "4.9★", label: "average rating" },
       { number: "98%", label: "satisfaction rate" },
@@ -294,9 +294,9 @@ const translations = {
       { number: "48h", label: "delivery guaranteed" },
     ],
     bottom_title: "Ready for your next journey?",
-    bottom_sub: "Join hundreds of travelers who have optimized their adventure with TravelGuide AI.",
+    bottom_sub: "Join hundreds of travelers who have optimized their adventure with TravelGuide.",
     footer_tagline: "Artificial intelligence at the service of your adventures.",
-    footer_copy: "© 2026 TravelGuide AI",
+    footer_copy: "© 2026 TravelGuide",
     footer_cgv: "Terms of Sale",
     footer_privacy: "Privacy Policy",
     hero_card_subtitle: "Japan · 7 days",
@@ -413,7 +413,7 @@ export default function Home() {
       <nav className="fixed top-12 w-full z-50 bg-[#0e1310]/95 backdrop-blur-md border-b border-[#232c20]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
           <div className="text-xl font-bold tracking-tight text-[#d8e3d5]" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
-            TravelGuide AI
+            TravelGuide
           </div>
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-1 border border-[#232c20] rounded-lg p-0.5">
@@ -519,7 +519,7 @@ export default function Home() {
               <div className="bg-[#161c14] rounded-2xl border border-[#232c20] w-full max-w-[340px] overflow-hidden">
                 <div className="bg-[#111810] border-b border-[#232c20] px-6 py-5">
                   <div className="flex items-center justify-between mb-3">
-                    <span className="text-[9px] font-mono text-[#3a5037] tracking-[0.2em] uppercase">TravelGuide AI</span>
+                    <span className="text-[9px] font-mono text-[#3a5037] tracking-[0.2em] uppercase">TravelGuide</span>
                     <span className="text-[#C9A84C] font-bold text-base" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>6€</span>
                   </div>
                   <div className="text-2xl font-bold text-[#d8e3d5] mb-0.5" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>Tokyo</div>
@@ -624,8 +624,8 @@ export default function Home() {
             </h2>
             <p className="text-[#7a9076] max-w-lg mx-auto text-sm leading-relaxed">
               {lang === "fr"
-                ? "Que vous sachiez déjà où aller ou non, TravelGuide AI s'adapte à vous."
-                : "Whether you know where to go or not, TravelGuide AI adapts to you."}
+                ? "Que vous sachiez déjà où aller ou non, TravelGuide s'adapte à vous."
+                : "Whether you know where to go or not, TravelGuide adapts to you."}
             </p>
           </div>
           <div className="grid sm:grid-cols-2 gap-6">
@@ -1029,35 +1029,32 @@ export default function Home() {
       </section>
 
       {/* SOCIAL PROOF */}
-      <section className="py-14 sm:py-24 px-4 sm:px-6 bg-gradient-to-br from-[#2e4133] via-[#425C47] to-[#2e4133] text-white">
+      <section className="py-14 sm:py-24 px-4 sm:px-6" style={{ background: "var(--ch)" }}>
         <div className="max-w-5xl mx-auto text-center">
           <h2
             className="text-2xl sm:text-4xl lg:text-5xl font-bold mb-4"
-            style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
+            style={{ fontFamily: "var(--font-playfair), Georgia, serif", color: "var(--ct)" }}
           >
             {tx.social_title}
           </h2>
-          <p className="text-white/60 text-base mb-16 max-w-xl mx-auto">{tx.social_subtitle}</p>
+          <p className="text-base mb-16 max-w-xl mx-auto" style={{ color: "var(--cm)" }}>{tx.social_subtitle}</p>
 
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-14">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
             {tx.social_stats.map((stat) => (
               <div
                 key={stat.label}
-                className="bg-white/8 border border-white/12 rounded-2xl px-6 py-8 flex flex-col items-center gap-2 hover:bg-white/12 transition-colors"
+                className="rounded-2xl px-6 py-8 flex flex-col items-center gap-2 transition-colors"
+                style={{ background: "var(--cc)", border: "1px solid var(--ce)" }}
               >
                 <span
-                  className="text-3xl sm:text-5xl lg:text-6xl font-black text-[#C9A84C] leading-none"
-                  style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
+                  className="text-3xl sm:text-5xl lg:text-6xl font-black leading-none"
+                  style={{ fontFamily: "var(--font-playfair), Georgia, serif", color: "var(--ca)" }}
                 >
                   {stat.number}
                 </span>
-                <span className="text-sm font-semibold text-white/70 uppercase tracking-wide">{stat.label}</span>
+                <span className="text-sm font-semibold uppercase tracking-wide" style={{ color: "var(--cm)" }}>{stat.label}</span>
               </div>
             ))}
-          </div>
-
-          <div className="max-w-xl mx-auto">
-            <p className="text-base text-white/50 italic">{tx.social_subtitle}</p>
           </div>
         </div>
       </section>
@@ -1091,7 +1088,7 @@ export default function Home() {
             className="font-bold text-[#7a9076] text-base"
             style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
           >
-            TravelGuide AI
+            TravelGuide
           </span>
           <span className="text-xs">{tx.footer_tagline}</span>
           <div className="flex items-center gap-4 text-xs">

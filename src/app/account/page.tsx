@@ -84,7 +84,7 @@ export default async function AccountPage() {
       {/* Navbar */}
       <nav className="sticky top-0 z-10 px-6 py-4 flex items-center justify-between border-b border-[#232c20]" style={{ background: "#0e1310/90", backdropFilter: "blur(12px)" }}>
         <Link href="/" className="text-lg font-bold text-[#d8e3d5]" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
-          TravelGuide AI
+          TravelGuide
         </Link>
         <div className="flex items-center gap-4">
           <LangToggle />

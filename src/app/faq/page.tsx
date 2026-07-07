@@ -88,7 +88,7 @@ export default function FAQPage() {
   const [openItem, setOpenItem] = useState<string | null>(null);
   const { isBusiness } = useMode();
   const data = lang === "fr" ? FAQ_FR : FAQ_EN;
-  const brandName = isBusiness ? "Travel Business IA" : "TravelGuide AI";
+  const brandName = isBusiness ? "Travel Business IA" : "TravelGuide";
   const backHref = isBusiness ? "/business" : "/personal";
 
   return (
@@ -135,6 +135,8 @@ export default function FAQPage() {
                 {cat.items.map((item, i) => {
                   const key = `${cat.cat}-${i}`;
                   const open = openItem === key;
+                  const q = item.q.replace(/TravelGuide AI/g, brandName);
+                  const a = item.a.replace(/TravelGuide AI/g, brandName);
                   return (
                     <div key={key} className="rounded-2xl overflow-hidden" style={{ border: "1px solid var(--ce)", background: "var(--cc)" }}>
                       <button
@@ -145,12 +147,12 @@ export default function FAQPage() {
                         onMouseEnter={e => (e.currentTarget.style.background = "var(--csh)")}
                         onMouseLeave={e => (e.currentTarget.style.background = "")}
                       >
-                        <span className="font-semibold text-sm pr-4">{item.q}</span>
+                        <span className="font-semibold text-sm pr-4">{q}</span>
                         <span className={`text-xl font-bold flex-shrink-0 transition-transform duration-200 ${open ? "rotate-45" : ""}`} style={{ color: "var(--ca)" }}>+</span>
                       </button>
                       {open && (
                         <div className="px-5 pb-5 pt-4 text-sm leading-relaxed border-t" style={{ color: "var(--cm)", borderColor: "var(--ce)" }}>
-                          {item.a}
+                          {a}
                         </div>
                       )}
                     </div>

@@ -378,8 +378,8 @@ function renderBody(text: string) {
   });
 }
 
-function renderSection(body: string) {
-  const blocks = body.split("\n\n");
+function renderSection(body: string, brand = "TravelGuide") {
+  const blocks = body.replace(/TravelGuide AI/g, brand).split("\n\n");
   return blocks.map((block, j) => {
     if (block.trim().startsWith("|")) {
       const rows = block.trim().split("\n").filter(r => !r.match(/^\|[-\s|]+$/));
@@ -421,7 +421,7 @@ export default function CGVPage() {
   const [lang, setLang] = useState<"fr" | "en">("fr");
   const { isBusiness } = useMode();
   const t = content[lang];
-  const brandName = isBusiness ? "Travel Business IA" : "TravelGuide AI";
+  const brandName = isBusiness ? "Travel Business IA" : "TravelGuide";
   const backHref = isBusiness ? "/business" : "/personal";
 
   return (
@@ -448,7 +448,7 @@ export default function CGVPage() {
           <h1 className="text-3xl font-bold mb-2" style={{ fontFamily: "var(--font-playfair), Georgia, serif", color: "var(--ct)" }}>
             {t.title}
           </h1>
-          <p className="text-sm" style={{ color: "var(--cm)" }}>{t.subtitle}</p>
+          <p className="text-sm" style={{ color: "var(--cm)" }}>{t.subtitle.replace(/TravelGuide AI/g, brandName)}</p>
           <p className="mt-3 text-xs italic border-l-2 pl-3" style={{ color: "var(--cf)", borderColor: "var(--ca)" }}>{t.note}</p>
         </div>
 
@@ -459,7 +459,7 @@ export default function CGVPage() {
                 {section.title}
               </h2>
               <div className="text-sm leading-relaxed" style={{ color: "var(--cm)" }}>
-                {renderSection(section.body)}
+                {renderSection(section.body, brandName)}
               </div>
             </section>
           ))}

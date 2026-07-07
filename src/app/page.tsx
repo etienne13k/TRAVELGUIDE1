@@ -14,7 +14,7 @@ export default function Home() {
           className="text-sm font-bold tracking-[0.25em] uppercase"
           style={{ color: "#2a2a3a" }}
         >
-          TravelGuide AI
+          TravelGuide
         </span>
       </header>
 
@@ -162,7 +162,7 @@ export default function Home() {
       {/* Minimal footer */}
       <footer className="flex items-center justify-center py-5">
         <p className="text-[10px] uppercase tracking-[0.2em]" style={{ color: "#15151e" }}>
-          © 2026 TravelGuide AI
+          © 2026 TravelGuide
         </p>
       </footer>
     </div>

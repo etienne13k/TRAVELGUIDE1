@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
     if (process.env.RESEND_API_KEY) {
       const resend = new Resend(process.env.RESEND_API_KEY);
       await resend.emails.send({
-        from: "TravelGuide AI <guides@travelguide.ai>",
+        from: "TravelGuide <guides@travelguide.ai>",
         to: CONTACT_EMAIL,
         replyTo: email.trim(),
         subject: `[Contact] ${firstName} ${lastName} — ${email}`,
