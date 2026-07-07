@@ -346,6 +346,7 @@ export default function Home() {
 
   useEffect(() => {
     localStorage.setItem("tgai_mode", "personal");
+    document.documentElement.dataset.mode = "personal";
     const refreshCartCount = () => setCartCount(getCartCount());
 
     refreshCartCount();
@@ -1064,8 +1065,7 @@ export default function Home() {
         <div className="max-w-2xl mx-auto">
           <div className="w-16 h-16 mx-auto mb-6 rounded-2xl flex items-center justify-center" style={{ background: "rgba(201,168,76,0.15)", border: "1px solid rgba(201,168,76,0.3)" }}>
             <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#C9A84C" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-              <rect x="1" y="7" width="22" height="14" rx="2" ry="2"/>
-              <path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/>
+              <path d="M17.8 19.2L16 11l3.5-3.5C21 6 21 4 19.5 2.5S18 2 16.5 3.5L13 7 4.8 5.2 3.5 6.5l7 4L7 14l-2 0-1.5 1.5 2.5 1.5L7.5 19.5 9 21l1.5-1.5 0-2 3.5-3.5 4 7z"/>
             </svg>
           </div>
           <h2
