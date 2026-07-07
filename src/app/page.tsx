@@ -469,113 +469,93 @@ export default function Home() {
         </div>
       </nav>
 
-      {/* HERO */}
-      <section className="hero-bg relative min-h-screen flex items-center pt-36 overflow-hidden">
-        {/* Decorative circles */}
+      {/* HERO — mode selector */}
+      <section className="hero-bg relative pt-36 pb-20 overflow-hidden">
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          <div className="absolute top-1/2 right-0 -translate-y-1/2 translate-x-1/3 w-[700px] h-[700px] rounded-full border border-[#C9A84C]/10" />
-          <div className="absolute top-1/2 right-0 -translate-y-1/2 translate-x-1/3 w-[500px] h-[500px] rounded-full border border-[#C9A84C]/7" />
-          <div className="absolute top-1/2 right-0 -translate-y-1/2 translate-x-1/3 w-[300px] h-[300px] rounded-full bg-[#C9A84C]/4" />
+          <div className="absolute top-1/2 right-0 -translate-y-1/2 translate-x-1/3 w-[700px] h-[700px] rounded-full border border-[#C9A84C]/8" />
           <div className="absolute bottom-0 left-0 w-full h-24 bg-gradient-to-t from-[#0e1310]/60 to-transparent" />
         </div>
 
-        <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-12 lg:gap-20 items-center w-full py-16">
-          {/* Left */}
-          <div>
-            <div className="inline-flex items-center gap-2 bg-[#C9A84C]/10 border border-[#C9A84C]/30 rounded-full px-4 py-1.5 mb-8">
+        <div className="max-w-5xl mx-auto px-6 relative">
+          {/* Heading */}
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 bg-[#C9A84C]/10 border border-[#C9A84C]/30 rounded-full px-4 py-1.5 mb-6">
               <span className="w-2 h-2 bg-[#C9A84C] rounded-full animate-pulse-dot" />
-              <span className="text-xs font-semibold text-[#C9A84C] tracking-wide">
-                {tx.hero_badge_ai}
-              </span>
+              <span className="text-xs font-semibold text-[#C9A84C] tracking-wide">{tx.hero_badge_ai}</span>
             </div>
-            <h1
-              className="text-4xl sm:text-5xl lg:text-7xl xl:text-8xl font-bold leading-tight sm:leading-none mb-5 sm:mb-6 text-[#d8e3d5]"
-              style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
-            >
-              {tx.hero_title}
+            <h1 className="text-4xl sm:text-6xl font-bold text-[#d8e3d5] mb-4"
+              style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
+              TravelGuide AI
             </h1>
-            <p className="text-base sm:text-xl text-[#7a9076] max-w-lg leading-relaxed mb-8 sm:mb-10 font-medium">{tx.hero_sub}</p>
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
-              <a
-                href="#pricing"
-                onClick={() => trackCTA("hero")}
-                className="bg-gradient-to-br from-[#425C47] to-[#2e4133] text-white font-bold px-8 py-4 rounded-full hover:from-[#2e4133] hover:to-[#1f2e22] transition-all hover:scale-105 text-base shadow-[0_8px_30px_rgba(66,92,71,0.35)] text-center"
-              >
-                {tx.hero_cta} →
-              </a>
-              <p className="text-sm text-[#4a6447] text-center sm:text-left">{tx.hero_sub_cta}</p>
-            </div>
-            {/* Trust badges */}
-            <div className="flex items-center gap-4 sm:gap-6 mt-8 sm:mt-10">
-              {[
-                { val: "48h", label: tx.hero_badge_delivery },
-                { val: "100%", label: tx.hero_badge_custom },
-                { val: "4.9★", label: tx.hero_badge_rating },
-              ].map((b, i) => (
-                <div key={b.label} className="flex items-center gap-6">
-                  {i > 0 && <div className="w-px h-8 bg-[#232c20]" />}
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-[#d8e3d5]" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
-                      {b.val}
-                    </div>
-                    <div className="text-xs text-[#4a6447]">{b.label}</div>
-                  </div>
-                </div>
-              ))}
-            </div>
+            <p className="text-base sm:text-lg text-[#7a9076] max-w-xl mx-auto">
+              Guides de voyage personnalisés par IA — pour vos aventures comme pour vos déplacements professionnels.
+            </p>
           </div>
 
-          {/* Right: Preview card */}
-          <div className="relative hidden sm:flex justify-center lg:justify-end">
-            <div className="relative">
-              <div className="bg-[#161c14] rounded-2xl border border-[#232c20] w-full max-w-[340px] overflow-hidden">
-                {/* Card header */}
-                <div className="bg-[#111810] border-b border-[#232c20] px-6 py-5">
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-[9px] font-mono text-[#3a5037] tracking-[0.2em] uppercase">TravelGuide AI</span>
-                    <span className="text-[#C9A84C] font-bold text-base" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>6€</span>
-                  </div>
-                  <div className="text-2xl font-bold text-[#d8e3d5] mb-0.5" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
-                    Tokyo
-                  </div>
-                  <div className="text-[#7a9076] text-xs mb-4">{tx.hero_card_subtitle}</div>
-                  <div className="flex gap-1.5 flex-wrap">
-                    <span className="bg-[#1e2c1e] border border-[#2a3a2a] text-[#9ab896] text-[10px] px-2.5 py-0.5 rounded-md">{tx.hero_card_tag1}</span>
-                    <span className="bg-[#1e2c1e] border border-[#2a3a2a] text-[#9ab896] text-[10px] px-2.5 py-0.5 rounded-md">{tx.hero_card_tag2}</span>
-                    <span className="bg-[#c9a84c]/10 border border-[#c9a84c]/25 text-[#c9a84c] text-[10px] px-2.5 py-0.5 rounded-md">{tx.hero_card_tag3}</span>
-                  </div>
-                </div>
-                {/* Days list */}
-                <div className="px-6 py-4 space-y-3">
-                  {tx.hero_card_days.map((item) => (
-                    <div key={item.day} className="flex items-start gap-3">
-                      <span
-                        className="w-6 h-6 rounded-md flex items-center justify-center text-[10px] font-bold flex-shrink-0 mt-0.5 text-white"
-                        style={{ backgroundColor: item.color }}
-                      >
-                        {item.day}
-                      </span>
-                      <div>
-                        <div className="text-sm font-semibold text-[#d8e3d5] leading-tight">{item.title}</div>
-                        <div className="text-[11px] text-[#4a6447] mt-0.5">{item.sub}</div>
-                      </div>
-                    </div>
-                  ))}
-                  <div className="text-[10px] text-[#3a5037] pt-1">
-                    {tx.hero_card_more}
-                  </div>
-                </div>
-                {/* Footer */}
-                <div className="border-t border-[#1e2c1e] px-6 py-3 flex items-center justify-between">
-                  <span className="text-[9px] font-mono text-[#3a5037] uppercase tracking-wider">PDF</span>
-                  <span className="text-[9px] font-mono text-[#3a5037] uppercase tracking-wider">{tx.hero_card_delivery}</span>
-                  <span className="text-[9px] font-mono text-[#3a5037] uppercase tracking-wider">IA entraînée</span>
-                </div>
+          {/* Two tiles */}
+          <div className="grid sm:grid-cols-2 gap-5 max-w-3xl mx-auto">
+            {/* Personal tile */}
+            <a href="#pricing"
+              onClick={() => trackCTA("hero")}
+              className="group rounded-2xl p-8 flex flex-col gap-5 transition-all hover:scale-[1.02] cursor-pointer"
+              style={{ background: "#161c14", border: "1px solid #232c20" }}>
+              <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ background: "#1e2c1e" }}>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C9A84C" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                </svg>
               </div>
-              <div className="absolute -top-2.5 -right-2.5 bg-[#C9A84C] text-[#0e1310] text-[10px] font-bold px-3 py-1 rounded-full">
-                {tx.hero_card_label}
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-[0.2em] mb-1" style={{ color: "#C9A84C" }}>Voyage personnel</p>
+                <h2 className="text-xl font-bold mb-2 text-[#d8e3d5]" style={{ fontFamily: "var(--font-playfair), serif" }}>
+                  TravelGuide AI
+                </h2>
+                <p className="text-sm leading-relaxed" style={{ color: "#7a9076" }}>
+                  Aventures, city trips, vacances. Guide personnalisé selon vos envies, votre budget et votre style de voyage.
+                </p>
               </div>
-            </div>
+              <ul className="space-y-1.5 text-xs" style={{ color: "#4a6447" }}>
+                {["Itinéraire jour par jour", "Restaurants & activités sélectionnés", "À partir de 3€ · Sans abonnement"].map(f => (
+                  <li key={f} className="flex items-center gap-2">
+                    <span style={{ color: "#C9A84C" }}>✓</span> {f}
+                  </li>
+                ))}
+              </ul>
+              <div className="mt-auto flex items-center justify-between">
+                <span className="text-xs font-bold" style={{ color: "#C9A84C" }}>Voir les offres →</span>
+                <span className="text-[10px] px-2 py-1 rounded-full" style={{ background: "#C9A84C", color: "#0e1310", fontWeight: 700 }}>dès 3€</span>
+              </div>
+            </a>
+
+            {/* Business tile */}
+            <Link href="/business"
+              className="group rounded-2xl p-8 flex flex-col gap-5 transition-all hover:scale-[1.02]"
+              style={{ background: "#09091a", border: "1px solid #1a1a2e" }}>
+              <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ background: "rgba(59,130,246,0.1)" }}>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/>
+                </svg>
+              </div>
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-[0.2em] mb-1" style={{ color: "#3b82f6" }}>Voyage d'affaires</p>
+                <h2 className="text-xl font-bold mb-2" style={{ fontFamily: "var(--font-playfair), serif", color: "#f0f4ff" }}>
+                  Travel Business
+                </h2>
+                <p className="text-sm leading-relaxed" style={{ color: "#6b7a99" }}>
+                  Déplacements professionnels. Hôtels business, restaurants clients, transport optimisé, agenda structuré.
+                </p>
+              </div>
+              <ul className="space-y-1.5 text-xs" style={{ color: "#2d3748" }}>
+                {["Hôtels proches de vos réunions", "Restaurants dîners d'affaires", "Guide PDF livré en 48h"].map(f => (
+                  <li key={f} className="flex items-center gap-2">
+                    <span style={{ color: "#3b82f6" }}>✓</span> {f}
+                  </li>
+                ))}
+              </ul>
+              <div className="mt-auto flex items-center justify-between">
+                <span className="text-xs font-bold" style={{ color: "#3b82f6" }}>Découvrir →</span>
+                <span className="text-[10px] px-2 py-1 rounded-full font-bold" style={{ background: "rgba(59,130,246,0.15)", color: "#3b82f6", border: "1px solid rgba(59,130,246,0.3)" }}>Pro</span>
+              </div>
+            </Link>
           </div>
         </div>
       </section>
