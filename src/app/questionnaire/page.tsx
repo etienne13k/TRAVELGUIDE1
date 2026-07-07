@@ -173,8 +173,47 @@ const TRIP_TYPE: Opt[] = [
 ];
 
 const SCOPE_TYPE: Opt[] = [
-  { id: "city",    label: "Visite de la ville" },
+  { id: "city",    label: "Visite de la ville / alentours" },
   { id: "country", label: "Tour du pays / road trip" },
+];
+
+/* ──────────────────────────────────────────────────────────
+   COUNTRIES LIST (FR) — 195 États de l'ONU
+────────────────────────────────────────────────────────── */
+
+const COUNTRIES: string[] = [
+  "Afghanistan","Afrique du Sud","Albanie","Algérie","Allemagne","Andorre","Angola","Antigua-et-Barbuda",
+  "Arabie Saoudite","Argentine","Arménie","Australie","Autriche","Azerbaïdjan",
+  "Bahamas","Bahreïn","Bangladesh","Barbade","Belgique","Belize","Bénin","Bhoutan","Biélorussie",
+  "Birmanie (Myanmar)","Bolivie","Bosnie-Herzégovine","Botswana","Brésil","Brunéi","Bulgarie","Burkina Faso","Burundi",
+  "Cabo Verde","Cambodge","Cameroun","Canada","République centrafricaine","Chili","Chine","Chypre","Colombie",
+  "Comores","Congo","Corée du Nord","Corée du Sud","Costa Rica","Côte d'Ivoire","Croatie","Cuba",
+  "Danemark","Djibouti","Dominique","République dominicaine",
+  "Équateur","Égypte","Émirats arabes unis","Érythrée","Espagne","Estonie","Eswatini","Éthiopie",
+  "Fidji","Finlande","France",
+  "Gabon","Gambie","Géorgie","Ghana","Grèce","Grenade","Guatemala","Guinée","Guinée-Bissau","Guinée équatoriale","Guyana",
+  "Haïti","Honduras","Hongrie",
+  "Îles Marshall","Îles Salomon","Inde","Indonésie","Irak","Iran","Irlande","Islande","Israël","Italie",
+  "Jamaïque","Japon","Jordanie",
+  "Kazakhstan","Kenya","Kirghizstan","Kiribati","Kosovo","Koweït",
+  "Laos","Lesotho","Lettonie","Liban","Libéria","Libye","Liechtenstein","Lituanie","Luxembourg",
+  "Macédoine du Nord","Madagascar","Malaisie","Malawi","Maldives","Mali","Malte","Maroc","Maurice","Mauritanie",
+  "Mexique","Micronésie","Moldova","Monaco","Mongolie","Monténégro","Mozambique",
+  "Namibie","Nauru","Népal","Nicaragua","Niger","Nigéria","Norvège","Nouvelle-Zélande",
+  "Oman","Ouganda","Ouzbékistan",
+  "Pakistan","Palaos","Palestine","Panama","Papouasie-Nouvelle-Guinée","Paraguay","Pays-Bas","Pérou",
+  "Philippines","Pologne","Portugal",
+  "Qatar",
+  "Roumanie","Royaume-Uni","Russie","Rwanda",
+  "Saint-Kitts-et-Nevis","Sainte-Lucie","Saint-Marin","Saint-Vincent-et-les-Grenadines","Salvador",
+  "Samoa","São Tomé-et-Príncipe","Sénégal","Serbie","Seychelles","Sierra Leone","Singapour","Slovaquie",
+  "Slovénie","Somalie","Soudan","Soudan du Sud","Sri Lanka","Suède","Suisse","Suriname","Syrie",
+  "Tadjikistan","Tanzanie","Tchad","Thaïlande","Timor-Leste","Togo","Tonga","Trinité-et-Tobago","Tunisie",
+  "Turkménistan","Turquie","Tuvalu",
+  "Ukraine","Uruguay",
+  "Vanuatu","Vatican","Venezuela","Viêt Nam",
+  "Yémen",
+  "Zambie","Zimbabwe",
 ];
 
 const COUNTRY_ZONES: Opt[] = [
@@ -219,9 +258,11 @@ interface Answers {
   destination: string;
   scope_type: string;
   country_zones: string[];
+  nearby_cities: string;
   // Location fields
   departure_city: string;
   destination_arrival_city: string;
+  arrival_city_country: string;
   // Dates
   arrival_date: string;
   departure_date: string;
@@ -231,6 +272,7 @@ interface Answers {
   traveler_type: string;
   traveler_adults: number;
   traveler_children: number;
+  children_ages: string[];
   // Budget
   budget: string;
   budget_amount: string;
@@ -265,10 +307,10 @@ interface Answers {
 }
 
 const EMPTY: Answers = {
-  destination: "", scope_type: "", country_zones: [],
-  departure_city: "", destination_arrival_city: "",
+  destination: "", scope_type: "", country_zones: [], nearby_cities: "",
+  departure_city: "", destination_arrival_city: "", arrival_city_country: "",
   arrival_date: "", departure_date: "", travel_dates: "", dates_flexible: "",
-  traveler_type: "", traveler_adults: 1, traveler_children: 0,
+  traveler_type: "", traveler_adults: 1, traveler_children: 0, children_ages: [],
   budget: "", budget_amount: "", budget_currency: "€", budget_scope: "",
   activity_pace: "", authenticity: "", trip_type: "", trip_vibe: "",
   accommodations: [], transport: [], neighborhood_vibe: "",
@@ -551,6 +593,7 @@ function QuestionnaireContent() {
   const [answers, setAnswers] = useState<Answers>(()=>({...EMPTY, user_email:initialEmail, language}));
   const [errors, setErrors] = useState<Record<string,string>>({});
   const [submitting, setSubmitting] = useState(false);
+  const [validating, setValidating] = useState(false);
   const [submitError, setSubmitError] = useState<string|null>(null);
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [step2Errors, setStep2Errors] = useState<Record<string,string>>({});
@@ -618,7 +661,7 @@ function QuestionnaireContent() {
     setTimeout(()=>{const el=document.getElementById(id);if(el)el.scrollIntoView({behavior:"smooth",block:"center"});},50);
   }
 
-  function goNext() {
+  async function goNext() {
     if (step===1) {
       const nextErrors: Record<string,string> = {};
       if (!answers.destination.trim()) nextErrors.destination = "Veuillez indiquer votre destination.";
@@ -628,24 +671,46 @@ function QuestionnaireContent() {
       if (!answers.traveler_type) nextErrors.traveler_type = "Veuillez indiquer avec qui vous voyagez.";
       if (Object.keys(nextErrors).length > 0) {
         setErrors(nextErrors);
-        const firstKey = Object.keys(nextErrors)[0];
-        scrollToError(`field-${firstKey}`);
+        scrollToError(`field-${Object.keys(nextErrors)[0]}`);
         return;
       }
+      // AI validation for text fields
+      try {
+        setValidating(true);
+        const toValidate = [
+          { name: "destination", label: "Destination", value: answers.destination },
+          { name: "departure_city", label: "Ville de départ", value: answers.departure_city },
+          ...(answers.destination_arrival_city.trim() ? [{ name: "destination_arrival_city", label: "Ville d'arrivée", value: answers.destination_arrival_city }] : []),
+        ];
+        const res = await fetch("/api/validate-input", { method: "POST", headers: {"Content-Type":"application/json"}, body: JSON.stringify({ fields: toValidate }) });
+        const data = await res.json() as { errors: Record<string,string> };
+        if (Object.keys(data.errors).length > 0) {
+          setErrors(data.errors);
+          scrollToError(`field-${Object.keys(data.errors)[0]}`);
+          return;
+        }
+      } catch { /* silently allow if API fails */ }
+      finally { setValidating(false); }
       setErrors({});
     }
     if (step===2) {
       const s2: Record<string,string> = {};
       if (!answers.budget) s2.budget = "Veuillez choisir un niveau de budget.";
       if (answers.budget_amount && Number(answers.budget_amount) > 0) {
-        const amount = Number(answers.budget_amount);
-        const adults = answers.traveler_adults || 1;
-        const days = selectedPlanKey ? PLAN_DATE_LIMITS[selectedPlanKey].maxDays : 7;
-        const totalAmount = answers.budget_scope === "per_person" ? amount * adults : amount;
-        const perPersonPerDay = totalAmount / (adults * days);
-        if (perPersonPerDay < 25) {
-          s2.budget_amount = `Budget trop faible : ${Math.round(perPersonPerDay)}${answers.budget_currency}/pers/jour ne couvre pas un voyage réaliste (minimum 25${answers.budget_currency}/pers/jour). Vérifiez le montant saisi.`;
+        if (!answers.budget_scope) {
+          s2.budget_scope = "Précisez si ce montant est par personne ou au total.";
+        } else {
+          const amount = Number(answers.budget_amount);
+          const adults = answers.traveler_adults || 1;
+          const days = selectedPlanKey ? PLAN_DATE_LIMITS[selectedPlanKey].maxDays : 7;
+          const totalAmount = answers.budget_scope === "per_person" ? amount * adults : amount;
+          const perPersonPerDay = totalAmount / (adults * days);
+          if (perPersonPerDay < 25) {
+            s2.budget_amount = `Budget trop faible : ${Math.round(perPersonPerDay)}${answers.budget_currency}/pers/jour ne couvre pas un voyage réaliste (minimum 25${answers.budget_currency}/pers/jour). Vérifiez le montant saisi.`;
+          }
         }
+      } else if (!answers.budget_scope) {
+        s2.budget_scope = "Précisez si votre budget est par personne ou au total.";
       }
       if (answers.accommodations.length===0) s2.accommodations = "Veuillez choisir au moins un type d'hébergement.";
       if (!answers.activity_pace) s2.activity_pace = "Veuillez choisir un rythme d'activités.";
@@ -662,10 +727,28 @@ function QuestionnaireContent() {
       if (answers.language_spoken.length===0) s2.language_spoken = "Veuillez indiquer au moins une langue.";
       if (Object.keys(s2).length > 0) {
         setStep2Errors(s2);
-        const firstKey = Object.keys(s2)[0];
-        scrollToError(`s2-${firstKey}`);
+        scrollToError(`s2-${Object.keys(s2)[0]}`);
         return;
       }
+      // AI validation for free text fields in step 2
+      try {
+        setValidating(true);
+        const toValidate = [
+          { name: "already_visited", label: "Pays/villes déjà visités", value: answers.already_visited },
+          { name: "non_negotiables", label: "Incontournables", value: answers.non_negotiables },
+          { name: "things_to_avoid", label: "Choses à éviter", value: answers.things_to_avoid },
+        ].filter(f => f.value.trim() && f.value.trim().toLowerCase() !== "aucun" && f.value.trim().toLowerCase() !== "none");
+        if (toValidate.length > 0) {
+          const res = await fetch("/api/validate-input", { method: "POST", headers: {"Content-Type":"application/json"}, body: JSON.stringify({ fields: toValidate }) });
+          const data = await res.json() as { errors: Record<string,string> };
+          if (Object.keys(data.errors).length > 0) {
+            setStep2Errors(data.errors);
+            scrollToError(`s2-${Object.keys(data.errors)[0]}`);
+            return;
+          }
+        }
+      } catch { /* silently allow */ }
+      finally { setValidating(false); }
       setStep2Errors({});
     }
     setStep(s=>Math.min(3,s+1));
@@ -704,6 +787,23 @@ function QuestionnaireContent() {
 
     if (!answers.destination.trim()) { setErrors({destination:"Veuillez indiquer votre destination."}); setStep(1); setTimeout(()=>scrollToError("field-destination"),100); return; }
     if (!answers.arrival_date) { setErrors({dates:"Veuillez sélectionner au moins une date."}); setStep(1); setTimeout(()=>scrollToError("field-dates"),100); return; }
+
+    // Validate notes field with AI if filled
+    if (answers.notes.trim()) {
+      try {
+        setSubmitting(true);
+        const res = await fetch("/api/validate-input", { method: "POST", headers: {"Content-Type":"application/json"}, body: JSON.stringify({ fields: [{ name: "notes", label: "Notes libres", value: answers.notes }] }) });
+        const data = await res.json() as { errors: Record<string,string> };
+        if (data.errors.notes) {
+          setStep3Errors({ notes: data.errors.notes });
+          setSubmitting(false);
+          scrollToError("s3-notes");
+          return;
+        }
+      } catch { /* silently allow */ }
+      finally { setSubmitting(false); }
+    }
+
     setErrors({});
     setSubmitting(true);
     setSubmitError(null);
@@ -798,39 +898,10 @@ function QuestionnaireContent() {
                   type="text"
                   value={answers.destination}
                   onChange={e=>{setAnswers(p=>({...p,destination:e.target.value}));if(errors.destination)setErrors(p=>({...p,destination:""}));}}
-                  placeholder="Ville, pays ou région — ex. Tokyo, Japon"
+                  placeholder="Ville, pays ou région — ex. Tokyo, Bali, Sicile"
                   className={inputCls("destination")}
                 />
                 <FieldError msg={errors.destination} />
-
-                <div className="mt-5">
-                  <QLabel>Type de séjour</QLabel>
-                  <div className="flex flex-wrap gap-2 mb-3">
-                    {SCOPE_TYPE.map(o=>(
-                      <Pill key={o.id} label={o.label}
-                        selected={answers.scope_type===o.id}
-                        onClick={()=>radio("scope_type",o.id)}/>
-                    ))}
-                  </div>
-                  {answers.scope_type==="country"&&(
-                    <div className="mt-3">
-                      <QLabel hint="(plusieurs choix)">Zone(s) du pays à visiter</QLabel>
-                      <div className="flex flex-wrap gap-2">
-                        {COUNTRY_ZONES.map(o=>(
-                          <Pill key={o.id} label={o.label}
-                            selected={answers.country_zones.includes(o.id)}
-                            onClick={()=>toggle("country_zones",o.id)}/>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                  {answers.scope_type&&(
-                    <p className="mt-3 text-xs text-[#5a7856] border border-[#1a2218] bg-[#111810] rounded-lg px-3 py-2 leading-relaxed">
-                      Si vous souhaitez visiter d&apos;autres villes ou régions alentour, mentionnez-le dans les notes libres à l&apos;étape 3.
-                    </p>
-                  )}
-                </div>
-
               </SectionCard>
             </div>
 
@@ -843,23 +914,76 @@ function QuestionnaireContent() {
                     type="text"
                     value={answers.departure_city}
                     onChange={e=>{setAnswers(p=>({...p,departure_city:e.target.value}));if(errors.departure_city)setErrors(p=>({...p,departure_city:""}));}}
-                    placeholder="ex. Paris, France"
+                    placeholder="ex. Paris, Lyon, Montréal"
                     className={inputCls("departure_city")}
                   />
-                  <p className="text-xs text-[#3a5037] mt-1.5">La ville et le pays depuis lesquels vous partez.</p>
+                  <p className="text-xs text-[#3a5037] mt-1.5">La ville depuis laquelle vous partez.</p>
                   <FieldError msg={errors.departure_city} />
                 </div>
                 <div id="field-destination_arrival_city">
-                  <QLabel hint="(optionnel)">Ville d&apos;arrivée dans la destination</QLabel>
-                  <input
-                    type="text"
-                    value={answers.destination_arrival_city}
-                    onChange={e=>setAnswers(p=>({...p,destination_arrival_city:e.target.value}))}
-                    placeholder="ex. Tokyo, Japon"
-                    className={inputCls("destination_arrival_city")}
-                  />
-                  <p className="text-xs text-[#3a5037] mt-1.5">La ville par laquelle vous entrez dans le pays (capitale, aéroport principal...).</p>
+                  <QLabel>Ville d&apos;arrivée</QLabel>
+                  <div className="flex flex-col sm:flex-row gap-2">
+                    <input
+                      type="text"
+                      value={answers.destination_arrival_city}
+                      onChange={e=>{setAnswers(p=>({...p,destination_arrival_city:e.target.value}));if(errors.destination_arrival_city)setErrors(p=>({...p,destination_arrival_city:""}));}}
+                      placeholder="ex. Tokyo, Bangkok, Rome"
+                      className={`flex-1 border rounded-lg px-4 py-3 text-sm focus:outline-none bg-[#0e1310] text-[#d8e3d5] placeholder-[#3a5037] transition-colors ${errors.destination_arrival_city?"border-red-700 focus:border-red-500":"border-[#2a3527] focus:border-[#c9a84c]"}`}
+                    />
+                    <select
+                      value={answers.arrival_city_country}
+                      onChange={e=>setAnswers(p=>({...p,arrival_city_country:e.target.value}))}
+                      className="sm:w-48 border border-[#2a3527] rounded-lg px-3 py-3 text-sm focus:outline-none focus:border-[#c9a84c] bg-[#0e1310] text-[#d8e3d5] transition-colors appearance-none cursor-pointer"
+                    >
+                      <option value="">Pays...</option>
+                      {COUNTRIES.map(c=><option key={c} value={c}>{c}</option>)}
+                    </select>
+                  </div>
+                  <p className="text-xs text-[#3a5037] mt-1.5">La ville et le pays par lesquels vous arrivez (aéroport principal, capitale...).</p>
+                  <FieldError msg={errors.destination_arrival_city} />
                 </div>
+              </div>
+            </SectionCard>
+
+            {/* Type de séjour */}
+            <SectionCard title="Type de séjour">
+              <div className="space-y-4">
+                <div>
+                  <QLabel>Comment souhaitez-vous explorer ?</QLabel>
+                  <select
+                    value={answers.scope_type}
+                    onChange={e=>setAnswers(p=>({...p,scope_type:e.target.value,country_zones:[],nearby_cities:""}))}
+                    className="w-full border border-[#2a3527] rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-[#c9a84c] bg-[#0e1310] text-[#d8e3d5] transition-colors appearance-none cursor-pointer"
+                  >
+                    <option value="">-- Choisir un type --</option>
+                    {SCOPE_TYPE.map(o=><option key={o.id} value={o.id}>{o.label}</option>)}
+                  </select>
+                </div>
+                {answers.scope_type==="city"&&(
+                  <div>
+                    <QLabel hint="(optionnel)">Villes ou sites alentour à inclure</QLabel>
+                    <input
+                      type="text"
+                      value={answers.nearby_cities}
+                      onChange={e=>setAnswers(p=>({...p,nearby_cities:e.target.value}))}
+                      placeholder="ex. Nikko, Kamakura, Yokohama — villes proches de Tokyo"
+                      className="w-full border border-[#2a3527] rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-[#c9a84c] bg-[#0e1310] text-[#d8e3d5] placeholder-[#3a5037] transition-colors"
+                    />
+                    <p className="text-xs text-[#3a5037] mt-1.5">Si vous souhaitez inclure des excursions depuis la ville principale.</p>
+                  </div>
+                )}
+                {answers.scope_type==="country"&&(
+                  <div>
+                    <QLabel hint="(plusieurs choix)">Zone(s) du pays à visiter</QLabel>
+                    <div className="flex flex-wrap gap-2">
+                      {COUNTRY_ZONES.map(o=>(
+                        <Pill key={o.id} label={o.label}
+                          selected={answers.country_zones.includes(o.id)}
+                          onClick={()=>toggle("country_zones",o.id)}/>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             </SectionCard>
 
@@ -901,7 +1025,14 @@ function QuestionnaireContent() {
                     <QLabel>Nombre de voyageurs</QLabel>
                     <div className="space-y-2">
                       <Stepper label="Adultes" sublabel="18 ans et plus" value={answers.traveler_adults} min={1} max={20} disabled={answers.traveler_type==="solo"} onChange={v=>setAnswers(p=>({...p,traveler_adults:v}))}/>
-                      <Stepper label="Enfants" sublabel="Moins de 18 ans" value={answers.traveler_children} min={0} max={10} onChange={v=>setAnswers(p=>({...p,traveler_children:v}))}/>
+                      <Stepper label="Enfants" sublabel="Moins de 18 ans" value={answers.traveler_children} min={0} max={10}
+                        onChange={v=>{
+                          setAnswers(p=>{
+                            const ages = [...p.children_ages];
+                            while(ages.length<v) ages.push("");
+                            return {...p,traveler_children:v,children_ages:ages.slice(0,v)};
+                          });
+                        }}/>
                     </div>
                     {answers.traveler_type==="solo"&&(
                       <p className="mt-2 text-xs text-[#5a7856] border border-[#1a2218] bg-[#111810] rounded-lg px-3 py-2">
@@ -909,9 +1040,32 @@ function QuestionnaireContent() {
                       </p>
                     )}
                     {answers.traveler_children>0&&(
-                      <p className="mt-2 text-xs text-[#5a7856] border border-[#1a2218] bg-[#111810] rounded-lg px-3 py-2">
-                        Précisez les âges des enfants dans les notes libres (étape 3) pour des activités adaptées.
-                      </p>
+                      <div className="mt-4">
+                        <QLabel required>Âge des enfants</QLabel>
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                          {Array.from({length:answers.traveler_children},(_,i)=>(
+                            <div key={i} className="flex items-center gap-2">
+                              <label className="text-xs text-[#5a7856] shrink-0 w-16">Enfant {i+1}</label>
+                              <input
+                                type="number"
+                                min="0"
+                                max="17"
+                                value={answers.children_ages[i]??""}
+                                onChange={e=>{
+                                  setAnswers(p=>{
+                                    const ages=[...p.children_ages];
+                                    ages[i]=e.target.value;
+                                    return {...p,children_ages:ages};
+                                  });
+                                }}
+                                placeholder="ans"
+                                className="w-full border border-[#2a3527] rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#c9a84c] bg-[#0e1310] text-[#d8e3d5] placeholder-[#3a5037] transition-colors"
+                              />
+                            </div>
+                          ))}
+                        </div>
+                        <p className="text-xs text-[#3a5037] mt-1.5">Précisez l&apos;âge pour adapter les activités.</p>
+                      </div>
                     )}
                   </div>
                 </div>
@@ -943,7 +1097,7 @@ function QuestionnaireContent() {
                     <FieldError msg={step2Errors.budget} />
                   </div>
                   <div id="s2-budget_amount">
-                    <QLabel hint="(optionnel)">Budget total approximatif</QLabel>
+                    <QLabel required>Montant et répartition du budget</QLabel>
                     <div className="flex flex-wrap items-center gap-2">
                       <input type="number" min="0" max="999999" value={answers.budget_amount}
                         onChange={e=>{setAnswers(p=>({...p,budget_amount:e.target.value}));setStep2Errors(p=>{const n={...p};delete n.budget_amount;return n;});}}
@@ -957,14 +1111,18 @@ function QuestionnaireContent() {
                           </button>
                         ))}
                       </div>
+                    </div>
+                    <div id="s2-budget_scope" className="mt-2">
+                      <QLabel required>Ce montant est :</QLabel>
                       <div className="flex gap-2">
-                        {[{id:"total",label:"total"},{id:"per_person",label:"/ pers."}].map(o=>(
-                          <button key={o.id} type="button" onClick={()=>radio("budget_scope",o.id)}
-                            className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${answers.budget_scope===o.id?"border-[#c9a84c] bg-[#c9a84c] text-[#0e1310]":"border-[#2a3527] text-[#5a7856] hover:border-[#c9a84c] bg-[#1a2218]"}`}>
+                        {[{id:"total",label:"Total du groupe"},{id:"per_person",label:"Par personne"}].map(o=>(
+                          <button key={o.id} type="button" onClick={()=>{radio("budget_scope",o.id);setStep2Errors(p=>{const n={...p};delete n.budget_scope;return n;});}}
+                            className={`px-4 py-2 rounded-lg text-sm font-semibold border transition-all ${answers.budget_scope===o.id?"border-[#c9a84c] bg-[#c9a84c] text-[#0e1310]":"border-[#2a3527] text-[#5a7856] hover:border-[#c9a84c] bg-[#1a2218]"}`}>
                             {o.label}
                           </button>
                         ))}
                       </div>
+                      <FieldError msg={step2Errors.budget_scope} />
                     </div>
                     <FieldError msg={step2Errors.budget_amount} />
                   </div>
@@ -1193,13 +1351,14 @@ function QuestionnaireContent() {
                 </div>
 
                 {/* Notes */}
-                <div>
+                <div id="s3-notes">
                   <QLabel hint="(optionnel)">Notes libres</QLabel>
                   <textarea value={answers.notes}
-                    onChange={e=>{if(e.target.value.length<=500)setAnswers(p=>({...p,notes:e.target.value}));}}
+                    onChange={e=>{if(e.target.value.length<=500){setAnswers(p=>({...p,notes:e.target.value}));setStep3Errors(p=>{const n={...p};delete n.notes;return n;});}}}
                     rows={3} placeholder="Toute information complémentaire — contraintes particulières, villes supplémentaires à visiter, demandes spécifiques..."
-                    className="w-full border border-[#2a3527] rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-[#c9a84c] bg-[#0e1310] text-[#d8e3d5] placeholder-[#3a5037] resize-none transition-colors"/>
+                    className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none bg-[#0e1310] text-[#d8e3d5] placeholder-[#3a5037] resize-none transition-colors ${step3Errors.notes?"border-red-700 focus:border-red-500":"border-[#2a3527] focus:border-[#c9a84c]"}`}/>
                   <p className="text-xs text-[#3a5037] text-right mt-1">{answers.notes.length}/500</p>
+                  <FieldError msg={step3Errors.notes} />
                 </div>
               </div>
             </SectionCard>
@@ -1304,9 +1463,13 @@ function QuestionnaireContent() {
             </Link>
           )}
           {step<3&&(
-            <button type="button" onClick={goNext}
-              className="bg-[#c9a84c] text-[#0e1310] font-bold px-8 py-3 rounded-lg hover:bg-[#b8962e] transition-all shadow-[0_4px_20px_rgba(201,168,76,0.25)] text-sm">
-              Suivant
+            <button type="button" onClick={goNext} disabled={validating}
+              className="bg-[#c9a84c] text-[#0e1310] font-bold px-8 py-3 rounded-lg hover:bg-[#b8962e] transition-all shadow-[0_4px_20px_rgba(201,168,76,0.25)] text-sm disabled:opacity-70 disabled:cursor-not-allowed">
+              {validating?(
+                <span className="flex items-center gap-2">
+                  <span className="w-4 h-4 border-2 border-[#0e1310] border-t-transparent rounded-full animate-spin"/>Vérification...
+                </span>
+              ):"Suivant"}
             </button>
           )}
         </div>
