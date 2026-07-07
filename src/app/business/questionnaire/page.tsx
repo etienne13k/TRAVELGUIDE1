@@ -96,7 +96,7 @@ const PAYS_EXEMPLES = [
 ];
 
 /* ─── Business plan options ─── */
-const B_DATE_LIMITS: Record<string, number> = { "7j": 7, "1mois": 7 };
+const B_DATE_LIMITS: Record<string, number> = { "7j": 7, "1mois": 3 };
 type BPlanKey = "7j" | "1mois";
 
 interface MissionAnswers {
@@ -477,7 +477,7 @@ function BusinessQuestionnaireContent() {
 
     // Block free subscription plan if not subscribed
     if (answers.selectedPlan === "1mois" && !hasSub) {
-      setSubmitError("Cette option est réservée aux abonnés actifs. Abonnez-vous à 15€/mois depuis la page Travel Business.");
+      setSubmitError("Cette option est réservée aux abonnés actifs. Abonnez-vous à 20€/mois depuis la page Travel Business.");
       return;
     }
 
@@ -539,13 +539,13 @@ function BusinessQuestionnaireContent() {
       {/* Header */}
       <header style={{ borderBottom: `1px solid ${B.border}`, background: B.bg }} className="sticky top-0 z-40">
         <div className="max-w-3xl mx-auto px-6 py-4 flex items-center justify-between">
-          <Link href="/" className="text-base font-bold transition-colors duration-200"
+          <Link href="/business" className="text-base font-bold transition-colors duration-200"
             style={{ fontFamily: "var(--font-playfair), Georgia, serif", color: B.text }}
             onMouseEnter={e => (e.currentTarget.style.color = "#93c5fd")}
             onMouseLeave={e => (e.currentTarget.style.color = B.text)}>
             Travel Business
           </Link>
-          <Link href="/" className="text-xs" style={{ color: B.faint }}>← Mode personnel</Link>
+          <Link href="/personal" className="text-xs" style={{ color: B.faint }}>← Mode personnel</Link>
         </div>
       </header>
 
@@ -614,7 +614,7 @@ function BusinessQuestionnaireContent() {
                     style={{ border: `2px solid ${answers.selectedPlan === "7j" ? B.blue : B.border}`, background: answers.selectedPlan === "7j" ? B.blueFaint : B.cardDeep }}>
                     <span className="block text-[10px] font-bold uppercase tracking-wider mb-2" style={{ color: B.muted }}>Guide à la carte</span>
                     <div className="flex items-baseline gap-1 mb-1">
-                      <span className="text-4xl font-black" style={{ color: B.blue }}>5€</span>
+                      <span className="text-4xl font-black" style={{ color: B.blue }}>6€</span>
                     </div>
                     <p className="text-sm font-semibold mb-1" style={{ color: B.text }}>Guide 7 jours</p>
                     <p className="text-xs" style={{ color: B.muted }}>Jusqu'à 7 jours · paiement unique</p>
@@ -639,12 +639,12 @@ function BusinessQuestionnaireContent() {
                         <span className="text-4xl font-black" style={{ color: B.text }}>Gratuit</span>
                       </div>
                       <p className="text-sm font-semibold mb-1" style={{ color: B.text }}>Inclus dans mon abonnement</p>
-                      <p className="text-xs" style={{ color: B.muted }}>10 guides inclus / mois · 7j max par guide</p>
+                      <p className="text-xs" style={{ color: B.muted }}>10 guides de 3j inclus / mois · idéal déplacements fréquents</p>
                     </button>
                     {!hasSub && (
                       <p className="mt-2 text-xs text-center" style={{ color: B.muted }}>
                         Pas encore abonné ?{" "}
-                        <a href="/business#pricing" className="font-semibold hover:underline" style={{ color: B.blue }}>S'abonner à 15€/mois →</a>
+                        <a href="/business#pricing" className="font-semibold hover:underline" style={{ color: B.blue }}>S'abonner à 20€/mois →</a>
                       </p>
                     )}
                   </div>

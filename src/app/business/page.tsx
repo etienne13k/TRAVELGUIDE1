@@ -254,7 +254,7 @@ export default function BusinessPage() {
     addCartItem({
       planId: "1mois",
       planLabel: "Abonnement Travel Business — 1 mois",
-      price: 1500,
+      price: 2000,
       destination: "—",
       dates: "1 mois",
       criteria: { mode: "business" },
@@ -815,8 +815,8 @@ export default function BusinessPage() {
             </h2>
             <p className="max-w-xl mx-auto text-sm leading-relaxed" style={{ color: B.muted }}>
               {lang === "fr"
-                ? "Guide 7 jours à 5€ à la carte, ou abonnement 15€/mois incluant 10 guides (7j max chacun)."
-                : "7-day guide at €5 per trip, or €15/month subscription including 10 guides (7 days each max)."}
+                ? "Guide 7 jours à 6€ à la carte, ou abonnement 20€/mois incluant 10 guides de 3 jours."
+                : "7-day guide at €6 per trip, or €20/month subscription including 10 x 3-day guides."}
             </p>
           </div>
 
@@ -836,8 +836,8 @@ export default function BusinessPage() {
                 </h3>
                 <ul className="space-y-1.5 text-sm" style={{ color: "rgba(255,255,255,0.65)" }}>
                   {(lang === "fr"
-                    ? ["10 guides inclus par mois (7j max par guide)","Gratuit à l'unité dès l'abonnement actif","Idéal pour les équipes en déplacement fréquent","Guides disponibles dès l'achat"]
-                    : ["10 guides included per month (7 days max each)","Free per guide once subscription is active","Perfect for frequent business travel","Guides available immediately after purchase"]
+                    ? ["10 guides de 3 jours inclus par mois","Pour ceux qui bougent énormément — chaque semaine","Gratuit à l'unité dès l'abonnement actif","Guides disponibles immédiatement après l'achat"]
+                    : ["10 x 3-day guides included per month","For those who travel constantly — every week","Free per guide once subscription is active","Guides available immediately after purchase"]
                   ).map(f => (
                     <li key={f} className="flex items-center gap-2">
                       <span className="font-bold text-xs" style={{ color: B.accent }}>✓</span>{f}
@@ -848,7 +848,7 @@ export default function BusinessPage() {
               <div className="flex flex-col items-start sm:items-end gap-3 shrink-0">
                 <div>
                   <div className="flex items-end gap-1">
-                    <span className="text-6xl font-black" style={{ color: B.accent, fontFamily: "var(--font-playfair), Georgia, serif" }}>15€</span>
+                    <span className="text-6xl font-black" style={{ color: B.accent, fontFamily: "var(--font-playfair), Georgia, serif" }}>20€</span>
                     <span className="text-sm mb-2" style={{ color: B.muted }}>/mois</span>
                   </div>
                   <p className="text-xs mt-1" style={{ color: B.faint }}>{lang === "fr" ? "Résiliable à tout moment" : "Cancel anytime"}</p>
@@ -894,7 +894,7 @@ export default function BusinessPage() {
             <div className="flex flex-col items-start sm:items-end gap-3 shrink-0">
               <div>
                 <div className="flex items-end gap-1">
-                  <span className="text-6xl font-black" style={{ color: B.accent, fontFamily: "var(--font-playfair), Georgia, serif" }}>5€</span>
+                  <span className="text-6xl font-black" style={{ color: B.accent, fontFamily: "var(--font-playfair), Georgia, serif" }}>6€</span>
                 </div>
                 <p className="text-xs mt-1" style={{ color: B.faint }}>{lang === "fr" ? "Paiement unique" : "One-time payment"}</p>
               </div>

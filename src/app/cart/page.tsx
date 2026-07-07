@@ -250,7 +250,7 @@ function CartContent() {
                             <h2 className="text-lg font-bold" style={{ color: T.text, fontFamily: "var(--font-playfair), Georgia, serif" }}>
                               Travel Business · 1 mois
                             </h2>
-                            <p className="text-xs mt-0.5" style={{ color: T.muted }}>10 guides inclus · 7j max par guide</p>
+                            <p className="text-xs mt-0.5" style={{ color: T.muted }}>10 guides de 3j inclus · pour les déplacements fréquents</p>
                           </div>
                         </div>
                         <strong className="rounded-full px-4 py-2 text-sm flex-shrink-0" style={{ background: T.accentFaint, border: `1px solid ${T.accentBorder}`, color: T.accent }}>

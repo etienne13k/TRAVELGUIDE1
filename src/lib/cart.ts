@@ -31,7 +31,7 @@ export const CART_PLANS: Record<PlanKey, { label: string; duration: string; amou
   "3j":    { label: "Guide Express",  duration: "3 jours", amount: 300  },
   "7j":    { label: "Guide Complet",  duration: "7 jours", amount: 600  },
   "14j":   { label: "Guide Immersif", duration: "14 jours", amount: 1000 },
-  "1mois": { label: "Guide Évasion",  duration: "1 mois",  amount: 1600 },
+  "1mois": { label: "Guide Évasion",  duration: "1 mois",  amount: 2000 },
 };
 
 export type CartItemInput = Omit<CartItem, "id" | "createdAt" | "updatedAt">;

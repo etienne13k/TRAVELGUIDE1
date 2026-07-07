@@ -58,7 +58,7 @@ Le guide est généré dans la langue choisie par le Client lors du questionnair
       {
         id: "art4",
         title: "Article 4 — Prix et TVA",
-        body: `**Grille tarifaire en vigueur :**
+        body: `**Grille tarifaire TravelGuide (mode personnel) :**
 
 | Offre | Durée du voyage | Prix TTC |
 |---|---|---|
@@ -66,6 +66,13 @@ Le guide est généré dans la langue choisie par le Client lors du questionnair
 | Guide 7 jours | 4 à 7 jours | 6,00 € |
 | Guide 14 jours | 8 à 14 jours | 12,00 € |
 | Guide 1 mois | 15 à 30 jours | 18,00 € |
+
+**Grille tarifaire Travel Business (mode professionnel) :**
+
+| Offre | Durée | Prix TTC |
+|---|---|---|
+| Guide 7 jours (à la carte) | jusqu'à 7 jours | 6,00 € |
+| Abonnement mensuel | 1 mois · 10 guides de 3j inclus | 20,00 € |
 
 **TVA :** TVA non applicable — Article 293 B du CGI (micro-entreprise non soumise à la TVA).
 
