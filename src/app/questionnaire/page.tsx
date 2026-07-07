@@ -768,7 +768,7 @@ function QuestionnaireContent() {
     };
   }
 
-  function handleAddToCart() {
+  async function handleAddToCart() {
     setTermsError(null);
     if (!termsAccepted) { setTermsError(legalCopy.error); return; }
     if (!selectedPlanKey||!plan) { setSubmitError("Veuillez choisir votre forfait."); setStep(1); window.scrollTo({top:0,behavior:"smooth"}); return; }
