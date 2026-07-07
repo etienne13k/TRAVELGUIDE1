@@ -152,7 +152,7 @@ Cette politique peut être mise à jour. La date de dernière modification est i
 export default function PrivacyPage() {
   const [activeSection, setActiveSection] = useState<string>("qui");
   const { isBusiness } = useMode();
-  const brandName = isBusiness ? "Travel Business IA" : "TravelGuide";
+  const brandName = isBusiness ? "Travel Business" : "TravelGuide";
   const backHref = isBusiness ? "/business" : "/personal";
 
   function renderBody(text: string) {

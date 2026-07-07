@@ -421,7 +421,7 @@ export default function CGVPage() {
   const [lang, setLang] = useState<"fr" | "en">("fr");
   const { isBusiness } = useMode();
   const t = content[lang];
-  const brandName = isBusiness ? "Travel Business IA" : "TravelGuide";
+  const brandName = isBusiness ? "Travel Business" : "TravelGuide";
   const backHref = isBusiness ? "/business" : "/personal";
 
   return (

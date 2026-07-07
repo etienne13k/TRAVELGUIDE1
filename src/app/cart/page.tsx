@@ -148,7 +148,7 @@ function CartContent() {
 
   const homeLink = isBusiness ? "/business" : "/personal";
   const shopLink = isBusiness ? "/business" : "/#pricing";
-  const brandName = isBusiness ? "Travel Business IA" : "TravelGuide";
+  const brandName = isBusiness ? "Travel Business" : "TravelGuide";
   const editBase = isBusiness ? "/business/questionnaire" : "/questionnaire";
 
   return (

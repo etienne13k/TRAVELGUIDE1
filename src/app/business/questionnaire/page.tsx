@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, Suspense } from "react";
+import React, { useEffect, useRef, useState, Suspense } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { addCartItem, loadCart, updateCartItem } from "@/lib/cart";
@@ -63,14 +63,13 @@ const BUDGET_NIVEAUX = [
 const PAYS_EXEMPLES = ["France", "Allemagne", "Espagne", "Italie", "Royaume-Uni", "États-Unis", "Japon", "Chine", "Belgique", "Suisse", "Pays-Bas", "Canada"];
 
 interface MissionAnswers {
-  mission_type: "" | "solo" | "team";
+  participants: number;
   destination_city: string;
   destination_country: string;
   departure_city: string;
   arrival_date: string;
   departure_date: string;
   objectif: string;
-  colleagues: number;
   hotel_type: string;
   transports: string[];
   proximite: string[];
@@ -81,12 +80,132 @@ interface MissionAnswers {
 }
 
 const EMPTY: MissionAnswers = {
-  mission_type: "",
+  participants: 1,
   destination_city: "", destination_country: "", departure_city: "",
   arrival_date: "", departure_date: "", objectif: "",
-  colleagues: 1, hotel_type: "", transports: [], proximite: [],
+  hotel_type: "", transports: [], proximite: [],
   budget_niveau: "", requirements: "", notes: "", user_email: "",
 };
+
+/* ─── Calendar helpers ─── */
+const LAST_SELECTABLE = "2027-12-31";
+const WEEKDAY_LABELS = ["L","M","M","J","V","S","D"];
+
+function toKey(d: Date): string {
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+}
+function parseKey(k: string): Date {
+  const [y,m,d] = k.split("-").map(Number);
+  return new Date(y, m-1, d);
+}
+function addDaysB(d: Date, n: number): Date {
+  const r = new Date(d); r.setDate(r.getDate()+n); return r;
+}
+function countDays(s: string, e: string): number {
+  return Math.floor((parseKey(e).getTime()-parseKey(s).getTime())/86400000)+1;
+}
+function fmtDateFr(k: string): string {
+  return parseKey(k).toLocaleDateString("fr-FR",{day:"numeric",month:"short",year:"numeric"});
+}
+function buildGrid(monthDate: Date): Array<{date:Date;key:string;inMonth:boolean;isWeekend:boolean}> {
+  const first = new Date(monthDate.getFullYear(), monthDate.getMonth(), 1);
+  const offset = (first.getDay()+6)%7;
+  const firstCell = addDaysB(first, -offset);
+  return Array.from({length:42},(_,i)=>{
+    const date = addDaysB(firstCell,i);
+    return { date, key: toKey(date), inMonth: date.getMonth()===monthDate.getMonth(), isWeekend: date.getDay()===0||date.getDay()===6 };
+  });
+}
+
+/* ─── Business Calendar component ─── */
+function BusinessCalendar({ startDate, endDate, onChange, error }: {
+  startDate: string; endDate: string;
+  onChange: (s: string, e: string) => void;
+  error?: string;
+}) {
+  const [visibleMonth, setVisibleMonth] = React.useState(() => {
+    const t = new Date(); return new Date(t.getFullYear(), t.getMonth(), 1);
+  });
+  const [choosingEnd, setChoosingEnd] = React.useState(false);
+  const [calErr, setCalErr] = React.useState<string|null>(null);
+  const todayKey = toKey(new Date());
+  const cells = buildGrid(visibleMonth);
+
+  function select(key: string) {
+    if (key < todayKey || key > LAST_SELECTABLE) return;
+    if (!startDate || !choosingEnd || key < startDate) {
+      onChange(key, key); setChoosingEnd(true); setCalErr(null); return;
+    }
+    onChange(startDate, key); setChoosingEnd(false); setCalErr(null);
+  }
+
+  const monthLabel = visibleMonth.toLocaleDateString("fr-FR",{month:"long",year:"numeric"});
+
+  return (
+    <div className="rounded-2xl overflow-hidden" style={{ border: `1px solid ${error ? B.errorBorder : B.border}`, background: B.cardDeep }}>
+      {/* Header */}
+      <div className="px-5 py-3 flex items-start justify-between" style={{ borderBottom: `1px solid ${B.border}` }}>
+        <div>
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] mb-0.5" style={{ color: B.blue }}>Calendrier de mission</p>
+          <p className="text-xs" style={{ color: B.muted }}>
+            {startDate && endDate && startDate !== endDate
+              ? `${fmtDateFr(startDate)} → ${fmtDateFr(endDate)}`
+              : startDate
+              ? `Départ : ${fmtDateFr(startDate)} — cliquez sur le retour`
+              : "Cliquez sur la date d'arrivée, puis de retour"}
+          </p>
+        </div>
+        {startDate && endDate && (
+          <div className="rounded-lg px-3 py-1 text-center flex-shrink-0" style={{ background: B.blueFaint, border: `1px solid ${B.blueBorder}` }}>
+            <div className="font-bold text-sm" style={{ color: B.blue }}>{countDays(startDate,endDate)}</div>
+            <div className="text-[9px] uppercase tracking-wide" style={{ color: B.muted }}>jour{countDays(startDate,endDate)>1?"s":""}</div>
+          </div>
+        )}
+      </div>
+      {/* Nav */}
+      <div className="px-5 py-3 flex items-center justify-between" style={{ borderBottom: `1px solid ${B.border}` }}>
+        <button type="button" onClick={()=>setVisibleMonth(p=>new Date(p.getFullYear(),p.getMonth()-1,1))}
+          className="w-8 h-8 rounded-lg flex items-center justify-center text-sm transition-colors"
+          style={{ background: B.border, color: B.text }}>←</button>
+        <span className="text-sm font-semibold capitalize" style={{ color: B.text }}>{monthLabel}</span>
+        <button type="button" onClick={()=>setVisibleMonth(p=>new Date(p.getFullYear(),p.getMonth()+1,1))}
+          className="w-8 h-8 rounded-lg flex items-center justify-center text-sm transition-colors"
+          style={{ background: B.border, color: B.text }}>→</button>
+      </div>
+      {/* Day labels */}
+      <div className="grid grid-cols-7 px-4 pt-3 pb-1">
+        {WEEKDAY_LABELS.map((l,i)=>(
+          <div key={i} className="text-center text-[10px] font-bold uppercase tracking-wide" style={{ color: B.muted }}>{l}</div>
+        ))}
+      </div>
+      {/* Grid */}
+      <div className="grid grid-cols-7 gap-1 px-4 pb-4">
+        {cells.map(cell => {
+          const isPast = cell.key < todayKey;
+          const isFuture = cell.key > LAST_SELECTABLE;
+          const isStart = cell.key === startDate;
+          const isEnd = cell.key === endDate;
+          const inRange = startDate && endDate && cell.key > startDate && cell.key < endDate;
+          const disabled = isPast || isFuture || !cell.inMonth;
+          return (
+            <button key={cell.key} type="button" disabled={disabled} onClick={()=>select(cell.key)}
+              className="h-9 w-full rounded-lg text-xs font-semibold transition-all"
+              style={{
+                background: isStart||isEnd ? B.blue : inRange ? B.blueFaint : "transparent",
+                color: isStart||isEnd ? "#fff" : disabled ? B.border : cell.isWeekend ? "#93c5fd" : B.text,
+                border: `1px solid ${isStart||isEnd ? B.blue : inRange ? B.blueBorder : "transparent"}`,
+                opacity: disabled ? 0.3 : 1,
+                cursor: disabled ? "not-allowed" : "pointer",
+              }}>
+              {cell.date.getDate()}
+            </button>
+          );
+        })}
+      </div>
+      {(calErr||error) && <p className="px-5 pb-3 text-xs" style={{ color: B.errorText }}>{calErr||error}</p>}
+    </div>
+  );
+}
 
 /* ─── Helpers ─── */
 function inputCls(hasError: boolean) {
@@ -223,7 +342,6 @@ function BusinessQuestionnaireContent() {
   async function goNext() {
     if (step === 1) {
       const errs: Record<string, string> = {};
-      if (!answers.mission_type) errs.mission_type = "Veuillez choisir le type de déplacement.";
       if (!answers.destination_city.trim()) errs.destination_city = "Veuillez indiquer la ville de destination.";
       if (!answers.departure_city.trim()) errs.departure_city = "Veuillez indiquer votre ville de départ.";
       if (!answers.arrival_date) errs.arrival_date = "Veuillez sélectionner une date d'arrivée.";
@@ -281,8 +399,8 @@ function BusinessQuestionnaireContent() {
       arrival_date: answers.arrival_date,
       departure_date: answers.departure_date,
       travel_dates: `${answers.arrival_date} → ${answers.departure_date}`,
-      traveler_type: answers.mission_type === "team" ? "group" : "solo",
-      traveler_adults: answers.mission_type === "team" ? 1 + answers.colleagues : 1,
+      traveler_type: answers.participants > 1 ? "group" : "solo",
+      traveler_adults: answers.participants,
       traveler_children: 0,
       children_ages: [],
       budget: answers.budget_niveau,
@@ -376,54 +494,26 @@ function BusinessQuestionnaireContent() {
         {/* STEP 1 */}
         {step === 1 && (
           <>
-            {/* Mission type — solo vs team */}
-            <div className="mb-5" id="f-mission_type">
-              <p className="text-xs font-bold uppercase tracking-[0.2em] mb-3" style={{ color: B.blue }}>Type de déplacement</p>
-              <div className="grid sm:grid-cols-2 gap-4">
-                {([
-                  {
-                    id: "solo" as const,
-                    label: "Mission solo",
-                    desc: "Vous voyagez seul. Le guide est optimisé pour un déplacement individuel.",
-                    icon: (
-                      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-                        <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
-                      </svg>
-                    ),
-                  },
-                  {
-                    id: "team" as const,
-                    label: "Mission en équipe",
-                    desc: "Vous voyagez avec des collègues. Le guide intègre la logistique de groupe.",
-                    icon: (
-                      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-                        <circle cx="9" cy="8" r="3"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/>
-                        <circle cx="17" cy="8" r="3"/><path d="M15 20c0-1.7.7-3.3 2-4.5"/>
-                      </svg>
-                    ),
-                  },
-                ] as const).map(opt => {
-                  const selected = answers.mission_type === opt.id;
-                  return (
-                    <button
-                      key={opt.id}
-                      type="button"
-                      onClick={() => { setAnswers(p => ({ ...p, mission_type: opt.id })); if (errors.mission_type) setErrors(p => ({ ...p, mission_type: "" })); }}
-                      className="rounded-2xl p-5 text-left transition-all"
-                      style={{
-                        background: selected ? B.blueFaint : B.card,
-                        border: `2px solid ${selected ? B.blue : B.border}`,
-                      }}
-                    >
-                      <div className="mb-3" style={{ color: selected ? B.blue : B.muted }}>{opt.icon}</div>
-                      <p className="font-bold text-sm mb-1" style={{ color: selected ? B.blue : B.text }}>{opt.label}</p>
-                      <p className="text-xs leading-relaxed" style={{ color: B.muted }}>{opt.desc}</p>
-                    </button>
-                  );
-                })}
+            {/* Participants */}
+            <Card title="Participants">
+              <div className="flex items-center gap-6">
+                <div className="flex-1">
+                  <Label>Nombre de personnes (vous inclus)</Label>
+                  <p className="text-xs mb-4" style={{ color: B.muted }}>
+                    {answers.participants === 1
+                      ? "Mission solo — guide optimisé pour un déplacement individuel."
+                      : `Mission en groupe — guide adapté pour ${answers.participants} participants.`}
+                  </p>
+                  <Stepper value={answers.participants} min={1} max={30} onChange={v => setAnswers(p => ({ ...p, participants: v }))} />
+                </div>
+                <div className="flex-shrink-0 w-14 h-14 rounded-xl flex items-center justify-center" style={{ background: B.blueFaint, border: `1px solid ${B.blueBorder}` }}>
+                  {answers.participants === 1
+                    ? <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={B.blue} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+                    : <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={B.blue} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><circle cx="9" cy="8" r="3"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="17" cy="8" r="3"/><path d="M15 20c0-1.7.7-3.3 2-4.5"/></svg>
+                  }
+                </div>
               </div>
-              {errors.mission_type && <p className="mt-2 text-xs" style={{ color: B.errorText }}>{errors.mission_type}</p>}
-            </div>
+            </Card>
 
             <Card title="Destination">
               <div className="space-y-4">
@@ -453,27 +543,17 @@ function BusinessQuestionnaireContent() {
             </Card>
 
             <Card title="Calendrier de la mission">
-              <div className="grid sm:grid-cols-2 gap-4">
-                <div id="f-arrival_date">
-                  <Label required>Date d'arrivée</Label>
-                  <input type="date" style={inputCls(!!errors.arrival_date)} value={answers.arrival_date}
-                    min={new Date().toISOString().split("T")[0]}
-                    onChange={e => { setAnswers(p => ({ ...p, arrival_date: e.target.value })); if (errors.arrival_date) setErrors(p => ({ ...p, arrival_date: "" })); }} />
-                  <FieldErr msg={errors.arrival_date} />
-                </div>
-                <div id="f-departure_date">
-                  <Label required>Date de retour</Label>
-                  <input type="date" style={inputCls(!!errors.departure_date)} value={answers.departure_date}
-                    min={answers.arrival_date || new Date().toISOString().split("T")[0]}
-                    onChange={e => { setAnswers(p => ({ ...p, departure_date: e.target.value })); if (errors.departure_date) setErrors(p => ({ ...p, departure_date: "" })); }} />
-                  <FieldErr msg={errors.departure_date} />
-                </div>
+              <div id="f-arrival_date">
+                <BusinessCalendar
+                  startDate={answers.arrival_date}
+                  endDate={answers.departure_date}
+                  onChange={(s, e) => {
+                    setAnswers(p => ({ ...p, arrival_date: s, departure_date: e }));
+                    if (errors.arrival_date || errors.departure_date) setErrors(p => ({ ...p, arrival_date: "", departure_date: "" }));
+                  }}
+                  error={errors.arrival_date || errors.departure_date}
+                />
               </div>
-              {totalDays && (
-                <div className="mt-3 text-xs font-semibold" style={{ color: B.blue }}>
-                  Durée calculée : {totalDays} jour{totalDays > 1 ? "s" : ""}
-                </div>
-              )}
             </Card>
 
             <Card title="Objectif du déplacement">
@@ -488,18 +568,6 @@ function BusinessQuestionnaireContent() {
                 <FieldErr msg={errors.objectif} />
               </div>
             </Card>
-
-            {answers.mission_type === "team" && (
-              <Card title="Équipe">
-                <Label>Nombre de collègues avec vous</Label>
-                <div className="flex items-center gap-4">
-                  <Stepper value={answers.colleagues} min={1} max={20} onChange={v => setAnswers(p => ({ ...p, colleagues: v }))} />
-                  <span className="text-sm" style={{ color: B.muted }}>
-                    {answers.colleagues === 1 ? "1 collègue" : `${answers.colleagues} collègues`}
-                  </span>
-                </div>
-              </Card>
-            )}
           </>
         )}
 
@@ -586,7 +654,7 @@ function BusinessQuestionnaireContent() {
                   { label: "Départ depuis", val: answers.departure_city },
                   { label: "Dates", val: `${answers.arrival_date} → ${answers.departure_date}${totalDays ? ` (${totalDays}j)` : ""}` },
                   { label: "Objectif", val: OBJECTIFS.find(o => o.id === answers.objectif)?.label ?? "" },
-                  { label: "Type", val: answers.mission_type === "solo" ? "Mission solo" : answers.mission_type === "team" ? `Mission en équipe (1 + ${answers.colleagues} collègue${answers.colleagues > 1 ? "s" : ""})` : "" },
+                  { label: "Participants", val: answers.participants === 1 ? "Mission solo" : `Mission en groupe (${answers.participants} pers.)` },
                   { label: "Hébergement", val: HOTELS.find(o => o.id === answers.hotel_type)?.label ?? "" },
                   { label: "Budget / nuit", val: BUDGET_NIVEAUX.find(o => o.id === answers.budget_niveau)?.label ?? "" },
                 ].filter(r => r.val).map(row => (
@@ -669,7 +737,7 @@ function BusinessQuestionnaireContent() {
       </main>
 
       <footer style={{ borderTop: `1px solid ${B.border}`, background: B.bg }} className="py-6 text-center">
-        <p className="text-xs" style={{ color: B.faint }}>© 2026 Travel Business IA — Mode Professionnel</p>
+        <p className="text-xs" style={{ color: B.faint }}>© 2026 Travel Business — Mode Professionnel</p>
       </footer>
     </div>
   );

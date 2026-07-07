@@ -88,7 +88,7 @@ export default function FAQPage() {
   const [openItem, setOpenItem] = useState<string | null>(null);
   const { isBusiness } = useMode();
   const data = lang === "fr" ? FAQ_FR : FAQ_EN;
-  const brandName = isBusiness ? "Travel Business IA" : "TravelGuide";
+  const brandName = isBusiness ? "Travel Business" : "TravelGuide";
   const backHref = isBusiness ? "/business" : "/personal";
 
   return (

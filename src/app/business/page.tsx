@@ -32,7 +32,7 @@ const translations = {
       "Frankfurt · Londres · Amsterdam · Singapour · et plus",
     ],
     nav_cta: "Configurer ma mission",
-    hero_title: "Travel Business IA",
+    hero_title: "Travel Business",
     hero_sub: "Déplacements professionnels optimisés par IA. Hôtels d'affaires, restaurants clients, agenda — tout géré en un guide PDF.",
     hero_cta: "Configurer ma mission",
     hero_sub_cta: "Sans abonnement · Livraison sous 48h · 100% personnalisé",
@@ -57,8 +57,8 @@ const translations = {
     ],
     flows_badge: "Deux types de missions",
     flows_title: "Votre mission, votre façon",
-    flows_sub: "Que vous partiez seul ou en équipe, pour une réunion ou un salon, Travel Business IA s'adapte.",
-    flow1_title: "Mission solo ou petite équipe",
+    flows_sub: "Que vous partiez seul ou en équipe, pour une réunion ou un salon, Travel Business s'adapte.",
+    flow1_title: "Mission solo",
     flow1_desc: "Vous partez seul ou avec 2-3 collègues. L'IA optimise les hébergements, les transports et les restaurants adaptés à un budget entreprise.",
     flow1_features: [
       "Hôtels d'affaires sélectionnés",
@@ -67,7 +67,7 @@ const translations = {
       "Planning heure par heure",
     ],
     flow1_cta: "Configurer ma mission →",
-    flow2_title: "Groupe ou événement pro",
+    flow2_title: "Mission en groupe",
     flow2_desc: "Conférence, salon, formation d'équipe. L'IA anticipe les contraintes de groupe, les lieux de réunion et la logistique collective.",
     flow2_features: [
       "Lieux de réunion et salles de conf",
@@ -82,7 +82,7 @@ const translations = {
     examples_title: "À quoi ressemble votre guide ?",
     examples_sub: "Un aperçu de la qualité et du niveau de détail que vous recevrez pour vos déplacements.",
     social_title: "Ils nous font confiance",
-    social_subtitle: "Des professionnels et équipes font confiance à Travel Business IA pour leurs déplacements.",
+    social_subtitle: "Des professionnels et équipes font confiance à Travel Business pour leurs déplacements.",
     social_stats: [
       { number: "4.9★", label: "note moyenne" },
       { number: "97%", label: "de satisfaction" },
@@ -92,7 +92,7 @@ const translations = {
     bottom_title: "Prêt pour votre prochain déplacement ?",
     bottom_sub: "Optimisez vos missions professionnelles avec un guide sur mesure généré par IA.",
     footer_tagline: "L'IA au service de vos déplacements professionnels.",
-    footer_copy: "© 2026 Travel Business IA",
+    footer_copy: "© 2026 Travel Business",
     footer_cgv: "Conditions Générales de Vente",
     footer_privacy: "Politique de Confidentialité",
     hero_badge_ai: "Propulsé par IA entraînée",
@@ -128,7 +128,7 @@ const translations = {
       "Frankfurt · London · Amsterdam · Singapore · and more",
     ],
     nav_cta: "Configure my mission",
-    hero_title: "Travel Business IA",
+    hero_title: "Travel Business",
     hero_sub: "AI-optimized business travel. Business hotels, client restaurants, agenda — all in one PDF guide.",
     hero_cta: "Configure my mission",
     hero_sub_cta: "No subscription · Delivered in 48h · 100% personalized",
@@ -153,8 +153,8 @@ const translations = {
     ],
     flows_badge: "Two mission types",
     flows_title: "Your mission, your way",
-    flows_sub: "Whether you're travelling solo or as a team, for a meeting or a trade show, Travel Business IA adapts.",
-    flow1_title: "Solo or small team mission",
+    flows_sub: "Whether you're travelling solo or as a team, for a meeting or a trade show, Travel Business adapts.",
+    flow1_title: "Solo mission",
     flow1_desc: "You're travelling alone or with 2-3 colleagues. The AI optimises accommodations, transport and restaurants suited to a corporate budget.",
     flow1_features: [
       "Curated business hotels",
@@ -163,7 +163,7 @@ const translations = {
       "Hour-by-hour planning",
     ],
     flow1_cta: "Configure my mission →",
-    flow2_title: "Group or corporate event",
+    flow2_title: "Group mission",
     flow2_desc: "Conference, trade show, team training. The AI anticipates group constraints, meeting venues and collective logistics.",
     flow2_features: [
       "Meeting rooms & conference venues",
@@ -178,7 +178,7 @@ const translations = {
     examples_title: "What does your guide look like?",
     examples_sub: "A preview of the quality and level of detail you will receive for your business travel.",
     social_title: "They trust us",
-    social_subtitle: "Professionals and teams trust Travel Business IA for their business travel.",
+    social_subtitle: "Professionals and teams trust Travel Business for their business travel.",
     social_stats: [
       { number: "4.9★", label: "average rating" },
       { number: "97%", label: "satisfaction rate" },
@@ -188,7 +188,7 @@ const translations = {
     bottom_title: "Ready for your next business trip?",
     bottom_sub: "Optimize your professional missions with a tailor-made guide generated by AI.",
     footer_tagline: "AI at the service of your professional travel.",
-    footer_copy: "© 2026 Travel Business IA",
+    footer_copy: "© 2026 Travel Business",
     footer_cgv: "Terms of Sale",
     footer_privacy: "Privacy Policy",
     hero_badge_ai: "Powered by trained AI",
@@ -273,7 +273,7 @@ export default function BusinessPage() {
             className="text-xl font-bold tracking-tight"
             style={{ color: B.text, fontFamily: "var(--font-playfair), Georgia, serif" }}
           >
-            Travel Business IA
+            Travel Business
           </div>
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-1 rounded-lg p-0.5" style={{ border: `1px solid ${B.border}` }}>
@@ -391,7 +391,7 @@ export default function BusinessPage() {
               >
                 <div className="px-6 py-5" style={{ background: B.cardDeep, borderBottom: `1px solid ${B.border}` }}>
                   <div className="flex items-center justify-between mb-3">
-                    <span className="text-[9px] font-mono tracking-[0.2em] uppercase" style={{ color: B.veryFaint }}>Travel Business IA</span>
+                    <span className="text-[9px] font-mono tracking-[0.2em] uppercase" style={{ color: B.veryFaint }}>Travel Business</span>
                     <span className="font-bold text-base" style={{ color: B.accent, fontFamily: "var(--font-playfair), Georgia, serif" }}>Pro</span>
                   </div>
                   <div className="text-2xl font-bold mb-0.5" style={{ color: B.text, fontFamily: "var(--font-playfair), Georgia, serif" }}>Frankfurt</div>
@@ -857,7 +857,7 @@ export default function BusinessPage() {
             className="font-bold text-base"
             style={{ color: B.muted, fontFamily: "var(--font-playfair), Georgia, serif" }}
           >
-            Travel Business IA
+            Travel Business
           </span>
           <span className="text-xs">{tx.footer_tagline}</span>
           <div className="flex items-center gap-4 text-xs">
