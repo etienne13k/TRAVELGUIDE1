@@ -659,14 +659,14 @@ export default function BusinessPage() {
                 </div>
               </div>
               <div className="relative">
-                <div className="flex gap-3 mb-5 flex-wrap">
+                <div className="grid grid-cols-4 gap-2 mb-5">
                   {[
                     { val: "3", label: tx.example_cover_days_label },
                     { val: "2", label: tx.example_cover_travelers_label },
                     { val: "€180", label: tx.example_cover_budget_label },
                     { val: lang === "fr" ? "4★" : "4★", label: lang === "fr" ? "Hôtel" : "Hotel" },
                   ].map((b) => (
-                    <div key={b.label} className="rounded-lg px-3 py-2 text-center flex-1 min-w-[60px]" style={{ background: "rgba(59,130,246,0.08)", border: "1px solid rgba(59,130,246,0.18)" }}>
+                    <div key={b.label} className="rounded-lg px-2 py-2 text-center" style={{ background: "rgba(59,130,246,0.08)", border: "1px solid rgba(59,130,246,0.18)" }}>
                       <div className="font-bold text-sm" style={{ color: "#93c5fd" }}>{b.val}</div>
                       <div className="text-[9px] uppercase tracking-wide mt-0.5" style={{ color: "rgba(255,255,255,0.30)" }}>{b.label}</div>
                     </div>
