@@ -27,8 +27,11 @@ const B = {
 const translations = {
   fr: {
     banner_messages: [
+      "🏷️ -25% sur votre premier guide avec le code WELCOME",
       "Guides professionnels sur mesure · Livraison sous 48h",
-      "Optimisez vos deplacements d'affaires avec l'IA",
+      "🏷️ -25% sur votre premier guide avec le code WELCOME",
+      "Optimisez vos déplacements d'affaires avec l'IA",
+      "🏷️ -25% sur votre premier guide avec le code WELCOME",
       "Frankfurt · Londres · Amsterdam · Singapour · et plus",
     ],
     nav_cta: "Configurer ma mission",
@@ -122,8 +125,11 @@ const translations = {
   },
   en: {
     banner_messages: [
+      "🏷️ -25% on your first guide with code WELCOME",
       "Tailor-made professional guides · Delivered within 48h",
+      "🏷️ -25% on your first guide with code WELCOME",
       "Optimize your business travel with AI",
+      "🏷️ -25% on your first guide with code WELCOME",
       "Frankfurt · London · Amsterdam · Singapore · and more",
     ],
     nav_cta: "Configure my mission",
@@ -593,7 +599,7 @@ export default function BusinessPage() {
       </section>
 
       {/* VISUAL EXAMPLES */}
-      <section className="py-14 sm:py-24 px-4 sm:px-6" style={{ background: B.cardDeep }}>
+      <section className="py-12 sm:py-16 px-4 sm:px-6" style={{ background: B.cardDeep }}>
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2
@@ -604,10 +610,10 @@ export default function BusinessPage() {
             </h2>
             <p className="max-w-lg mx-auto text-sm" style={{ color: B.muted }}>{tx.examples_sub}</p>
           </div>
-          <div className="grid lg:grid-cols-2 gap-8">
+          <div className="grid lg:grid-cols-2 gap-8 items-start">
             {/* Cover mockup */}
             <div
-              className="text-white rounded-2xl overflow-hidden shadow-2xl p-8 min-h-[480px] flex flex-col justify-between relative"
+              className="text-white rounded-2xl overflow-hidden shadow-2xl p-8 flex flex-col justify-between relative"
               style={{ background: `linear-gradient(160deg, ${B.dark1} 0%, ${B.dark2} 60%, #0a0a1a 100%)` }}
             >
               {/* Background geometric accents */}
@@ -923,7 +929,7 @@ export default function BusinessPage() {
           </h2>
           <p className="text-base mb-16 max-w-xl mx-auto" style={{ color: "rgba(255,255,255,0.60)" }}>{tx.social_subtitle}</p>
 
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-14">
+          <div className="grid grid-cols-3 gap-6 mb-14 max-w-2xl mx-auto">
             {tx.social_stats.map((stat) => (
               <div
                 key={stat.label}

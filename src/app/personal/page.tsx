@@ -1038,7 +1038,7 @@ export default function Home() {
           </h2>
           <p className="text-base mb-16 max-w-xl mx-auto" style={{ color: "var(--cm)" }}>{tx.social_subtitle}</p>
 
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-3 gap-6 max-w-2xl mx-auto">
             {tx.social_stats.map((stat) => (
               <div
                 key={stat.label}
