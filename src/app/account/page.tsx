@@ -50,7 +50,9 @@ async function getProfile(userId: string): Promise<Profile> {
 async function getOrders(userId: string): Promise<Order[]> {
   const pool = getPool();
   const { rows } = await pool.query(
-    `SELECT id, destination, plan, status, created_at,
+    `SELECT id,
+            COALESCE(destination, questionnaire_data->>'destination', questionnaire_data->>'destination_arrival_city') as destination,
+            plan, status, created_at,
             questionnaire_data->>'mode' as mode
      FROM orders WHERE user_id = $1 ORDER BY created_at DESC`,
     [userId]
