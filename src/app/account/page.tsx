@@ -51,7 +51,11 @@ async function getOrders(userId: string): Promise<Order[]> {
   const pool = getPool();
   const { rows } = await pool.query(
     `SELECT id,
-            COALESCE(destination, questionnaire_data->>'destination', questionnaire_data->>'destination_arrival_city') as destination,
+            NULLIF(TRIM(COALESCE(
+              NULLIF(TRIM(destination), ''),
+              NULLIF(TRIM(questionnaire_data->>'destination'), ''),
+              NULLIF(TRIM(questionnaire_data->>'destination_arrival_city'), '')
+            )), '') as destination,
             plan, status, created_at,
             questionnaire_data->>'mode' as mode
      FROM orders WHERE user_id = $1 ORDER BY created_at DESC`,
@@ -176,7 +180,7 @@ export default async function AccountPage() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1.5 flex-wrap">
                         <span className="text-sm font-semibold truncate" style={{ color: N.text }}>
-                          {order.destination ?? "Destination non définie"}
+                          {order.destination || "Destination non définie"}
                         </span>
                         <span className="text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0"
                           style={isBiz
