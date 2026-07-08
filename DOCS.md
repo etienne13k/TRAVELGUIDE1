@@ -1291,3 +1291,46 @@ Les credentials Twilio ont été déplacés hors des fichiers suivis par Git et 
 URL : `https://travel-guide.nanocorp.app/admin/login`
 Email : `admin@spiregg.app`
 Mot de passe : `SpireggAdmin2025!` (stocké bcrypt, jamais en clair)
+
+---
+
+## Mise à jour 2026-07-08 — Fix système de compte utilisateur (inscription/connexion/OTP)
+
+### Problèmes résolus
+
+**Bug 1 — `relation "ip_logs" does not exist` à l'inscription :**
+- La base de données était complètement vide (aucune migration exécutée).
+- Toutes les migrations SQL ont été appliquées via `psql $DATABASE_URL -f supabase/migrations/*.sql`.
+- Tables créées : `profiles`, `orders`, `ip_logs`, `payment_sessions`, `guides`, `admin_logs`, `admin_login_attempts`, `password_reset_tokens`, `phone_verifications`, `promo_usage`.
+- Vues créées : `users` (alias de `profiles`), `promo_usages`.
+
+**Bug 2 — `relation "users" does not exist` à la connexion :**
+- Même cause (migrations non exécutées). Résolu par la même action.
+- Note : `users` est une VUE auto-updatable sur `profiles` (PostgreSQL). Les INSERT/SELECT fonctionnent sur la vue.
+
+**Bug 3 — Mock SMS bloqué en production :**
+- `sms-provider.ts` bloquait le provider mock en production avec une erreur 501.
+- Modifié pour utiliser automatiquement le mock si Twilio n'est pas configuré.
+- Code de vérification mock = `SMS_MOCK_CODE` env var (défaut `000000`).
+
+### Nouveau flux inscription avec vérification OTP
+
+`src/app/signup/SignupForm.tsx` reécrit avec deux étapes :
+1. **Formulaire** : Email, Téléphone (E.164), Mot de passe, Confirmation, Anti-bot
+2. **Vérification OTP** : 6 cases individuelles, focus automatique, renvoi avec compteur 60s
+   - Après succès API signup → appel automatique `/api/phone/send-otp`
+   - Saisie code → appel `/api/phone/verify-otp` → redirection `/account`
+   - Bouton "Passer cette étape" pour accès immédiat sans vérification
+
+### Fichiers modifiés
+| Fichier | Changement |
+|---------|-----------|
+| `src/app/signup/SignupForm.tsx` | Ajout étape OTP inline après inscription |
+| `src/lib/sms-provider.ts` | Mock SMS autorisé quand Twilio non configuré |
+
+### Migrations exécutées (base de données)
+1. `20260609000000_base_travelguide_schema.sql` — tables core
+2. `20260609190000_signup_anti_abuse.sql` — index ip_logs
+3. `20260610103000_explore3_phone_verified_usage.sql` — phone_verified + promo_usage
+4. `20260610121500_phone_sms_verification.sql` — phone_verifications table
+5. `20260611000000_profile_name_fields.sql` — first_name, last_name
