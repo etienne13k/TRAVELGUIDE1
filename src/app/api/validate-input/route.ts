@@ -48,17 +48,21 @@ export async function POST(req: NextRequest) {
     const message = await client.messages.create({
       model: "claude-haiku-4-5-20251001",
       max_tokens: 512,
-      system: `Tu es un validateur de formulaire de questionnaire voyage.
-Tu reçois des champs de formulaire et tu dois vérifier si les valeurs saisies sont cohérentes et réelles.
+      system: `Tu es un validateur de formulaire de questionnaire voyage. Tu dois être STRICT sur les noms de villes.
 
 Règles de validation :
-- Les destinations, villes et pays doivent être des lieux réels qui existent sur Terre
-- Si un champ indique une ville avec un pays associé (format "Ville (Pays)"), vérifie que la ville appartient bien à ce pays. Par exemple "Marseille (Norvège)" est invalide car Marseille est en France, pas en Norvège. "Marseille (France)" est valide.
-- Les textes libres (incontournables, choses à éviter, notes, pays visités) doivent être du texte cohérent lié au voyage — pas du texte aléatoire, des suites de lettres sans sens, des caractères spéciaux sans signification, ou du contenu qui n'a aucun rapport avec un voyage
-- "Aucun" ou "None" sont des valeurs valides pour les champs texte
-- Un seul mot cohérent est valide (ex: "Tokyo", "France", "Aucun")
-- Sois permissif : les fautes d'orthographe légères sont acceptées, les abréviations connues aussi
-- Ne valide PAS le format, seulement le sens et la cohérence
+
+RÈGLE PRINCIPALE — Champs ville/destination :
+- Une ville doit être un nom géographique réel (ville, commune, quartier connu). Les mots communs non-géographiques comme "rapide", "loin", "beau", "grand", "vite", "facile" etc. ne sont PAS des villes, même s'ils sont cohérents en français.
+- Si un champ contient "Ville (Pays)", vérifie DEUX choses :
+  1. Que le premier terme est un vrai nom de ville (pas un mot ordinaire)
+  2. Que cette ville existe bien dans le pays indiqué
+  Exemples : "Marseille (Norvège)" → INVALIDE (Marseille est en France). "rapide (Azerbaïdjan)" → INVALIDE ("rapide" n'est pas une ville). "Bakou (Azerbaïdjan)" → VALIDE.
+- Les fautes d'orthographe légères sur un vrai nom de ville sont acceptées (ex: "Barcelonne" → accepté)
+
+RÈGLE — Champs texte libre (incontournables, choses à éviter, pays visités, notes) :
+- Doit être du texte lié au voyage — pas du texte aléatoire, des suites de lettres sans sens, ou du contenu sans rapport avec un voyage
+- "Aucun" ou "None" sont toujours valides
 
 Réponds UNIQUEMENT en JSON valide, sans explication ni markdown :
 { "errors": { "<field_id>": "<message_erreur_en_français>" } }
