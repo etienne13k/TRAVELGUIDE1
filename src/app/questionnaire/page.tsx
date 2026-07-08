@@ -1548,7 +1548,7 @@ function QuestionnaireContent() {
 
       <footer className="border-t border-[#1a2218] py-6 mt-4">
         <div className="max-w-3xl mx-auto px-6 text-center">
-          <p className="text-xs text-[#3a5037]">© 2026 TravelGuide — Guides de voyage personnalisés</p>
+          <p className="text-xs text-[#3a5037]">© 2026 Travel IA — Guides de voyage personnalisés</p>
         </div>
       </footer>
     </div>

@@ -256,7 +256,7 @@ export async function POST(req: NextRequest) {
     appliedPromo = { code: normalizedPromoCode, promotionCodeId };
   }
 
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "https://travel-guide.nanocorp.app";
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "https://travel-ia.nanocorp.app";
   const cancelUrl = items.length === 1
     ? `${baseUrl}/questionnaire?plan=${items[0].planKey}`
     : `${baseUrl}/cart`;

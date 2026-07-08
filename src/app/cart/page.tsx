@@ -17,7 +17,7 @@ import LangToggle from "@/components/LangToggle";
 import { useMode } from "@/lib/mode-theme";
 
 const LEGAL_NOTICE =
-  "Les horaires et jours d'ouverture des monuments et lieux recommandés dans votre guide sont fournis à titre indicatif. Spiregg ne peut être tenu responsable en cas de fermeture exceptionnelle, de modification d'horaires ou d'événements imprévus. Vérifiez les informations officielles avant chaque visite.";
+  "Les horaires et jours d'ouverture des monuments et lieux recommandés dans votre guide sont fournis à titre indicatif. Travel IA ne peut être tenu responsable en cas de fermeture exceptionnelle, de modification d'horaires ou d'événements imprévus. Vérifiez les informations officielles avant chaque visite.";
 
 function CartContent() {
   const router = useRouter();

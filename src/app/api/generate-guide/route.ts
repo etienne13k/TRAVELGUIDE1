@@ -286,11 +286,11 @@ Si tout semble normal, réponds : {"issues": [], "should_pause": false}`;
     try {
       const resend = new Resend(process.env.RESEND_API_KEY);
       const baseUrl =
-        process.env.NEXT_PUBLIC_BASE_URL ?? "https://travel-guide.nanocorp.app";
+        process.env.NEXT_PUBLIC_BASE_URL ?? "https://travel-ia.nanocorp.app";
       const downloadUrl = `${baseUrl}/api/download-guide/${guideId}`;
 
       await resend.emails.send({
-        from: "TravelGuide <travel-guide@nanocorp.app>",
+        from: "Travel IA <travel-ia@nanocorp.app>",
         to: input.email,
         subject: `Votre guide de voyage ${input.destination} est prêt ! ✈️`,
         html: buildEmailHtml(input, downloadUrl),
@@ -310,7 +310,7 @@ Si tout semble normal, réponds : {"issues": [], "should_pause": false}`;
 
   // Update order delivery state
   if (orderId) {
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "https://travel-guide.nanocorp.app";
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "https://travel-ia.nanocorp.app";
     const guideDownloadUrl = `${baseUrl}/api/download-guide/${guideId}`;
     const deliveryStatus = emailSent ? "delivered" : "error";
     const deliveryError = emailSent ? null : "Email de livraison non envoyé";

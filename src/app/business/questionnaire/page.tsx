@@ -906,7 +906,7 @@ function BusinessQuestionnaireContent() {
       </main>
 
       <footer style={{ borderTop: `1px solid ${B.border}`, background: B.bg }} className="py-6 text-center">
-        <p className="text-xs" style={{ color: B.faint }}>© 2026 Travel Business — Mode Professionnel</p>
+        <p className="text-xs" style={{ color: B.faint }}>© 2026 Travel IA — Mode Professionnel</p>
       </footer>
     </div>
   );

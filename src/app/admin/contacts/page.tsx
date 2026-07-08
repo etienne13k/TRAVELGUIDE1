@@ -112,7 +112,7 @@ export default async function AdminContactsPage() {
                 </p>
                 <div className="mt-3 flex gap-2">
                   <a
-                    href={`mailto:${msg.email}?subject=Re: votre message TravelGuide AI`}
+                    href={`mailto:${msg.email}?subject=Re: votre message Travel IA`}
                     className="inline-flex items-center gap-1.5 rounded-xl bg-[#425C47] hover:bg-[#2e4133] text-white text-xs font-bold px-4 py-2 transition-colors"
                   >
                     ✉️ Répondre

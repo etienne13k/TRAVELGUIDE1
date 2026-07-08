@@ -4,14 +4,14 @@ import { useState } from "react";
 import Link from "next/link";
 import { useMode } from "@/lib/mode-theme";
 
-const CONTACT = "travel-guide@nanocorp.app";
-const SITE_URL = "https://travel-guide.nanocorp.app";
+const CONTACT = "travel-ia@nanocorp.app";
+const SITE_URL = "https://travel-ia.nanocorp.app";
 
 const content = {
   fr: {
     lang: "FR",
     title: "Conditions Générales de Vente",
-    subtitle: "TravelGuide AI — Version juin 2026",
+    subtitle: "Travel IA — Version juin 2026",
     back: "← Retour au site",
     note: "Document juridiquement contraignant soumis au droit français. En cas de divergence entre la version française et toute autre version, la version française prévaut.",
     sections: [
@@ -21,19 +21,19 @@ const content = {
         body: `Les présentes Conditions Générales de Vente (« CGV ») régissent les relations contractuelles entre :
 
 **Le Vendeur :**
-- Raison sociale : TravelGuide AI, exploité sous l'enseigne NanoCorp
+- Raison sociale : Travel IA, exploité sous l'enseigne NanoCorp
 - Statut : Auto-entrepreneur (micro-entreprise)
 - SIRET : [À COMPLÉTER]
 - Adresse : [À COMPLÉTER], France
 - Email de contact : ${CONTACT}
 - Site web : ${SITE_URL}
 
-Et toute personne physique ou morale (« le Client ») passant commande sur le Site TravelGuide AI (${SITE_URL}).`,
+Et toute personne physique ou morale (« le Client ») passant commande sur le Site Travel IA (${SITE_URL}).`,
       },
       {
         id: "art2",
         title: "Article 2 — Objet et Champ d'Application",
-        body: `Les présentes CGV définissent les droits et obligations des parties dans le cadre de la vente en ligne de contenus numériques via TravelGuide AI.
+        body: `Les présentes CGV définissent les droits et obligations des parties dans le cadre de la vente en ligne de contenus numériques via Travel IA.
 
 Elles s'appliquent sans restriction ni réserve à toutes les commandes passées sur le Site par tout Client, qu'il soit consommateur ou professionnel, résidant en France ou à l'étranger.
 
@@ -43,7 +43,7 @@ En validant sa commande, le Client reconnaît avoir pris connaissance des prése
         id: "art3",
         title: "Article 3 — Description du Service",
         body: `**3.1 Nature du service**
-TravelGuide AI est un service de génération automatisée de guides de voyage personnalisés par intelligence artificielle. Le guide est créé à partir des réponses fournies par le Client dans un questionnaire de personnalisation.
+Travel IA est un service de génération automatisée de guides de voyage personnalisés par intelligence artificielle. Le guide est créé à partir des réponses fournies par le Client dans un questionnaire de personnalisation.
 
 **3.2 Format de livraison**
 Chaque guide est livré en format **PDF**, téléchargeable depuis l'espace client et envoyé par email à l'adresse fournie lors de la commande.
@@ -134,7 +134,7 @@ Toute demande de remboursement doit être adressée par email à ${CONTACT} avec
         id: "art8",
         title: "Article 8 — Limitation de Responsabilité — Contenu IA",
         body: `**8.1 Nature du contenu généré**
-Les guides TravelGuide AI sont générés automatiquement par un système d'intelligence artificielle entraînée et ne sont pas rédigés, relus ni vérifiés par un expert humain, un guide professionnel ou un agent de voyage agréé.
+Les guides Travel IA sont générés automatiquement par un système d'intelligence artificielle entraînée et ne sont pas rédigés, relus ni vérifiés par un expert humain, un guide professionnel ou un agent de voyage agréé.
 
 **8.2 Absence de garantie sur l'exactitude**
 Le Vendeur ne garantit pas l'exactitude, l'exhaustivité, l'actualité ni la pertinence des informations contenues dans les guides, notamment :
@@ -154,7 +154,7 @@ La responsabilité du Vendeur est, en tout état de cause, strictement limitée 
         id: "art9",
         title: "Article 9 — Propriété Intellectuelle",
         body: `**9.1 Titularité**
-Les guides générés par TravelGuide AI sont protégés par le droit de la propriété intellectuelle. Le Vendeur est titulaire des droits sur la structure, la mise en forme et les éléments distinctifs du guide.
+Les guides générés par Travel IA sont protégés par le droit de la propriété intellectuelle. Le Vendeur est titulaire des droits sur la structure, la mise en forme et les éléments distinctifs du guide.
 
 **9.2 Licence accordée au Client**
 Le Client bénéficie d'une licence personnelle, non exclusive, non cessible et non transférable, pour un usage strictement personnel et non commercial du guide.
@@ -232,7 +232,7 @@ Le Vendeur se réserve le droit de modifier les présentes CGV à tout moment. L
   en: {
     lang: "EN",
     title: "Terms of Sale",
-    subtitle: "TravelGuide AI — June 2026",
+    subtitle: "Travel IA — June 2026",
     back: "← Back to site",
     note: "This is a faithful English translation for information purposes. In case of conflict, the French version prevails.",
     sections: [
@@ -242,14 +242,14 @@ Le Vendeur se réserve le droit de modifier les présentes CGV à tout moment. L
         body: `These Terms of Sale govern the contractual relationship between:
 
 **The Seller:**
-- Trading name: TravelGuide AI, operated under NanoCorp
+- Trading name: Travel IA, operated under NanoCorp
 - Status: Self-employed entrepreneur (micro-entreprise — French sole trader)
 - SIRET: [TO BE COMPLETED]
 - Address: [TO BE COMPLETED], France
 - Contact email: ${CONTACT}
 - Website: ${SITE_URL}
 
-And any individual or entity ("Customer") placing an order on TravelGuide AI (${SITE_URL}).`,
+And any individual or entity ("Customer") placing an order on Travel IA (${SITE_URL}).`,
       },
       {
         id: "s2",
@@ -261,7 +261,7 @@ By validating an order, the Customer acknowledges having read and accepted these
       {
         id: "s3",
         title: "3. Service Description",
-        body: `TravelGuide AI is an AI-powered service that automatically generates personalised travel guides based on the Customer's questionnaire responses.
+        body: `Travel IA is an AI-powered service that automatically generates personalised travel guides based on the Customer's questionnaire responses.
 
 **Delivery format:** PDF, downloadable from the customer account and sent by email.
 
@@ -386,7 +386,7 @@ function renderBody(text: string) {
 }
 
 function renderSection(body: string, brand = "TravelGuide") {
-  const blocks = body.replace(/TravelGuide AI/g, brand).split("\n\n");
+  const blocks = body.split("\n\n");
   return blocks.map((block, j) => {
     if (block.trim().startsWith("|")) {
       const rows = block.trim().split("\n").filter(r => !r.match(/^\|[-\s|]+$/));
@@ -455,7 +455,7 @@ export default function CGVPage() {
           <h1 className="text-3xl font-bold mb-2" style={{ fontFamily: "var(--font-playfair), Georgia, serif", color: "var(--ct)" }}>
             {t.title}
           </h1>
-          <p className="text-sm" style={{ color: "var(--cm)" }}>{t.subtitle.replace(/TravelGuide AI/g, brandName)}</p>
+          <p className="text-sm" style={{ color: "var(--cm)" }}>{t.subtitle}</p>
           <p className="mt-3 text-xs italic border-l-2 pl-3" style={{ color: "var(--cf)", borderColor: "var(--ca)" }}>{t.note}</p>
         </div>
 

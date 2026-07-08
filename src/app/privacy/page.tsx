@@ -8,9 +8,9 @@ const SECTIONS_FR = [
   {
     id: "qui",
     title: "1. Qui sommes-nous ?",
-    body: `TravelGuide AI est un service de génération de guides de voyage personnalisés par intelligence artificielle, édité par NanoCorp.
+    body: `Travel IA est un service de génération de guides de voyage personnalisés par intelligence artificielle, édité par NanoCorp.
 
-**Contact :** travel-guide@nanocorp.app
+**Contact :** travel-ia@nanocorp.app
 **Site :** https://travelguide-ai.com
 
 Pour toute question relative à vos données personnelles, écrivez-nous directement à l'adresse ci-dessus.`,
@@ -62,7 +62,7 @@ Notre IA entraînée n'utilise pas les données soumises pour s'améliorer. Les 
     body: `| Donnée | Utilisation | Base légale |
 |--------|-------------|-------------|
 | E-mail | Livraison du guide, confirmation d'achat, support client | Exécution du contrat |
-| E-mail (newsletter) | Envoi d'actualités TravelGuide AI | Consentement explicite |
+| E-mail (newsletter) | Envoi d'actualités Travel IA | Consentement explicite |
 | Téléphone | Vérification OTP, déblocage code promo WELCOME | Intérêt légitime / consentement |
 | Questionnaire | Génération de votre guide par IA | Exécution du contrat |
 | Paiement | Traitement de la transaction | Exécution du contrat |
@@ -125,7 +125,7 @@ Aucun autre tiers n'a accès à vos données personnelles.`,
 - **Droit d'opposition** : vous opposer à certains traitements (ex. newsletter)
 - **Droit à la limitation** : restreindre le traitement dans certains cas
 
-**Pour exercer vos droits :** Contactez-nous à travel-guide@nanocorp.app avec une preuve d'identité. Nous répondons sous 30 jours.
+**Pour exercer vos droits :** Contactez-nous à travel-ia@nanocorp.app avec une preuve d'identité. Nous répondons sous 30 jours.
 
 En cas de litige, vous pouvez également saisir la **CNIL** : cnil.fr`,
   },
@@ -141,7 +141,7 @@ Aucun cookie publicitaire ou de tracking tiers n'est déposé sur votre navigate
   {
     id: "contact",
     title: "10. Contact & mise à jour",
-    body: `**Contact DPO / Privacy :** travel-guide@nanocorp.app
+    body: `**Contact DPO / Privacy :** travel-ia@nanocorp.app
 
 Cette politique peut être mise à jour. La date de dernière modification est indiquée en haut de page. En cas de modification substantielle, vous serez informé par e-mail.
 
@@ -173,7 +173,7 @@ export default function PrivacyPage() {
   }
 
   function renderSection(body: string) {
-    const blocks = body.replace(/TravelGuide AI/g, brandName).split("\n\n");
+    const blocks = body.split("\n\n");
     return blocks.map((block, j) => {
       if (block.trim().startsWith("|")) {
         const rows = block.trim().split("\n").filter(r => !r.match(/^\|[-\s|]+$/));
@@ -293,7 +293,7 @@ export default function PrivacyPage() {
         </div>
 
         <div className="mt-16 pt-8 border-t text-center text-xs" style={{ borderColor: "var(--ce)", color: "var(--cf)" }}>
-          <p>© 2026 {brandName} · <a href="mailto:travel-guide@nanocorp.app" className="underline" style={{ color: "var(--cf)" }}>travel-guide@nanocorp.app</a></p>
+          <p>© 2026 Travel IA · <a href="mailto:travel-ia@nanocorp.app" className="underline" style={{ color: "var(--cf)" }}>travel-ia@nanocorp.app</a></p>
           <p className="mt-1">Pour exercer vos droits RGPD, contactez-nous. Nous répondons sous 30 jours.</p>
         </div>
       </main>

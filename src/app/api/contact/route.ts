@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getPool } from "@/lib/db";
 import { Resend } from "resend";
 
-const CONTACT_EMAIL = "travel-guide@nanocorp.app";
+const CONTACT_EMAIL = "travel-ia@nanocorp.app";
 
 export async function POST(req: NextRequest) {
   try {
@@ -54,7 +54,7 @@ export async function POST(req: NextRequest) {
             <div style="background: #f5f7f5; border-left: 4px solid #C9A84C; padding: 16px; border-radius: 4px;">
               <p style="margin: 0; white-space: pre-wrap; color: #425C47;">${message.trim().replace(/</g, "&lt;").replace(/>/g, "&gt;")}</p>
             </div>
-            <p style="margin-top: 24px; font-size: 12px; color: #999;">Message reçu depuis travel-guide.nanocorp.app · Répondez directement à cet email pour contacter l'expéditeur.</p>
+            <p style="margin-top: 24px; font-size: 12px; color: #999;">Message reçu depuis travel-ia.nanocorp.app · Répondez directement à cet email pour contacter l'expéditeur.</p>
           </div>
         `,
       });
