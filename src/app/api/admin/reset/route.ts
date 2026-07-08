@@ -17,10 +17,16 @@ export async function POST(req: NextRequest) {
 
   try {
     const pool = new Pool({ connectionString: process.env.DATABASE_URL, ssl: { rejectUnauthorized: false } });
-    await pool.query(`CREATE TABLE IF NOT EXISTS users (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), email TEXT UNIQUE NOT NULL, password_hash TEXT NOT NULL, is_admin BOOLEAN DEFAULT false, is_suspended BOOLEAN DEFAULT false, created_at TIMESTAMPTZ DEFAULT NOW())`);
-    await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS is_admin BOOLEAN DEFAULT false`);
-    await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS is_suspended BOOLEAN DEFAULT false`);
-    await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS password_hash TEXT`);
+    // Create table with all required columns if not exists
+    await pool.query(`CREATE TABLE IF NOT EXISTS users (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), email TEXT UNIQUE NOT NULL, password_hash TEXT, is_admin BOOLEAN DEFAULT false, is_suspended BOOLEAN DEFAULT false, created_at TIMESTAMPTZ DEFAULT NOW())`);
+    // Try to add columns individually — ignore errors if they already exist
+    for (const stmt of [
+      `ALTER TABLE users ADD COLUMN IF NOT EXISTS is_admin BOOLEAN DEFAULT false`,
+      `ALTER TABLE users ADD COLUMN IF NOT EXISTS is_suspended BOOLEAN DEFAULT false`,
+      `ALTER TABLE users ADD COLUMN IF NOT EXISTS password_hash TEXT`,
+    ]) {
+      try { await pool.query(stmt); } catch { /* column already exists — ok */ }
+    }
     const results = [];
     for (const acc of accounts) {
       const hash = await bcrypt.hash(acc.password, 12);
