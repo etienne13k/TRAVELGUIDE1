@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { CART_PLANS } from "@/lib/cart";
+import { addCartItem, CART_PLANS, loadCart, updateCartItem } from "@/lib/cart";
 
 /* ─── Design tokens ─── */
 const B = {
@@ -473,49 +473,49 @@ function BusinessQuestionnaireContent() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
-  async function handleSubmit() {
+  async function handleAddToCart() {
     setTermsError(null);
     if (!termsAccepted) { setTermsError("Veuillez accepter les conditions générales de vente pour continuer."); return; }
 
+    if (answers.selectedPlan === "credit" && (businessCredits ?? 0) === 0) {
+      setSubmitError("Vous n'avez plus de crédits Pack Premium.");
+      return;
+    }
+
+    const existingCart = loadCart();
+    if (existingCart.length > 0) setReplacedExisting(true);
+
     const destination = answers.destination_city.trim() + (answers.destination_country ? `, ${answers.destination_country}` : "");
     const dates = answers.arrival_date && answers.departure_date ? `${answers.arrival_date} → ${answers.departure_date}` : answers.arrival_date;
-    const criteria = {
-      ...answers,
-      mode: "business",
-      traveler_type: answers.participants > 1 ? "group" : "solo",
-      traveler_adults: answers.participants,
-      traveler_children: 0,
-      children_ages: [] as string[],
-      budget: answers.budget_niveau,
-      budget_amount: "",
-      budget_currency: "€",
-      budget_scope: "total",
-      language: "fr",
+    const planKey = answers.selectedPlan === "credit" ? "7j" : answers.selectedPlan as "7j";
+    const cartInput = {
+      planId: planKey,
+      planLabel: answers.selectedPlan === "credit" ? "Inclus — Pack Premium" : CART_PLANS[planKey].label,
+      price: answers.selectedPlan === "credit" ? 0 : CART_PLANS[planKey].amount,
+      destination: destination || "Destination à préciser",
+      dates,
+      criteria: {
+        ...answers,
+        mode: "business",
+        use_credit: answers.selectedPlan === "credit",
+        traveler_type: answers.participants > 1 ? "group" : "solo",
+        traveler_adults: answers.participants,
+        traveler_children: 0,
+        children_ages: [] as string[],
+        budget: answers.budget_niveau,
+        budget_amount: "",
+        budget_currency: "€",
+        budget_scope: "total",
+        language: "fr",
+      },
     };
 
     try {
       setSubmitting(true);
       setSubmitError(null);
-
-      if (answers.selectedPlan === "credit") {
-        // Pack Premium : déduire 1 crédit
-        const res = await fetch("/api/business-credits", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ destination, dates, criteria }),
-        });
-        const data = await res.json() as { success?: boolean; error?: string; message?: string; redirectUrl?: string };
-        if (!res.ok || !data.success) {
-          setSubmitError(data.message ?? "Erreur lors de l'utilisation du crédit.");
-          return;
-        }
-        setBusinessCredits(data.redirectUrl ? (businessCredits ?? 1) - 1 : businessCredits);
-        router.push(data.redirectUrl ?? "/account");
-      } else {
-        // Guide Mission : redirection directe vers le lien Stripe
-        const email = answers.user_email ? `&prefilled_email=${encodeURIComponent(answers.user_email)}` : "";
-        window.location.href = `https://buy.stripe.com/14A3cvagd1sE37de120Ba05${email}`;
-      }
+      const existingGuide = existingCart.find(i => i.planId === "7j");
+      existingGuide?.id ? updateCartItem(existingGuide.id, cartInput) : addCartItem(cartInput);
+      router.push("/cart");
     } catch (err) {
       setSubmitError("Une erreur est survenue. Veuillez réessayer.");
       console.error(err);
@@ -889,15 +889,15 @@ function BusinessQuestionnaireContent() {
             </button>
           )}
           {step === 3 && (
-            <button type="button" onClick={handleSubmit} disabled={submitting}
+            <button type="button" onClick={handleAddToCart} disabled={submitting}
               className="flex-[2] font-bold py-3 rounded-xl text-sm transition-all disabled:opacity-60"
               style={{ background: B.blue, color: "#fff" }}>
               {submitting ? (
                 <span className="flex items-center justify-center gap-2">
                   <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  {answers.selectedPlan === "credit" ? "Utilisation du crédit..." : "Redirection vers le paiement..."}
+                  Enregistrement...
                 </span>
-              ) : answers.selectedPlan === "credit" ? "Utiliser un crédit →" : "Payer 6€ →"}
+              ) : "Ajouter au panier →"}
             </button>
           )}
         </div>

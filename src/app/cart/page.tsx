@@ -117,7 +117,10 @@ function CartContent() {
     try {
       const normalizedPromoCode = promoCode.trim().toUpperCase();
       const item = items[0];
-      const baseLink = STRIPE_PAYMENT_LINKS[item.planId as PlanKey];
+      const isBusiness = item.criteria?.mode === "business";
+      const baseLink = isBusiness && item.planId === "7j"
+        ? "https://buy.stripe.com/14A3cvagd1sE37de120Ba05"
+        : STRIPE_PAYMENT_LINKS[item.planId as PlanKey];
       if (!baseLink) throw new Error("Lien de paiement introuvable.");
 
       const pendingRes = await fetch("/api/save-pending-order", {
