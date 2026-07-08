@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { addCartItem, CART_PLANS, hasActiveSubscription, loadCart, updateCartItem } from "@/lib/cart";
+import { CART_PLANS } from "@/lib/cart";
 
 /* ─── Design tokens ─── */
 const B = {
@@ -382,7 +382,7 @@ function BusinessQuestionnaireContent() {
   const isSoloLocked = searchParams.get("type") === "solo";
   const [step, setStep] = useState(1);
   const [answers, setAnswers] = useState<MissionAnswers>({ ...EMPTY });
-  const [hasSub, setHasSub] = useState(false);
+  const [businessCredits, setBusinessCredits] = useState<number | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [s2Errors, setS2Errors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
@@ -394,7 +394,6 @@ function BusinessQuestionnaireContent() {
   const topRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    setHasSub(hasActiveSubscription());
     if (isSoloLocked) setAnswers(p => ({ ...p, participants: 1 }));
     localStorage.setItem("tgai_mode", "business");
     const stored = localStorage.getItem("tgai_session_user");
@@ -406,6 +405,9 @@ function BusinessQuestionnaireContent() {
     }
     fetch("/api/auth/me").then(r => r.ok ? r.json() : null).then(d => {
       if (d?.email) setAnswers(p => ({ ...p, user_email: d.email }));
+    }).catch(() => undefined);
+    fetch("/api/business-credits").then(r => r.ok ? r.json() : null).then(d => {
+      if (d) setBusinessCredits(d.credits ?? 0);
     }).catch(() => undefined);
   }, []);
 
@@ -471,56 +473,59 @@ function BusinessQuestionnaireContent() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
-  async function handleAddToCart() {
+  async function handleSubmit() {
     setTermsError(null);
     if (!termsAccepted) { setTermsError("Veuillez accepter les conditions générales de vente pour continuer."); return; }
 
-    // Block free subscription plan if not subscribed
-    if (answers.selectedPlan === "1mois" && !hasSub) {
-      setSubmitError("Cette option est réservée aux abonnés actifs. Abonnez-vous à 20€/mois depuis la page Travel Business.");
-      return;
-    }
-
-    const existingCart = loadCart();
-    if (existingCart.length > 0) setReplacedExisting(true);
-
     const destination = answers.destination_city.trim() + (answers.destination_country ? `, ${answers.destination_country}` : "");
     const dates = answers.arrival_date && answers.departure_date ? `${answers.arrival_date} → ${answers.departure_date}` : answers.arrival_date;
-    const planKey = answers.selectedPlan as "7j" | "1mois";
-    const isAbonnement = planKey === "1mois";
-    const cartInput = {
-      planId: planKey,
-      planLabel: isAbonnement ? "Inclus — Abonnement Business actif" : CART_PLANS[planKey].label,
-      price: isAbonnement ? 0 : CART_PLANS[planKey].amount,
-      destination: destination || "Destination à préciser",
-      dates,
-      criteria: {
-        ...answers,
-        mode: "business",
-        traveler_type: answers.participants > 1 ? "group" : "solo",
-        traveler_adults: answers.participants,
-        traveler_children: 0,
-        children_ages: [] as string[],
-        budget: answers.budget_niveau,
-        budget_amount: "",
-        budget_currency: "€",
-        budget_scope: "total",
-        language: "fr",
-      },
+    const criteria = {
+      ...answers,
+      mode: "business",
+      traveler_type: answers.participants > 1 ? "group" : "solo",
+      traveler_adults: answers.participants,
+      traveler_children: 0,
+      children_ages: [] as string[],
+      budget: answers.budget_niveau,
+      budget_amount: "",
+      budget_currency: "€",
+      budget_scope: "total",
+      language: "fr",
     };
 
     try {
       setSubmitting(true);
       setSubmitError(null);
-      // Business: subscription and guide are separate slots — never overwrite a subscription with a guide
-      const existingGuide = existingCart.find(i => i.planId !== "1mois");
-      const existingSub  = existingCart.find(i => i.planId === "1mois");
-      if (isAbonnement) {
-        existingSub?.id ? updateCartItem(existingSub.id, cartInput) : addCartItem(cartInput);
+
+      if (answers.selectedPlan === "credit") {
+        // Pack Premium : déduire 1 crédit
+        const res = await fetch("/api/business-credits", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ destination, dates, criteria }),
+        });
+        const data = await res.json() as { success?: boolean; error?: string; message?: string; redirectUrl?: string };
+        if (!res.ok || !data.success) {
+          setSubmitError(data.message ?? "Erreur lors de l'utilisation du crédit.");
+          return;
+        }
+        setBusinessCredits(data.redirectUrl ? (businessCredits ?? 1) - 1 : businessCredits);
+        router.push(data.redirectUrl ?? "/account");
       } else {
-        existingGuide?.id ? updateCartItem(existingGuide.id, cartInput) : addCartItem(cartInput);
+        // Guide Mission : sauvegarder la commande puis rediriger vers le lien Stripe
+        const res = await fetch("/api/save-pending-order", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ planId: "7j", destination, dates, criteria }),
+        });
+        const data = await res.json() as { orderId?: string; error?: string };
+        if (!res.ok || !data.orderId) {
+          setSubmitError("Erreur lors de la préparation du paiement. Réessayez.");
+          return;
+        }
+        const guideMissionUrl = `https://buy.stripe.com/14A3cvagd1sE37de12?client_reference_id=${data.orderId}${answers.user_email ? `&prefilled_email=${encodeURIComponent(answers.user_email)}` : ""}`;
+        window.location.href = guideMissionUrl;
       }
-      router.push("/cart");
     } catch (err) {
       setSubmitError("Une erreur est survenue. Veuillez réessayer.");
       console.error(err);
@@ -621,32 +626,35 @@ function BusinessQuestionnaireContent() {
                     <p className="text-sm font-semibold mb-1" style={{ color: B.text }}>Guide 7 jours</p>
                     <p className="text-xs" style={{ color: B.muted }}>Jusqu'à 7 jours · paiement unique</p>
                   </button>
-                  {/* Abonnement actif */}
+                  {/* Pack Premium — crédit */}
                   <div>
                     <button type="button"
-                      onClick={() => hasSub && setAnswers(p => ({ ...p, selectedPlan: "1mois", arrival_date: "", departure_date: "" }))}
-                      aria-disabled={!hasSub}
+                      onClick={() => (businessCredits ?? 0) > 0 && setAnswers(p => ({ ...p, selectedPlan: "credit", arrival_date: "", departure_date: "" }))}
+                      aria-disabled={(businessCredits ?? 0) === 0}
                       className="rounded-xl p-5 text-left transition-all w-full"
                       style={{
-                        border: `2px solid ${answers.selectedPlan === "1mois" ? B.blue : B.border}`,
-                        background: answers.selectedPlan === "1mois" ? B.blueFaint : B.cardDeep,
-                        opacity: hasSub ? 1 : 0.5,
-                        cursor: hasSub ? "pointer" : "not-allowed",
+                        border: `2px solid ${answers.selectedPlan === "credit" ? B.blue : B.border}`,
+                        background: answers.selectedPlan === "credit" ? B.blueFaint : B.cardDeep,
+                        opacity: (businessCredits ?? 0) > 0 ? 1 : 0.5,
+                        cursor: (businessCredits ?? 0) > 0 ? "pointer" : "not-allowed",
                       }}>
                       <div className="flex items-center justify-between mb-2">
-                        <span className="block text-[10px] font-bold uppercase tracking-wider" style={{ color: B.blue }}>Abonnement actif</span>
-                        {!hasSub && <span className="text-[9px] font-bold px-2 py-0.5 rounded-full" style={{ color: B.blue, background: B.blueFaint, border: `1px solid ${B.blueBorder}` }}>🔒 Abonnés</span>}
+                        <span className="block text-[10px] font-bold uppercase tracking-wider" style={{ color: B.blue }}>Pack Premium</span>
+                        {(businessCredits ?? 0) === 0
+                          ? <span className="text-[9px] font-bold px-2 py-0.5 rounded-full" style={{ color: B.blue, background: B.blueFaint, border: `1px solid ${B.blueBorder}` }}>🔒 Pack requis</span>
+                          : <span className="text-[9px] font-bold px-2 py-0.5 rounded-full" style={{ color: "#4ade80", background: "rgba(74,222,128,0.1)", border: "1px solid rgba(74,222,128,0.3)" }}>{businessCredits} crédit{(businessCredits ?? 0) > 1 ? "s" : ""}</span>
+                        }
                       </div>
                       <div className="flex items-baseline gap-1 mb-1">
                         <span className="text-4xl font-black" style={{ color: B.text }}>Gratuit</span>
                       </div>
-                      <p className="text-sm font-semibold mb-1" style={{ color: B.text }}>Inclus dans mon abonnement</p>
-                      <p className="text-xs" style={{ color: B.muted }}>10 guides de 3j inclus / mois · idéal déplacements fréquents</p>
+                      <p className="text-sm font-semibold mb-1" style={{ color: B.text }}>Guide 7j inclus dans le Pack</p>
+                      <p className="text-xs" style={{ color: B.muted }}>1 crédit débité · 10 guides inclus dans le Pack Premium</p>
                     </button>
-                    {!hasSub && (
+                    {(businessCredits ?? 0) === 0 && (
                       <p className="mt-2 text-xs text-center" style={{ color: B.muted }}>
-                        Pas encore abonné ?{" "}
-                        <a href="/business#pricing" className="font-semibold hover:underline" style={{ color: B.blue }}>S'abonner à 20€/mois →</a>
+                        Pas de crédits ?{" "}
+                        <a href="https://buy.stripe.com/7sY8wP1JH8V6cHN8GI0Ba06" target="_blank" rel="noopener noreferrer" className="font-semibold hover:underline" style={{ color: B.blue }}>Acheter le Pack Premium →</a>
                       </p>
                     )}
                   </div>
@@ -891,15 +899,15 @@ function BusinessQuestionnaireContent() {
             </button>
           )}
           {step === 3 && (
-            <button type="button" onClick={handleAddToCart} disabled={submitting}
+            <button type="button" onClick={handleSubmit} disabled={submitting}
               className="flex-[2] font-bold py-3 rounded-xl text-sm transition-all disabled:opacity-60"
               style={{ background: B.blue, color: "#fff" }}>
               {submitting ? (
                 <span className="flex items-center justify-center gap-2">
                   <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  Enregistrement...
+                  {answers.selectedPlan === "credit" ? "Utilisation du crédit..." : "Redirection vers le paiement..."}
                 </span>
-              ) : "Ajouter au panier →"}
+              ) : answers.selectedPlan === "credit" ? "Utiliser un crédit →" : "Payer 6€ →"}
             </button>
           )}
         </div>

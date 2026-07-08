@@ -73,6 +73,22 @@ export async function POST(req: NextRequest) {
     await ensureAdminSchema();
     const pool = getPool();
 
+    // Pack Premium: add 10 business credits to user
+    if (metadataString(metadata, "product_type") === "pack_premium" && normalizedEmail) {
+      await pool.query("ALTER TABLE users ADD COLUMN IF NOT EXISTS business_credits INT NOT NULL DEFAULT 0").catch(() => undefined);
+      await pool.query(
+        "UPDATE users SET business_credits = business_credits + 10 WHERE email = $1",
+        [normalizedEmail]
+      ).catch(() => undefined);
+      await pool.query(
+        `INSERT INTO payment_sessions (session_id, email, plan, amount_cents, currency)
+         VALUES ($1, $2, 'pack_premium', $3, $4) ON CONFLICT (session_id) DO NOTHING`,
+        [sessionId, normalizedEmail, amountCents, currency]
+      ).catch(() => undefined);
+      console.log(`[webhook] pack_premium: +10 credits for ${normalizedEmail}`);
+      return NextResponse.json({ received: true });
+    }
+
     await pool.query(
       `INSERT INTO payment_sessions (session_id, email, plan, amount_cents, currency)
        VALUES ($1, $2, $3, $4, $5)
