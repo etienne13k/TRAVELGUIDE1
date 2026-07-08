@@ -73,7 +73,7 @@ Le guide est généré dans la langue choisie par le Client lors du questionnair
 | Offre | Durée | Prix TTC |
 |---|---|---|
 | Guide 7 jours (à la carte) | jusqu'à 7 jours | 6,00 € |
-| Abonnement mensuel | 1 mois · 10 guides de 3j inclus | 20,00 € |
+| Pack Premium | 1 mois · 10 guides de 3j inclus | 20,00 € |
 
 **TVA :** TVA non applicable — Article 293 B du CGI (micro-entreprise non soumise à la TVA).
 

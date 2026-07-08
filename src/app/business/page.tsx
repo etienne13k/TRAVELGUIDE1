@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { addCartItem, CART_UPDATED_EVENT, getCartCount } from "@/lib/cart";
+import { CART_UPDATED_EVENT, getCartCount } from "@/lib/cart";
 import RevealObserver from "@/components/RevealObserver";
 
 type Lang = "fr" | "en";
@@ -39,7 +39,7 @@ const translations = {
     hero_title: "Travel Business",
     hero_sub: "Déplacements professionnels optimisés par IA. Hôtels d'affaires, restaurants clients, agenda — tout géré en un guide PDF.",
     hero_cta: "Configurer ma mission",
-    hero_sub_cta: "Sans abonnement · Livraison sous 24h · 100% personnalisé",
+    hero_sub_cta: "Pack Premium disponible · Livraison sous 24h · 100% personnalisé",
     how_title: "Comment ça marche",
     how_sub: "Simple, rapide, et entièrement adapté à votre mission.",
     how_steps: [
@@ -137,7 +137,7 @@ const translations = {
     hero_title: "Travel Business",
     hero_sub: "AI-optimized business travel. Business hotels, client restaurants, agenda — all in one PDF guide.",
     hero_cta: "Configure my mission",
-    hero_sub_cta: "No subscription · Delivered in 24h · 100% personalized",
+    hero_sub_cta: "Pack Premium available · Delivered in 24h · 100% personalized",
     how_title: "How it works",
     how_sub: "Simple, fast, and fully adapted to your mission.",
     how_steps: [
@@ -254,17 +254,7 @@ export default function BusinessPage() {
   }, []);
 
   function handleSubscribe() {
-    localStorage.setItem("tgai_mode", "business");
-    localStorage.setItem("tgai_has_subscription", "true");
-    addCartItem({
-      planId: "1mois",
-      planLabel: "Abonnement Travel Business — 1 mois",
-      price: 2000,
-      destination: "—",
-      dates: "1 mois",
-      criteria: { mode: "business" },
-    });
-    window.location.href = "/cart";
+    window.location.href = "https://buy.stripe.com/7sY8wP1JH8V6cHN8GI0Ba06";
   }
 
   return (
@@ -844,12 +834,12 @@ export default function BusinessPage() {
             </h2>
             <p className="max-w-xl mx-auto text-sm leading-relaxed" style={{ color: B.muted }}>
               {lang === "fr"
-                ? "Guide 7 jours à 6€ à la carte, ou abonnement 20€/mois incluant 10 guides de 3 jours."
-                : "7-day guide at €6 per trip, or €20/month subscription including 10 x 3-day guides."}
+                ? "Guide 7 jours à 6€ à la carte, ou Pack Premium à 20€/mois incluant 10 guides de 3 jours."
+                : "7-day guide at €6 per trip, or Pack Premium at €20/month including 10 x 3-day guides."}
             </p>
           </div>
 
-          {/* ABONNEMENT — featured */}
+          {/* PACK PREMIUM — featured */}
           <div className="relative rounded-2xl p-8 sm:p-10 mb-6 mt-6" style={{ background: `linear-gradient(135deg, ${B.dark2}, ${B.dark1})`, border: `1px solid ${B.accentBorder}` }}>
             <div className="absolute top-0 right-0 w-64 h-64 rounded-full -translate-y-1/2 translate-x-1/2 pointer-events-none overflow-hidden" style={{ background: "rgba(59,130,246,0.05)" }} />
             <div className="absolute -top-4 left-8 text-white text-[11px] font-bold px-4 py-1 rounded-full" style={{ background: B.accent }}>
@@ -858,15 +848,15 @@ export default function BusinessPage() {
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 relative">
               <div className="flex-1">
                 <p className="text-[10px] font-mono tracking-widest uppercase mb-2" style={{ color: "rgba(59,130,246,0.6)" }}>
-                  {lang === "fr" ? "Abonnement mensuel" : "Monthly subscription"}
+                  {lang === "fr" ? "Pack Premium mensuel" : "Monthly Premium Pack"}
                 </p>
                 <h3 className="text-2xl sm:text-3xl font-bold mb-3" style={{ color: B.text, fontFamily: "var(--font-playfair), Georgia, serif" }}>
-                  {lang === "fr" ? "Abonnement Travel Business" : "Travel Business Subscription"}
+                  {lang === "fr" ? "Pack Premium Travel Business" : "Travel Business Premium Pack"}
                 </h3>
                 <ul className="space-y-1.5 text-sm" style={{ color: "rgba(255,255,255,0.65)" }}>
                   {(lang === "fr"
-                    ? ["10 guides de 3 jours inclus par mois","Pour ceux qui bougent énormément — chaque semaine","Gratuit à l'unité dès l'abonnement actif","Guides disponibles immédiatement après l'achat"]
-                    : ["10 x 3-day guides included per month","For those who travel constantly — every week","Free per guide once subscription is active","Guides available immediately after purchase"]
+                    ? ["10 guides de 3 jours inclus par mois","Pour ceux qui bougent énormément — chaque semaine","Gratuit à l'unité dès le Pack Premium actif","Guides disponibles immédiatement après l'achat"]
+                    : ["10 x 3-day guides included per month","For those who travel constantly — every week","Free per guide once Pack Premium is active","Guides available immediately after purchase"]
                   ).map(f => (
                     <li key={f} className="flex items-center gap-2">
                       <span className="font-bold text-xs" style={{ color: B.accent }}>✓</span>{f}
@@ -885,7 +875,7 @@ export default function BusinessPage() {
                 <button type="button" onClick={handleSubscribe}
                   className="font-bold px-8 py-3 rounded-xl text-sm whitespace-nowrap text-white transition-all hover:opacity-90 hover:scale-105"
                   style={{ background: B.accent }}>
-                  {lang === "fr" ? "S'abonner →" : "Subscribe →"}
+                  {lang === "fr" ? "Acheter le Pack Premium →" : "Get the Premium Pack →"}
                 </button>
               </div>
             </div>
@@ -937,8 +927,8 @@ export default function BusinessPage() {
 
           <p className="text-center text-xs mt-6" style={{ color: B.faint }}>
             {lang === "fr"
-              ? "Abonné ? Créez des guides gratuits directement depuis le questionnaire."
-              : "Already subscribed? Create free guides directly from the questionnaire."}
+              ? "Pack Premium actif ? Créez des guides gratuits directement depuis le questionnaire."
+              : "Pack Premium active? Create free guides directly from the questionnaire."}
           </p>
         </div>
       </section>

@@ -249,7 +249,7 @@ function CartContent() {
                             </svg>
                           </div>
                           <div>
-                            <p className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: T.accent }}>Abonnement</p>
+                            <p className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: T.accent }}>Pack Premium</p>
                             <h2 className="text-lg font-bold" style={{ color: T.text, fontFamily: "var(--font-playfair), Georgia, serif" }}>
                               Travel Business · 1 mois
                             </h2>
@@ -367,7 +367,7 @@ function CartContent() {
                   <div key={item.id} className="flex justify-between gap-4 text-sm" style={{ color: T.muted }}>
                     <span>
                       {item.planId === "1mois" && item.criteria?.mode === "business"
-                        ? "Abonnement Travel Business · 1 mois"
+                        ? "Pack Premium Travel Business"
                         : `${CART_PLANS[item.planId].duration} · ${item.destination}`}
                     </span>
                     <span className="font-semibold" style={{ color: T.modifyBtn }}>{formatEuro(item.price)}</span>

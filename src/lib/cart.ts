@@ -101,7 +101,7 @@ export const STRIPE_PAYMENT_LINKS: Record<PlanKey, string> = {
   "3j":    "https://buy.stripe.com/6oUbJ15ZXb3e8rx9KM0Ba01",
   "7j":    "https://buy.stripe.com/00wdR9fAxc7iePV8GI0Ba02",
   "14j":   "https://buy.stripe.com/7sY3cv2NLefq8rxe120Ba03",
-  "1mois": "https://buy.stripe.com/5kQ28r1JHfju239g9a0Ba04",
+  "1mois": "https://buy.stripe.com/7sY8wP1JH8V6cHN8GI0Ba06",
 };
 
 export function hasActiveSubscription(): boolean {
