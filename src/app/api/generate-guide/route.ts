@@ -6,20 +6,14 @@ import { ensureAdminSchema } from "@/lib/admin-db";
 import { buildSystemPrompt, buildUserMessage, getMaxTokens, type GuideInput } from "@/lib/guide-prompt";
 import { generateGuidePDF } from "@/lib/pdf-generator";
 import { getServerSession } from "@/lib/auth";
+import { getConfig } from "@/lib/app-config";
 import { Pool } from "pg";
 import crypto from "crypto";
 
 export const maxDuration = 60;
 
 async function getApiKey(): Promise<string | null> {
-  if (process.env.ANTHROPIC_API_KEY) return process.env.ANTHROPIC_API_KEY;
-  if (!process.env.DATABASE_URL) return null;
-  try {
-    const pool = new Pool({ connectionString: process.env.DATABASE_URL, ssl: { rejectUnauthorized: false } });
-    const res = await pool.query("SELECT value FROM app_config WHERE key = 'ANTHROPIC_API_KEY' LIMIT 1");
-    await pool.end();
-    return res.rows[0]?.value ?? null;
-  } catch { return null; }
+  return getConfig("ANTHROPIC_API_KEY");
 }
 
 async function markOrderError(orderId: string | null, message: string) {
@@ -275,15 +269,15 @@ Si tout semble normal, réponds : {"issues": [], "should_pause": false}`;
 
   // 4. Send email with PDF attachment
   let emailSent = false;
-  if (process.env.RESEND_API_KEY) {
+  const resendKey = await getConfig("RESEND_API_KEY");
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "https://travelguide1.vercel.app";
+  if (resendKey) {
     try {
-      const resend = new Resend(process.env.RESEND_API_KEY);
-      const baseUrl =
-        process.env.NEXT_PUBLIC_BASE_URL ?? "https://travel-ia.nanocorp.app";
+      const resend = new Resend(resendKey);
       const downloadUrl = `${baseUrl}/api/download-guide/${guideId}`;
 
       await resend.emails.send({
-        from: "Travel IA <travel-ia@nanocorp.app>",
+        from: "Travel IA <noreply@travel-ia.fr>",
         to: input.email,
         subject: `Votre guide de voyage ${input.destination} est prêt ! ✈️`,
         html: buildEmailHtml(input, downloadUrl),
@@ -301,12 +295,11 @@ Si tout semble normal, réponds : {"issues": [], "should_pause": false}`;
     }
   }
 
-  // Update order delivery state
+  // Update order delivery state — PDF ready even if email failed
   if (orderId) {
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "https://travel-ia.nanocorp.app";
     const guideDownloadUrl = `${baseUrl}/api/download-guide/${guideId}`;
-    const deliveryStatus = emailSent ? "delivered" : "error";
-    const deliveryError = emailSent ? null : "Email de livraison non envoyé";
+    const deliveryStatus = "delivered";
+    const deliveryError = emailSent ? null : "PDF généré, email non envoyé (clé Resend manquante)";
     try {
       await supabase
         .from("orders")

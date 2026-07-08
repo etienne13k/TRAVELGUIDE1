@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
       [userId, tokenHash, expiresAt]
     );
 
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "https://travel-ia.nanocorp.app";
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "https://travelguide1.vercel.app";
     const resetUrl = `${baseUrl}/reset-password?token=${rawToken}`;
 
     if (process.env.RESEND_API_KEY) {

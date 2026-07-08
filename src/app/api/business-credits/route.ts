@@ -67,7 +67,7 @@ export async function POST(req: NextRequest) {
       [session.userId, freeSessionId, freeSessionId, body.destination ?? null, JSON.stringify(questionnaireData)]
     );
 
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "https://travel-ia.nanocorp.app";
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "https://travelguide1.vercel.app";
     return NextResponse.json({
       success: true,
       remaining: rows[0].business_credits,

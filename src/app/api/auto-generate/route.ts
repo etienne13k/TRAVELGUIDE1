@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
   }
 
   // Trigger generation via internal call
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "https://travel-ia.nanocorp.app";
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "https://travelguide1.vercel.app";
   const internalSecret = process.env.INTERNAL_SECRET;
   if (!internalSecret) {
     return NextResponse.json({ orderId: order.id, status: "no_internal_secret", error: "INTERNAL_SECRET non configuré" }, { status: 503 });

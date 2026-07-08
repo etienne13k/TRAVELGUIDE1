@@ -1,21 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
-import { Pool } from "pg";
 import { getServerSession } from "@/lib/auth";
+import { getConfig } from "@/lib/app-config";
 
 export const maxDuration = 60;
 
 async function getApiKey(): Promise<string | null> {
-  if (process.env.ANTHROPIC_API_KEY) return process.env.ANTHROPIC_API_KEY;
-  if (!process.env.DATABASE_URL) return null;
-  try {
-    const pool = new Pool({ connectionString: process.env.DATABASE_URL, ssl: { rejectUnauthorized: false } });
-    const res = await pool.query("SELECT value FROM app_config WHERE key = 'ANTHROPIC_API_KEY' LIMIT 1");
-    await pool.end();
-    return res.rows[0]?.value ?? null;
-  } catch {
-    return null;
-  }
+  return getConfig("ANTHROPIC_API_KEY");
 }
 
 function isoToFlag(iso: string): string {

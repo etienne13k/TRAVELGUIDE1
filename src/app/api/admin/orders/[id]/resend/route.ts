@@ -49,7 +49,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   if (!guide) return NextResponse.json({ error: "PDF introuvable" }, { status: 404 });
 
   const resend = new Resend(process.env.RESEND_API_KEY);
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "https://travel-ia.nanocorp.app";
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "https://travelguide1.vercel.app";
   const downloadUrl = `${baseUrl}/api/download-guide/${guideId}`;
   const destination = order.destination || guide.destination;
 
