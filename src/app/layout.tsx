@@ -47,6 +47,8 @@ export default function RootLayout({
       <head>
         <link rel="icon" href="/logo.png" type="image/png" />
         <link rel="apple-touch-icon" href="/logo.png" />
+        {/* Blocking script: sets data-mode BEFORE first paint — eliminates theme flash */}
+        <script dangerouslySetInnerHTML={{ __html: `try{var m=localStorage.getItem('tgai_mode');if(m)document.documentElement.dataset.mode=m;}catch(e){}` }} />
         <script
           src="https://phospho-nanocorp-prod--nanocorp-api-fastapi-app.modal.run/analytics/v1.js?c=1f94361e-26a6-4bdd-9160-643b7eb82c53"
           defer
