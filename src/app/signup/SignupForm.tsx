@@ -52,6 +52,7 @@ export default function SignupForm({ turnstileSiteKey }: SignupFormProps) {
   const [otpLoading, setOtpLoading] = useState(false);
   const [otpError, setOtpError] = useState("");
   const [otpSuccess, setOtpSuccess] = useState("");
+  const [demoCode, setDemoCode] = useState<string | null>(null);
   const [resendCountdown, setResendCountdown] = useState(0);
   const [isSendingCode, setIsSendingCode] = useState(false);
   const otpRefs = useRef<Array<HTMLInputElement | null>>([]);
@@ -70,6 +71,7 @@ export default function SignupForm({ turnstileSiteKey }: SignupFormProps) {
   async function sendOtpCode() {
     setIsSendingCode(true);
     setOtpError("");
+    setDemoCode(null);
     try {
       const res = await fetch("/api/phone/send-otp", {
         method: "POST",
@@ -80,7 +82,11 @@ export default function SignupForm({ turnstileSiteKey }: SignupFormProps) {
       if (!res.ok) {
         setOtpError(data.message || "Impossible d'envoyer le code.");
       } else {
-        setOtpSuccess(`Code SMS envoyé au ${phoneNumber}.`);
+        const returnedDemoCode = typeof data.demoCode === "string" ? data.demoCode : null;
+        const isDemoMode = data.demoMode === true && returnedDemoCode !== null;
+
+        setDemoCode(isDemoMode ? returnedDemoCode : null);
+        setOtpSuccess(data.message || (isDemoMode ? `Mode démo - Code : ${returnedDemoCode}` : `Code SMS envoyé au ${phoneNumber}.`));
         startCountdown();
       }
     } catch {
@@ -207,10 +213,24 @@ export default function SignupForm({ turnstileSiteKey }: SignupFormProps) {
               Vérification du téléphone
             </h1>
             <p className="text-sm mb-6" style={{ color: "var(--cm)" }}>
-              Un code SMS a été envoyé au <span style={{ color: "var(--ct)", fontWeight: 600 }}>{phoneNumber}</span>. Entrez les 6 chiffres ci-dessous.
+              {demoCode ? (
+                <>Mode démo actif pour <span style={{ color: "var(--ct)", fontWeight: 600 }}>{phoneNumber}</span>. Utilisez le code affiché ci-dessous.</>
+              ) : (
+                <>Un code SMS a été envoyé au <span style={{ color: "var(--ct)", fontWeight: 600 }}>{phoneNumber}</span>. Entrez les 6 chiffres ci-dessous.</>
+              )}
             </p>
 
             <div className="space-y-6">
+              {demoCode && (
+                <div
+                  className="rounded-lg px-4 py-3 text-sm"
+                  style={{ background: "rgba(251,191,36,0.12)", color: "#fbbf24", border: "1px solid rgba(251,191,36,0.35)" }}
+                >
+                  <p className="font-bold">Mode démo - Code : <span className="font-mono text-base">{demoCode}</span></p>
+                  <p className="mt-1 text-xs">Aucun SMS réel n&apos;a été envoyé, car Twilio Verify n&apos;est pas configuré.</p>
+                </div>
+              )}
+
               {/* OTP boxes */}
               <div className="flex justify-between gap-2" aria-label="Code SMS à 6 chiffres">
                 {otpDigits.map((digit, index) => (
@@ -275,6 +295,7 @@ export default function SignupForm({ turnstileSiteKey }: SignupFormProps) {
                     setOtpDigits(Array(6).fill(""));
                     setOtpError("");
                     setOtpSuccess("");
+                    setDemoCode(null);
                     await sendOtpCode();
                   }}
                   disabled={isSendingCode || resendCountdown > 0}

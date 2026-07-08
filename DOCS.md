@@ -1334,3 +1334,34 @@ Mot de passe : `SpireggAdmin2025!` (stocké bcrypt, jamais en clair)
 3. `20260610103000_explore3_phone_verified_usage.sql` — phone_verified + promo_usage
 4. `20260610121500_phone_sms_verification.sql` — phone_verifications table
 5. `20260611000000_profile_name_fields.sql` — first_name, last_name
+
+---
+
+## Mise à jour 2026-07-08 — Vérification SMS Twilio transparente
+
+### Exploration persistée
+- `nanocorp site env list` ne montre actuellement que `DATABASE_URL` sur Vercel/NanoCorp : `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN` et `TWILIO_VERIFY_SERVICE_SID` ne sont pas configurées côté déploiement.
+- Aucun `.env.local` n'est présent dans le repo ; `.env.example` contenait seulement les trois placeholders Twilio sans `SMS_PROVIDER` ni `SMS_MOCK_CODE`.
+- `src/lib/sms-provider.ts` utilisait déjà Twilio Verify par HTTP `fetch` quand les trois variables Twilio étaient présentes, mais retombait silencieusement en mock (`000000`) quand elles manquaient.
+- Les routes actives pour l'interface compte et signup sont `POST /api/phone/send-otp` et `POST /api/phone/verify-otp`; les anciennes routes `src/app/api/auth/send-phone-code` et `src/app/api/auth/verify-phone-code` ne sont plus référencées par l'UI actuelle.
+- La consigne AGENTS demandait de lire `node_modules/next/dist/docs/`, mais le package `next` installé dans ce sandbox ne contient pas ce dossier ; la convention App Router a été vérifiée sur les routes existantes du projet.
+
+### Changements livrés
+- `src/lib/sms-provider.ts` ignore maintenant les placeholders d'environnement (`your_*`, `*_here`), logge explicitement les erreurs Twilio côté serveur et logge le fallback mock avec la raison (`twilio_missing_credentials` ou `sms_provider_mock`).
+- `POST /api/phone/send-otp` renvoie maintenant `provider`, `demoMode`, `demoCode` et un `message` clair ; en mode mock, la réponse dit `Mode démo - Code : 000000` au lieu de faire croire à un SMS réel.
+- `src/components/PhoneVerification.tsx` et `src/app/signup/SignupForm.tsx` affichent une bannière visible `Mode démo - Code : <code>` sur l'écran OTP quand Twilio n'est pas configuré.
+- `src/lib/phone-verification.ts` expose un message public distinct `sms_provider_error` pour les erreurs Twilio réelles, au lieu de retomber sur le message de configuration absente.
+- `.env.example` et `docs/phone-sms-verification.md` documentent `SMS_PROVIDER=twilio`, les trois variables Twilio requises, `SMS_MOCK_CODE`, et la commande `nanocorp site env set --vars '[...]'` pour configurer Vercel/NanoCorp.
+- `src/app/signup/page.tsx` et `src/app/login/page.tsx` enveloppent maintenant les composants utilisant `useSearchParams()` dans `Suspense`, ce qui débloque `next build` avec Next 15.5.20.
+- `tsconfig.json` a été normalisé par `next build` avec `jsx: "preserve"`, changement obligatoire annoncé par Next pendant la compilation.
+
+### Configuration Twilio à faire
+```bash
+nanocorp site env set --vars '[{"key":"SMS_PROVIDER","value":"twilio"},{"key":"TWILIO_ACCOUNT_SID","value":"AC..."},{"key":"TWILIO_AUTH_TOKEN","value":"..."},{"key":"TWILIO_VERIFY_SERVICE_SID","value":"VA..."}]'
+```
+Après configuration, pousser/redéployer puis vérifier `/api/health` : les trois variables Twilio doivent être marquées `✅ défini`.
+
+### Validation
+- `npx eslint src/app/login/page.tsx src/app/signup/page.tsx src/app/signup/SignupForm.tsx src/components/PhoneVerification.tsx src/lib/sms-provider.ts src/app/api/phone/send-otp/route.ts src/app/api/phone/verify-otp/route.ts src/lib/phone-verification.ts` passe.
+- `npm run build` passe.
+- `npm run lint` global reste bloqué par des erreurs préexistantes hors périmètre (`scripts/seed-admin.js`, `src/app/business/page.tsx`, `src/app/business/questionnaire/page.tsx`, `src/components/DestinationMap.tsx`, `src/lib/mode-theme.ts`, `src/lib/useLang.ts`).

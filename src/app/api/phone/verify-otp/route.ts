@@ -84,6 +84,11 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     const smsError = smsErrorResponse(error);
     if (smsError) {
+      console.error("[phone/verify-otp] SMS provider error", {
+        code: smsError.code,
+        status: smsError.status,
+        message: smsError.message,
+      });
       return NextResponse.json(
         {
           success: false,

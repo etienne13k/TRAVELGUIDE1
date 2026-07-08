@@ -66,10 +66,23 @@ export async function POST(req: NextRequest) {
       }),
     ]);
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({
+      success: true,
+      provider: verification.provider,
+      demoMode: verification.demoMode,
+      demoCode: verification.demoMode ? verification.demoCode : undefined,
+      message: verification.demoMode
+        ? `Mode démo - Code : ${verification.demoCode}`
+        : `Code envoyé par SMS au ${phone}.`,
+    });
   } catch (error) {
     const smsError = smsErrorResponse(error);
     if (smsError) {
+      console.error("[phone/send-otp] SMS provider error", {
+        code: smsError.code,
+        status: smsError.status,
+        message: smsError.message,
+      });
       return NextResponse.json(
         {
           success: false,

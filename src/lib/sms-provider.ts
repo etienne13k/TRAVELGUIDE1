@@ -1,11 +1,14 @@
 type SendOtpResult = {
   provider: string;
+  demoMode: boolean;
+  demoCode: string | null;
   verificationSid: string | null;
   status: string;
 };
 
 type CheckOtpResult = {
   provider: string;
+  demoMode: boolean;
   verified: boolean;
   status: string;
 };
@@ -25,16 +28,23 @@ function selectedProvider(): string {
   return (process.env.SMS_PROVIDER || "twilio").toLowerCase().trim();
 }
 
+function envValue(name: string): string | null {
+  const value = process.env[name]?.trim();
+  if (!value) return null;
+  if (value.includes("your_") || value.includes("_here")) return null;
+  return value;
+}
+
 function twilioAuthHeader(): string | null {
-  const accountSid = process.env.TWILIO_ACCOUNT_SID;
-  const authToken = process.env.TWILIO_AUTH_TOKEN;
+  const accountSid = envValue("TWILIO_ACCOUNT_SID");
+  const authToken = envValue("TWILIO_AUTH_TOKEN");
   if (!accountSid || !authToken) return null;
 
   return `Basic ${Buffer.from(`${accountSid}:${authToken}`).toString("base64")}`;
 }
 
 function twilioServiceSid(): string | null {
-  return process.env.TWILIO_VERIFY_SERVICE_SID || null;
+  return envValue("TWILIO_VERIFY_SERVICE_SID");
 }
 
 async function twilioRequest<T>(path: string, body: URLSearchParams): Promise<T> {
@@ -53,8 +63,15 @@ async function twilioRequest<T>(path: string, body: URLSearchParams): Promise<T>
     body,
   });
 
-  const data = (await response.json().catch(() => ({}))) as T & { message?: string };
+  const data = (await response.json().catch(() => ({}))) as T & { code?: number; message?: string; more_info?: string };
   if (!response.ok) {
+    console.error("[sms-provider] Twilio Verify request failed", {
+      path,
+      status: response.status,
+      code: data.code,
+      message: data.message,
+      moreInfo: data.more_info,
+    });
     throw new SmsProviderError("sms_provider_error", data.message || "SMS provider rejected the request.", response.status);
   }
 
@@ -69,6 +86,8 @@ async function sendTwilioOtp(phone: string): Promise<SendOtpResult> {
 
   return {
     provider: "twilio",
+    demoMode: false,
+    demoCode: null,
     verificationSid: data.sid ?? null,
     status: data.status ?? "pending",
   };
@@ -82,6 +101,7 @@ async function checkTwilioOtp(phone: string, code: string): Promise<CheckOtpResu
 
   return {
     provider: "twilio",
+    demoMode: false,
     verified: data.status === "approved",
     status: data.status ?? "pending",
   };
@@ -100,24 +120,36 @@ function mockCode(): string {
 }
 
 function isTwilioConfigured(): boolean {
-  return Boolean(process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN && process.env.TWILIO_VERIFY_SERVICE_SID);
+  return Boolean(twilioAuthHeader() && twilioServiceSid());
 }
 
-async function sendMockOtp(): Promise<SendOtpResult> {
-  return { provider: "mock", verificationSid: "mock_verification", status: "pending" };
+function logMockFallback(reason: string): void {
+  console.warn("[sms-provider] SMS demo mode active; no real SMS will be sent", {
+    reason,
+    expectedEnv: ["TWILIO_ACCOUNT_SID", "TWILIO_AUTH_TOKEN", "TWILIO_VERIFY_SERVICE_SID"],
+  });
 }
 
-async function checkMockOtp(code: string): Promise<CheckOtpResult> {
-  return { provider: "mock", verified: code === mockCode(), status: code === mockCode() ? "approved" : "pending" };
+async function sendMockOtp(reason: string): Promise<SendOtpResult> {
+  const code = mockCode();
+  logMockFallback(reason);
+  console.info("[sms-provider] Mock OTP generated", { code });
+  return { provider: "mock", demoMode: true, demoCode: code, verificationSid: "mock_verification", status: "pending" };
+}
+
+async function checkMockOtp(code: string, reason: string): Promise<CheckOtpResult> {
+  const expectedCode = mockCode();
+  logMockFallback(reason);
+  return { provider: "mock", demoMode: true, verified: code === expectedCode, status: code === expectedCode ? "approved" : "pending" };
 }
 
 export async function sendPhoneOtp(phone: string): Promise<SendOtpResult> {
   const provider = selectedProvider();
   if (provider === "twilio") {
-    if (!isTwilioConfigured()) return sendMockOtp();
+    if (!isTwilioConfigured()) return sendMockOtp("twilio_missing_credentials");
     return sendTwilioOtp(phone);
   }
-  if (provider === "mock") return sendMockOtp();
+  if (provider === "mock") return sendMockOtp("sms_provider_mock");
   if (provider === "vonage" || provider === "sinch") providerUnavailable(provider);
 
   throw new SmsProviderError("unsupported_provider", `Unsupported SMS_PROVIDER: ${provider}`, 400);
@@ -126,10 +158,10 @@ export async function sendPhoneOtp(phone: string): Promise<SendOtpResult> {
 export async function checkPhoneOtp(phone: string, code: string): Promise<CheckOtpResult> {
   const provider = selectedProvider();
   if (provider === "twilio") {
-    if (!isTwilioConfigured()) return checkMockOtp(code);
+    if (!isTwilioConfigured()) return checkMockOtp(code, "twilio_missing_credentials");
     return checkTwilioOtp(phone, code);
   }
-  if (provider === "mock") return checkMockOtp(code);
+  if (provider === "mock") return checkMockOtp(code, "sms_provider_mock");
   if (provider === "vonage" || provider === "sinch") providerUnavailable(provider);
 
   throw new SmsProviderError("unsupported_provider", `Unsupported SMS_PROVIDER: ${provider}`, 400);

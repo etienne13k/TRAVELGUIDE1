@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import Script from "next/script";
 import SignupForm from "./SignupForm";
 
@@ -10,7 +11,9 @@ export default function SignupPage() {
       {turnstileSiteKey && (
         <Script src="https://challenges.cloudflare.com/turnstile/v0/api.js" strategy="afterInteractive" />
       )}
-      <SignupForm turnstileSiteKey={turnstileSiteKey} />
+      <Suspense fallback={<div className="min-h-screen" style={{ background: "var(--cb)" }} />}>
+        <SignupForm turnstileSiteKey={turnstileSiteKey} />
+      </Suspense>
     </>
   );
 }

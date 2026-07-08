@@ -8,6 +8,7 @@
   - Vérifie l'unicité du numéro sur le compte utilisateur/profil courant.
   - Applique une limite de 3 envois par numéro et par heure via `ip_logs` avec `action = 'phone_otp_send'`.
   - Envoie le SMS via le provider défini par `SMS_PROVIDER`.
+  - Répond avec `demoMode: true` et `demoCode` si Twilio n'est pas configuré, afin que le frontend affiche clairement le code mock.
   - Stocke le `verification_sid`, le provider et le statut dans `phone_verifications`.
 
 - `POST /api/phone/verify-otp`
@@ -23,12 +24,15 @@
 
 ```bash
 SMS_PROVIDER=twilio
-TWILIO_ACCOUNT_SID=
-TWILIO_AUTH_TOKEN=
-TWILIO_VERIFY_SERVICE_SID=
+TWILIO_ACCOUNT_SID=ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+TWILIO_AUTH_TOKEN=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+TWILIO_VERIFY_SERVICE_SID=VAxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+SMS_MOCK_CODE=000000
 ```
 
-En local uniquement, `SMS_PROVIDER=mock` et `SMS_MOCK_CODE=123456` permettent de tester l'interface sans envoyer de SMS. Le provider `mock` est désactivé en production.
+`TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN` et `TWILIO_VERIFY_SERVICE_SID` sont obligatoires pour envoyer de vrais SMS. Si `SMS_PROVIDER=twilio` mais qu'une de ces variables est absente (ou laissée à une valeur placeholder), le système passe en mode démo transparent : aucun SMS réel n'est envoyé, l'API renvoie `demoMode: true`, et le frontend affiche `Mode démo - Code : 000000` (ou la valeur de `SMS_MOCK_CODE`).
+
+Pour forcer le mode démo en local, définir `SMS_PROVIDER=mock` et éventuellement `SMS_MOCK_CODE=123456`.
 
 ## Créer le service Twilio Verify
 
@@ -36,8 +40,12 @@ En local uniquement, `SMS_PROVIDER=mock` et `SMS_MOCK_CODE=123456` permettent de
 2. Activer le canal **SMS** sur ce service.
 3. Copier le **Service SID** du service Verify dans `TWILIO_VERIFY_SERVICE_SID`.
 4. Copier l'**Account SID** et l'**Auth Token** Twilio dans `TWILIO_ACCOUNT_SID` et `TWILIO_AUTH_TOKEN`.
-5. Définir `SMS_PROVIDER=twilio` dans Vercel et en local si nécessaire.
-6. Redéployer l'application après configuration des variables.
+5. Définir les variables sur Vercel/NanoCorp :
+   ```bash
+   nanocorp site env set --vars '[{"key":"SMS_PROVIDER","value":"twilio"},{"key":"TWILIO_ACCOUNT_SID","value":"AC..."},{"key":"TWILIO_AUTH_TOKEN","value":"..."},{"key":"TWILIO_VERIFY_SERVICE_SID","value":"VA..."}]'
+   ```
+6. Redéployer l'application après configuration des variables (un push sur `main` suffit).
+7. Vérifier `/api/health` : les trois variables Twilio doivent apparaître comme définies.
 
 ## Migration SQL
 

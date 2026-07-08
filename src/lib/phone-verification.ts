@@ -23,6 +23,7 @@ export const phoneVerificationMessages = {
   phone_taken: "Ce numéro de téléphone est déjà associé à un autre compte.",
   rate_limited: "Trop de codes envoyés. Réessayez dans une heure.",
   sms_not_configured: "Service SMS non configuré. Ajoutez les variables Twilio Verify.",
+  sms_provider_error: "Impossible d'envoyer ou vérifier le SMS. Réessayez ou contactez le support.",
   invalid_code: "Code invalide. Entrez les 6 chiffres reçus par SMS.",
   code_rejected: "Code incorrect ou expiré. Demandez un nouveau code si besoin.",
   server_error: "Erreur serveur, réessayez.",

@@ -59,6 +59,7 @@ export default function PhoneVerification({ initialPhone, initialVerified = fals
   const [localNumber, setLocalNumber] = useState(parsedPhone.localNumber);
   const [step, setStep] = useState<"phone" | "code" | "verified">(initialVerified ? "verified" : "phone");
   const [status, setStatus] = useState<Status>({ type: "idle", message: "" });
+  const [demoCode, setDemoCode] = useState<string | null>(null);
   const [sending, setSending] = useState(false);
   const [verifying, setVerifying] = useState(false);
   const [codeDigits, setCodeDigits] = useState<string[]>(Array(6).fill(""));
@@ -79,6 +80,7 @@ export default function PhoneVerification({ initialPhone, initialVerified = fals
 
   async function sendOtp() {
     setSending(true);
+    setDemoCode(null);
     setStatus({ type: "idle", message: "" });
 
     try {
@@ -94,10 +96,17 @@ export default function PhoneVerification({ initialPhone, initialVerified = fals
         return;
       }
 
+      const returnedDemoCode = typeof data.demoCode === "string" ? data.demoCode : null;
+      const isDemoMode = data.demoMode === true && returnedDemoCode !== null;
+
       setStep("code");
       setCountdown(60);
       setCodeDigits(Array(6).fill(""));
-      setStatus({ type: "success", message: `Code envoyé par SMS au ${fullPhone}.` });
+      setDemoCode(isDemoMode ? returnedDemoCode : null);
+      setStatus({
+        type: "success",
+        message: data.message ?? (isDemoMode ? `Mode démo - Code : ${returnedDemoCode}` : `Code envoyé par SMS au ${fullPhone}.`),
+      });
       window.setTimeout(() => codeRefs.current[0]?.focus(), 50);
     } catch {
       setStatus({ type: "error", message: "Erreur réseau, réessayez." });
@@ -227,6 +236,12 @@ export default function PhoneVerification({ initialPhone, initialVerified = fals
 
       {step === "code" && (
         <div className="space-y-4">
+          {demoCode && (
+            <div className="rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+              <p className="font-bold">Mode démo - Code : <span className="font-mono text-base">{demoCode}</span></p>
+              <p className="mt-1 text-xs">Aucun SMS réel n&apos;a été envoyé, car Twilio Verify n&apos;est pas configuré.</p>
+            </div>
+          )}
           <div className="flex justify-between gap-2" aria-label="Code SMS à 6 chiffres">
             {codeDigits.map((digit, index) => (
               <input
