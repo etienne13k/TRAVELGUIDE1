@@ -35,7 +35,8 @@ export async function POST(req: NextRequest) {
 
   // Allow internal calls with secret header (from auto-generate endpoint)
   const internalSecret = req.headers.get("x-internal-secret");
-  const isInternalCall = internalSecret && internalSecret === process.env.INTERNAL_SECRET;
+  const configuredSecret = await getConfig("INTERNAL_SECRET");
+  const isInternalCall = internalSecret && configuredSecret && internalSecret === configuredSecret;
 
   // Require authenticated session for external calls
   const session = isInternalCall ? null : await getServerSession();

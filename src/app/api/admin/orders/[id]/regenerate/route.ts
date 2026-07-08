@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getAdminSession } from "@/lib/admin-auth";
 import { ensureAdminSchema, getClientIp, logAdminAction } from "@/lib/admin-db";
 import { getPool } from "@/lib/db";
+import { getConfig } from "@/lib/app-config";
 
 export const maxDuration = 60;
 
@@ -10,12 +11,6 @@ type QuestionnaireData = Record<string, unknown>;
 function asString(value: unknown): string {
   if (Array.isArray(value)) return value.join(", ");
   return typeof value === "string" ? value : String(value ?? "");
-}
-
-function asArray(value: unknown): string[] {
-  if (Array.isArray(value)) return value.map(String).filter(Boolean);
-  if (typeof value === "string" && value.trim()) return value.split(",").map((item) => item.trim()).filter(Boolean);
-  return [];
 }
 
 export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -44,49 +39,57 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
 
   const orderEmail = psRows[0]?.email ?? userRows[0]?.email ?? null;
   const answers = (order.questionnaire_data ?? {}) as QuestionnaireData;
-  const email = orderEmail || asString(answers.user_email);
-  const destination = order.destination || asString(answers.destination);
 
-  if (!email || !destination) {
-    await pool.query(
-      `UPDATE orders SET status = 'error', delivery_error = $1 WHERE id = $2`,
-      ["Réponses questionnaire incomplètes pour relancer la génération", id]
-    );
-    return NextResponse.json({ error: "Réponses questionnaire incomplètes" }, { status: 400 });
-  }
+  // Resolve email and destination from all possible sources
+  const email =
+    orderEmail ||
+    asString(answers.user_email || answers.email) ||
+    "noreply@travelguide.app";
+
+  const destination =
+    order.destination ||
+    asString(answers.destination || answers.destination_arrival_city) ||
+    "Destination a definir";
 
   await pool.query(
-    `UPDATE orders SET status = 'questionnaire_completed', delivery_error = null WHERE id = $1`,
+    `UPDATE orders SET status = 'generating', delivery_error = null WHERE id = $1`,
     [id]
   );
 
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? new URL(req.url).origin;
+  const internalSecret = await getConfig("INTERNAL_SECRET");
+
+  if (!internalSecret) {
+    await pool.query(
+      `UPDATE orders SET status = 'error', delivery_error = $1 WHERE id = $2`,
+      ["INTERNAL_SECRET non configure", id]
+    );
+    return NextResponse.json({ error: "INTERNAL_SECRET non configure" }, { status: 503 });
+  }
+
+  // Pass the FULL questionnaire data to generate-guide so all 3 prompts work correctly
   const guideInput = {
+    ...answers,
     orderId: id,
     email,
     destination,
     duration: order.plan,
-    budget: asString(answers.budget) || "Non précisé",
-    style: [
-      ...asArray(answers.interests),
-      ...asArray(answers.vibe),
-      ...asArray(answers.sports),
-    ],
-    hebergement: asString(answers.accommodations) || "Non précisé",
-    regime: asArray(answers.diet),
-    compagnie: asString(answers.traveler_type) || "Non précisé",
-    notes: asString(answers.notes),
+    mode: asString(answers.mode) || undefined,
+    destination_arrival_city: asString(answers.destination_arrival_city) || undefined,
   };
 
   const response = await fetch(`${baseUrl}/api/generate-guide`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      "x-internal-secret": internalSecret,
+    },
     body: JSON.stringify(guideInput),
   });
 
   if (!response.ok) {
     const data = await response.json().catch(() => ({}));
-    const message = (data as { error?: string }).error || "La génération a échoué";
+    const message = (data as { error?: string }).error || "La generation a echoue";
     await pool.query(
       `UPDATE orders SET status = 'error', delivery_error = $1 WHERE id = $2`,
       [message, id]
