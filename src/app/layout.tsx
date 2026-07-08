@@ -54,7 +54,7 @@ export default function RootLayout({
           defer
         />
       </head>
-      <body className="min-h-full flex flex-col"><ModeStyleInjector />{children}</body>
+      <body className="min-h-full flex flex-col overflow-x-hidden"><ModeStyleInjector />{children}</body>
     </html>
   );
 }
