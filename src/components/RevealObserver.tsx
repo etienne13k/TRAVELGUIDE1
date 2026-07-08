@@ -3,6 +3,7 @@ import { useEffect } from "react";
 
 export default function RevealObserver() {
   useEffect(() => {
+    const els = document.querySelectorAll(".reveal, .reveal-scale");
     const obs = new IntersectionObserver(
       (entries) => {
         entries.forEach((e) => {
@@ -12,10 +13,14 @@ export default function RevealObserver() {
           }
         });
       },
-      { threshold: 0.07, rootMargin: "0px 0px -32px 0px" }
+      { threshold: 0, rootMargin: "0px 0px 0px 0px" }
     );
-    document.querySelectorAll(".reveal, .reveal-scale").forEach((el) => obs.observe(el));
-    return () => obs.disconnect();
+    els.forEach((el) => obs.observe(el));
+    // Fallback: reveal everything after 800ms in case observer doesn't fire
+    const t = setTimeout(() => {
+      els.forEach((el) => el.classList.add("in-view"));
+    }, 800);
+    return () => { obs.disconnect(); clearTimeout(t); };
   }, []);
   return null;
 }
