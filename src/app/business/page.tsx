@@ -85,7 +85,6 @@ const translations = {
     social_subtitle: "Des professionnels et équipes font confiance à Travel Business pour leurs déplacements.",
     social_stats: [
       { number: "4.9★", label: "note moyenne" },
-      { number: "97%", label: "de satisfaction" },
       { number: "500+", label: "villes couvertes" },
       { number: "48h", label: "livraison garantie" },
     ],
@@ -181,7 +180,6 @@ const translations = {
     social_subtitle: "Professionals and teams trust Travel Business for their business travel.",
     social_stats: [
       { number: "4.9★", label: "average rating" },
-      { number: "97%", label: "satisfaction rate" },
       { number: "500+", label: "cities covered" },
       { number: "48h", label: "delivery guaranteed" },
     ],
@@ -516,7 +514,7 @@ export default function BusinessPage() {
               <span className="text-xs font-bold uppercase tracking-widest" style={{ color: B.accent }}>{tx.flows_badge}</span>
             </div>
             <h2
-              className="text-2xl sm:text-4xl font-bold mb-3"
+              className="text-2xl sm:text-4xl lg:text-5xl font-bold mb-3"
               style={{ color: B.text, fontFamily: "var(--font-playfair), Georgia, serif" }}
             >
               {tx.flows_title}

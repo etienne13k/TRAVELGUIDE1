@@ -130,7 +130,6 @@ const translations = {
     social_subtitle: "Des milliers de voyageurs font confiance à TravelGuide pour planifier leurs aventures.",
     social_stats: [
       { number: "4.9★", label: "note moyenne" },
-      { number: "98%", label: "de satisfaction" },
       { number: "2000+", label: "destinations" },
       { number: "48h", label: "livraison garantie" },
     ],
@@ -289,7 +288,6 @@ const translations = {
     social_subtitle: "Thousands of travelers trust TravelGuide to plan their adventures.",
     social_stats: [
       { number: "4.9★", label: "average rating" },
-      { number: "98%", label: "satisfaction rate" },
       { number: "2000+", label: "destinations" },
       { number: "48h", label: "delivery guaranteed" },
     ],
@@ -620,7 +618,7 @@ export default function Home() {
                 {lang === "fr" ? "Deux façons de voyager" : "Two ways to travel"}
               </span>
             </div>
-            <h2 className="text-2xl sm:text-4xl font-bold text-[#d8e3d5] mb-3" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
+            <h2 className="text-2xl sm:text-4xl lg:text-5xl font-bold text-[#d8e3d5] mb-3" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
               {lang === "fr" ? "Votre voyage, votre façon" : "Your trip, your way"}
             </h2>
             <p className="text-[#7a9076] max-w-lg mx-auto text-sm leading-relaxed">
