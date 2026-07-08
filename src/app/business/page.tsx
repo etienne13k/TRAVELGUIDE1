@@ -658,7 +658,7 @@ export default function BusinessPage() {
                   ))}
                 </div>
               </div>
-              <div className="relative">
+              <div className="relative mt-8">
                 <div className="grid grid-cols-4 gap-2 mb-5">
                   {[
                     { val: "3", label: tx.example_cover_days_label },
