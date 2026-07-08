@@ -134,6 +134,7 @@ export async function POST(req: NextRequest) {
     }
   } catch (error) {
     console.error("[signup]", error);
-    return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
+    const msg = error instanceof Error ? error.message : String(error);
+    return NextResponse.json({ error: `Erreur serveur: ${msg}` }, { status: 500 });
   }
 }
