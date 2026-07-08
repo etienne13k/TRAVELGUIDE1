@@ -178,12 +178,12 @@ export default function PhoneVerification({ initialPhone, initialVerified = fals
   }
 
   return (
-    <div className="space-y-4 rounded-2xl border border-[#E8E0D0] bg-white/85 p-4 shadow-sm">
+    <div className="space-y-4 rounded-2xl p-4 shadow-sm" style={{ border: "1px solid var(--ce)", background: "var(--cd)" }}>
       <div className="flex items-start gap-3">
-        <span className="rounded-2xl bg-[#fdf8f0] p-3 text-2xl shadow-inner">📱</span>
+        <span className="rounded-2xl p-3 text-2xl shadow-inner" style={{ background: "var(--cv)" }}>📱</span>
         <div>
-          <h3 className="font-bold" style={{ color: "#425C47" }}>Vérification téléphone</h3>
-          <p className="text-sm" style={{ color: "#7a7060" }}>Recevez un code SMS pour débloquer le code WELCOME (-25% sur votre premier guide).</p>
+          <h3 className="font-bold" style={{ color: "var(--ct)" }}>Vérification téléphone</h3>
+          <p className="text-sm" style={{ color: "var(--cm)" }}>Recevez un code SMS pour débloquer le code WELCOME (-25% sur votre premier guide).</p>
         </div>
       </div>
 
@@ -195,7 +195,7 @@ export default function PhoneVerification({ initialPhone, initialVerified = fals
               id="phone-country"
               value={countryCode}
               onChange={(event) => setCountryCode(event.target.value)}
-              className="rounded-xl border border-[#E8E0D0] bg-[#FDFAF5] px-3 py-3 text-sm font-semibold outline-none focus:border-[#c9a84c]"
+              className="rounded-xl px-3 py-3 text-sm font-semibold outline-none" style={{ border: "1px solid var(--ce)", background: "var(--cd)", color: "var(--ct)" }}
             >
               {COUNTRIES.map((country) => (
                 <option key={`${country.label}-${country.code}`} value={country.code}>
@@ -211,14 +211,14 @@ export default function PhoneVerification({ initialPhone, initialVerified = fals
               onChange={(event) => setLocalNumber(event.target.value)}
               onKeyDown={(event) => event.key === "Enter" && sendOtp()}
               placeholder="6 12 34 56 78"
-              className="rounded-xl border border-[#E8E0D0] bg-[#FDFAF5] px-4 py-3 text-sm font-mono outline-none transition focus:border-[#c9a84c]"
+              className="rounded-xl px-4 py-3 text-sm font-mono outline-none transition" style={{ border: "1px solid var(--ce)", background: "var(--cd)", color: "var(--ct)" }}
             />
           </div>
           <button
             type="button"
             onClick={sendOtp}
             disabled={sending || digitsOnly(localNumber).length < 6}
-            className="w-full rounded-xl bg-[#425C47] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#111d35] disabled:cursor-not-allowed disabled:opacity-60"
+            className="w-full rounded-xl px-5 py-3 text-sm font-bold transition disabled:cursor-not-allowed disabled:opacity-60" style={{ background: "var(--ck)", color: "var(--cat)" }}
           >
             {sending ? "Envoi du code…" : "Envoyer le code"}
           </button>
@@ -240,7 +240,7 @@ export default function PhoneVerification({ initialPhone, initialVerified = fals
                 inputMode="numeric"
                 autoComplete={index === 0 ? "one-time-code" : "off"}
                 maxLength={1}
-                className="h-12 w-11 rounded-xl border border-[#E8E0D0] bg-[#FDFAF5] text-center text-lg font-bold text-[#425C47] outline-none transition focus:border-[#c9a84c] focus:ring-2 focus:ring-[#c9a84c]/20 sm:h-14 sm:w-12"
+                className="h-12 w-11 rounded-xl text-center text-lg font-bold outline-none transition sm:h-14 sm:w-12" style={{ border: "1px solid var(--ce)", background: "var(--cd)", color: "var(--ct)" }}
               />
             ))}
           </div>
@@ -248,7 +248,7 @@ export default function PhoneVerification({ initialPhone, initialVerified = fals
             type="button"
             onClick={verifyOtp}
             disabled={verifying || codeDigits.join("").length !== 6}
-            className="w-full rounded-xl bg-[#c9a84c] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#b8962e] disabled:cursor-not-allowed disabled:opacity-60"
+            className="w-full rounded-xl px-5 py-3 text-sm font-bold transition disabled:cursor-not-allowed disabled:opacity-60" style={{ background: "var(--ca)", color: "var(--cat)" }}
           >
             {verifying ? "Vérification…" : "Vérifier"}
           </button>
@@ -256,7 +256,7 @@ export default function PhoneVerification({ initialPhone, initialVerified = fals
             type="button"
             onClick={sendOtp}
             disabled={sending || countdown > 0}
-            className="text-sm font-semibold text-[#425C47] underline-offset-4 hover:underline disabled:cursor-not-allowed disabled:text-[#9a8f80]"
+            className="text-sm font-semibold underline-offset-4 hover:underline disabled:cursor-not-allowed disabled:opacity-50" style={{ color: "var(--ca)" }}
           >
             {countdown > 0 ? `Renvoyer le code dans ${countdown}s` : "Renvoyer le code"}
           </button>
@@ -268,7 +268,7 @@ export default function PhoneVerification({ initialPhone, initialVerified = fals
           {status.message}
         </p>
       )}
-      <p className="text-xs" style={{ color: "#9a8f80" }}>Format final : {fullPhone || "+33612345678"}</p>
+      <p className="text-xs" style={{ color: "var(--cm)" }}>Format final : {fullPhone || "+33612345678"}</p>
     </div>
   );
 }

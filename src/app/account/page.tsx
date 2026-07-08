@@ -65,18 +65,18 @@ async function getOrders(userId: string): Promise<Order[]> {
   }));
 }
 
-/* ── design tokens (neutral slate) ── */
+/* ── design tokens (mode-aware CSS vars) ── */
 const N = {
-  bg:     "#0b0b10",
-  card:   "#13131a",
-  deep:   "#0f0f15",
-  border: "#22222e",
-  text:   "#e2e8f0",
-  muted:  "#64748b",
-  faint:  "#1e1e28",
-  accent: "#818cf8",        // indigo clair — neutre entre vert et bleu
-  accentFaint: "rgba(129,140,248,0.10)",
-  accentBorder: "rgba(129,140,248,0.22)",
+  bg:     "var(--cb)",
+  card:   "var(--cc)",
+  deep:   "var(--cd)",
+  border: "var(--ce)",
+  text:   "var(--ct)",
+  muted:  "var(--cm)",
+  faint:  "var(--cv)",
+  accent: "var(--ca)",
+  accentFaint: "var(--caf)",
+  accentBorder: "var(--cab)",
 };
 
 export default async function AccountPage() {

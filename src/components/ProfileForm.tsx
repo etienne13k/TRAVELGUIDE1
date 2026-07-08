@@ -10,9 +10,9 @@ type ProfileFormProps = {
 };
 
 const inp: React.CSSProperties = {
-  background: "#0f0f15",
-  border: "1px solid #2a2a3a",
-  color: "#e2e8f0",
+  background: "var(--cd)",
+  border: "1px solid var(--ce)",
+  color: "var(--ct)",
   borderRadius: 12,
   padding: "10px 14px",
   fontSize: 14,
@@ -28,7 +28,7 @@ const lbl: React.CSSProperties = {
   letterSpacing: "0.14em",
   textTransform: "uppercase",
   marginBottom: 6,
-  color: "#64748b",
+  color: "var(--cm)",
 };
 
 export default function ProfileForm({ initialFirstName, initialLastName, email }: ProfileFormProps) {
@@ -74,8 +74,8 @@ export default function ProfileForm({ initialFirstName, initialLastName, email }
             onChange={(e) => { setFirstName(e.target.value); setStatus({ type: "idle", message: "" }); }}
             placeholder="Jean"
             style={inp}
-            onFocus={e => (e.currentTarget.style.borderColor = "#818cf8")}
-            onBlur={e => (e.currentTarget.style.borderColor = "#2a2a3a")}
+            onFocus={e => (e.currentTarget.style.borderColor = "var(--ca)")}
+            onBlur={e => (e.currentTarget.style.borderColor = "var(--ce)")}
           />
         </div>
         <div>
@@ -86,8 +86,8 @@ export default function ProfileForm({ initialFirstName, initialLastName, email }
             onChange={(e) => { setLastName(e.target.value); setStatus({ type: "idle", message: "" }); }}
             placeholder="Dupont"
             style={inp}
-            onFocus={e => (e.currentTarget.style.borderColor = "#818cf8")}
-            onBlur={e => (e.currentTarget.style.borderColor = "#2a2a3a")}
+            onFocus={e => (e.currentTarget.style.borderColor = "var(--ca)")}
+            onBlur={e => (e.currentTarget.style.borderColor = "var(--ce)")}
           />
         </div>
       </div>
@@ -100,7 +100,7 @@ export default function ProfileForm({ initialFirstName, initialLastName, email }
           disabled
           style={{ ...inp, opacity: 0.45, cursor: "not-allowed" }}
         />
-        <p style={{ fontSize: 11, marginTop: 4, color: "#475569" }}>L&apos;email ne peut pas être modifié.</p>
+        <p style={{ fontSize: 11, marginTop: 4, color: "var(--cm)" }}>L&apos;email ne peut pas être modifié.</p>
       </div>
 
       {isDirty && (
@@ -108,8 +108,8 @@ export default function ProfileForm({ initialFirstName, initialLastName, email }
           onClick={handleSave}
           disabled={saving || !firstName.trim() || !lastName.trim()}
           style={{
-            background: "#818cf8",
-            color: "#fff",
+            background: "var(--ck)",
+            color: "var(--cat)",
             border: "none",
             borderRadius: 12,
             padding: "10px 20px",
