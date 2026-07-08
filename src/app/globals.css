@@ -41,25 +41,29 @@ html {
 .anim-h3 { animation: fade-up-enter 0.55s cubic-bezier(0.22,1,0.36,1) 240ms both; }
 .anim-h4 { animation: fade-up-enter 0.55s cubic-bezier(0.22,1,0.36,1) 360ms both; }
 
-/* Scroll-reveal (trigger via IntersectionObserver → add .in-view) */
+/* Scroll-reveal — CSS animation (no JS required) */
+@keyframes revealUp {
+  from { opacity: 0; transform: translateY(22px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes revealScale {
+  from { opacity: 0; transform: scale(0.92); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
 .reveal {
-  opacity: 0;
-  transform: translateY(22px);
-  transition: opacity 0.5s cubic-bezier(0.22,1,0.36,1), transform 0.5s cubic-bezier(0.22,1,0.36,1);
+  animation: revealUp 0.5s cubic-bezier(0.22,1,0.36,1) both;
 }
-.reveal.in-view { opacity: 1; transform: translateY(0); }
 .reveal-scale {
-  opacity: 0;
-  transform: scale(0.92);
-  transition: opacity 0.45s cubic-bezier(0.22,1,0.36,1), transform 0.45s cubic-bezier(0.22,1,0.36,1);
+  animation: revealScale 0.45s cubic-bezier(0.22,1,0.36,1) both;
 }
-.reveal-scale.in-view { opacity: 1; transform: scale(1); }
+.reveal.in-view, .reveal-scale.in-view {} /* kept for compat */
 
 /* stagger helpers */
-.reveal-d1, .reveal-scale-d1 { transition-delay: 60ms; }
-.reveal-d2, .reveal-scale-d2 { transition-delay: 130ms; }
-.reveal-d3, .reveal-scale-d3 { transition-delay: 200ms; }
-.reveal-d4, .reveal-scale-d4 { transition-delay: 270ms; }
+.reveal-d1, .reveal-scale-d1 { animation-delay: 60ms; }
+.reveal-d2, .reveal-scale-d2 { animation-delay: 130ms; }
+.reveal-d3, .reveal-scale-d3 { animation-delay: 200ms; }
+.reveal-d4, .reveal-scale-d4 { animation-delay: 270ms; }
 
 /* ── Mobile touch & readability ──────────────────── */
 * {
