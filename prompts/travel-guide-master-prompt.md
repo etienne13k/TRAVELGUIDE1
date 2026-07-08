@@ -470,7 +470,7 @@ Autres informations utiles : [champ libre]
 
 | Paramètre | Valeur recommandée |
 |-----------|-------------------|
-| Modèle | `claude-opus-4-6` ou `gpt-4o` |
+| Modèle | `claude-sonnet-4-5` ou `claude-opus-4-5` |
 | Temperature | `0.7` (créativité + cohérence) |
 | Max tokens | 3j: 4000 / 7j: 8000 / 14j: 14000 / 1 mois: 20000 |
 | System prompt | Contenu du bloc `SYSTEM PROMPT` ci-dessus |
