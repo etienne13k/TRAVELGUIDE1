@@ -842,8 +842,8 @@ export default function BusinessPage() {
             </h2>
             <p className="max-w-xl mx-auto text-sm leading-relaxed" style={{ color: B.muted }}>
               {lang === "fr"
-                ? "Guide 7 jours à 6€ à la carte, ou Pack Premium à 20€ incluant 10 guides 7 jours."
-                : "7-day guide at €6 per trip, or Pack Premium at €20 including 10 x 7-day guides."}
+                ? "Guide 7 jours à 6€ à la carte, ou Pack Premium à 45€ incluant 10 guides 7 jours."
+                : "7-day guide at €6 per trip, or Pack Premium at €45 including 10 x 7-day guides."}
             </p>
           </div>
 
@@ -875,7 +875,7 @@ export default function BusinessPage() {
               <div className="flex flex-col items-start sm:items-end gap-3 shrink-0">
                 <div>
                   <div className="flex items-end gap-1">
-                    <span className="text-6xl font-black" style={{ color: B.accent, fontFamily: "var(--font-playfair), Georgia, serif" }}>20€</span>
+                    <span className="text-6xl font-black" style={{ color: B.accent, fontFamily: "var(--font-playfair), Georgia, serif" }}>45€</span>
                     <span className="text-sm mb-2" style={{ color: B.muted }}>achat unique</span>
                   </div>
                   <p className="text-xs mt-1" style={{ color: B.faint }}>{lang === "fr" ? "10 crédits valables sans limite de durée" : "10 credits with no expiry"}</p>

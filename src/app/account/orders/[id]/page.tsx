@@ -3,6 +3,7 @@ import Link from "next/link";
 import { getServerSession } from "@/lib/auth";
 import { getPool } from "@/lib/db";
 import OrderTimeline from "@/components/OrderTimeline";
+import OrderAutoRefresh from "@/components/OrderAutoRefresh";
 import LogoutButton from "@/components/LogoutButton";
 import DestinationMapWrapper from "@/components/DestinationMapWrapper";
 
@@ -135,6 +136,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
       </nav>
 
       <main className="max-w-3xl mx-auto px-4 py-10 space-y-6">
+        <OrderAutoRefresh status={order.status} />
         {/* Order header */}
         <div className="rounded-2xl p-6" style={{ background: "#fff", border: "1px solid #E8E0D0" }}>
           <div className="flex items-start justify-between gap-4 flex-wrap">

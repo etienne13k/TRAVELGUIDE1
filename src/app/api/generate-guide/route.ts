@@ -39,9 +39,13 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Service temporairement indisponible. Clé API non configurée." }, { status: 503 });
   }
 
-  // Require authenticated session
-  const session = await getServerSession();
-  if (!session) {
+  // Allow internal calls with secret header (from auto-generate endpoint)
+  const internalSecret = req.headers.get("x-internal-secret");
+  const isInternalCall = internalSecret && internalSecret === process.env.INTERNAL_SECRET;
+
+  // Require authenticated session for external calls
+  const session = isInternalCall ? null : await getServerSession();
+  if (!isInternalCall && !session) {
     return NextResponse.json({ error: "Vous devez être connecté pour générer un guide." }, { status: 401 });
   }
 
@@ -52,8 +56,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Données invalides." }, { status: 400 });
   }
 
-  // Weekly generation limit: 3 per verified account per week (based on session email)
-  if (process.env.DATABASE_URL) {
+  // Weekly generation limit: 3 per verified account per week (skip for internal calls)
+  if (!isInternalCall && process.env.DATABASE_URL) {
     try {
       const limitPool = new Pool({ connectionString: process.env.DATABASE_URL, ssl: { rejectUnauthorized: false } });
       await limitPool.query(`CREATE TABLE IF NOT EXISTS guide_limits (email text NOT NULL, week_start date NOT NULL, count int DEFAULT 1, PRIMARY KEY (email, week_start))`);
@@ -138,7 +142,7 @@ export async function POST(req: NextRequest) {
   try {
     const anthropic = new Anthropic({ apiKey });
     const response = await anthropic.messages.create({
-      model: "claude-haiku-4-5",
+      model: "claude-haiku-4-5-20251001",
       max_tokens: getMaxTokens(input.duration),
       system: buildSystemPrompt(input.language === "en" ? "en" : "fr"),
       messages: [{ role: "user", content: buildUserMessage(input) }],
@@ -199,7 +203,7 @@ Si tout semble normal, réponds : {"issues": [], "should_pause": false}`;
 
       const coherenceClient = new Anthropic({ apiKey });
       const coherenceResp = await coherenceClient.messages.create({
-        model: "claude-haiku-4-5",
+        model: "claude-haiku-4-5-20251001",
         max_tokens: 300,
         messages: [{ role: "user", content: coherencePrompt }],
       });

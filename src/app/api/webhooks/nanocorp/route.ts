@@ -115,16 +115,24 @@ export async function POST(req: NextRequest) {
       const pendingOrder = pendingRows[0];
 
       if (pendingOrder) {
+        // Check if questionnaire data already exists in the pending order
+        const { rows: orderRows } = await pool.query<{ questionnaire_data: Record<string, unknown> | null }>(
+          "SELECT questionnaire_data FROM orders WHERE id = $1",
+          [clientReferenceId]
+        );
+        const hasData = Object.keys(orderRows[0]?.questionnaire_data ?? {}).length > 0;
+        const newStatus = hasData ? "questionnaire_completed" : "questionnaire_pending";
+
         await pool.query(
           `UPDATE orders SET
              user_id = COALESCE(user_id, $1),
              stripe_session_id = $2,
              session_id = $3,
-             status = 'questionnaire_pending',
-             amount_cents = $4,
-             currency = $5
-           WHERE id = $6`,
-          [userId, sessionId, sessionId, amountCents, currency, clientReferenceId]
+             status = $4,
+             amount_cents = $5,
+             currency = $6
+           WHERE id = $7`,
+          [userId, sessionId, sessionId, newStatus, amountCents, currency, clientReferenceId]
         );
 
         if (userId && isManagedPromoCode(promoCode)) {
