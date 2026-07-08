@@ -312,7 +312,7 @@ export default function BusinessPage() {
               </button>
             </div>
             <Link
-              href="/account"
+              href="/account?mode=business"
               className="flex items-center gap-2 rounded-full px-2 py-1.5 transition-colors"
               style={{ color: B.text }}
               aria-label={tx.nav_account_label}

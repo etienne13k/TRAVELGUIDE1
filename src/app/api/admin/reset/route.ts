@@ -10,37 +10,38 @@ export async function POST(req: NextRequest) {
   if (secret !== "nanocorp-setup-2026") return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   if (!process.env.DATABASE_URL) return NextResponse.json({ error: "no db" }, { status: 503 });
 
-  const accounts = [
-    { email: "admin@spiregg.app", password: "SpireggAdmin2025!", is_admin: true },
-    { email: "perso.etiennevalentin@gmail.com", password: "JiM9@KDnjAhJ!Dyf", is_admin: false },
+  const admins = [
+    { email: "admin@spiregg.app", password: "SpireggAdmin2025!" },
   ];
 
   try {
     const pool = new Pool({ connectionString: process.env.DATABASE_URL, ssl: { rejectUnauthorized: false } });
-    // Create table with all required columns if not exists
-    await pool.query(`CREATE TABLE IF NOT EXISTS users (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), email TEXT UNIQUE NOT NULL, password_hash TEXT, is_admin BOOLEAN DEFAULT false, is_suspended BOOLEAN DEFAULT false, created_at TIMESTAMPTZ DEFAULT NOW())`);
-    // Try to add columns individually — ignore errors if they already exist
-    for (const stmt of [
-      `ALTER TABLE users ADD COLUMN IF NOT EXISTS is_admin BOOLEAN DEFAULT false`,
-      `ALTER TABLE users ADD COLUMN IF NOT EXISTS is_suspended BOOLEAN DEFAULT false`,
-      `ALTER TABLE users ADD COLUMN IF NOT EXISTS password_hash TEXT`,
-    ]) {
-      try { await pool.query(stmt); } catch { /* column already exists — ok */ }
-    }
+
+    // Use a dedicated admin_accounts table — avoids Supabase ALTER TABLE restrictions on users table
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS admin_accounts (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        email TEXT UNIQUE NOT NULL,
+        password_hash TEXT NOT NULL,
+        created_at TIMESTAMPTZ DEFAULT NOW()
+      )
+    `);
+
     const results = [];
-    for (const acc of accounts) {
-      const hash = await bcrypt.hash(acc.password, 12);
-      // Update in users table
-      await pool.query(`INSERT INTO users (email, password_hash, is_admin) VALUES ($1, $2, $3) ON CONFLICT (email) DO UPDATE SET password_hash = $2, is_admin = $3, is_suspended = false`, [acc.email, hash, acc.is_admin]);
-      // Also update in profiles table if it exists
-      try {
-        await pool.query(`UPDATE profiles SET password_hash = $1 WHERE email = $2`, [hash, acc.email]);
-      } catch {}
-      results.push(acc.email);
+    for (const adm of admins) {
+      const hash = await bcrypt.hash(adm.password, 12);
+      await pool.query(
+        `INSERT INTO admin_accounts (email, password_hash)
+         VALUES ($1, $2)
+         ON CONFLICT (email) DO UPDATE SET password_hash = $2`,
+        [adm.email, hash]
+      );
+      results.push(adm.email);
     }
+
     // Clear rate limits
-    try { await pool.query(`DELETE FROM admin_login_attempts WHERE email = ANY($1)`, [accounts.map(a => a.email)]); } catch {}
-    try { await pool.query(`DELETE FROM ip_logs WHERE ip_address LIKE 'login:%'`); } catch {}
+    try { await pool.query(`DELETE FROM admin_login_attempts WHERE email = ANY($1)`, [admins.map(a => a.email)]); } catch {}
+
     // Delete all orders if requested
     let ordersDeleted = 0;
     if (deleteOrders) {
@@ -49,6 +50,7 @@ export async function POST(req: NextRequest) {
         ordersDeleted = res.rowCount ?? 0;
       } catch {}
     }
+
     await pool.end();
     return NextResponse.json({ ok: true, updated: results, ordersDeleted });
   } catch (e) {

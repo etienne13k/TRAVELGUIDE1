@@ -34,12 +34,23 @@ export async function POST(req: NextRequest) {
 
   let valid = false;
   if (email && password) {
+    // Check admin_accounts table first (dedicated admin table, no Supabase restrictions)
     const { rows } = await pool.query(
-      `SELECT password_hash FROM users WHERE email = $1 AND is_admin = true AND (is_suspended IS NULL OR is_suspended = false)`,
+      `SELECT password_hash FROM admin_accounts WHERE email = $1`,
       [email]
-    );
+    ).catch(() => ({ rows: [] as { password_hash: string }[] }));
     if (rows.length > 0) {
       valid = await bcrypt.compare(password, rows[0].password_hash);
+    }
+    // Fallback: check users table with is_admin flag
+    if (!valid) {
+      const { rows: userRows } = await pool.query(
+        `SELECT password_hash FROM users WHERE email = $1 AND is_admin = true AND (is_suspended IS NULL OR is_suspended = false)`,
+        [email]
+      ).catch(() => ({ rows: [] as { password_hash: string }[] }));
+      if (userRows.length > 0) {
+        valid = await bcrypt.compare(password, userRows[0].password_hash);
+      }
     }
   }
 

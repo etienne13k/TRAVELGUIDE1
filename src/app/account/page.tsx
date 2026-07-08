@@ -1,10 +1,12 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { Suspense } from "react";
 import { getServerSession } from "@/lib/auth";
 import { getPool } from "@/lib/db";
 import LogoutButton from "@/components/LogoutButton";
 import ProfileForm from "@/components/ProfileForm";
 import LangToggle from "@/components/LangToggle";
+import AccountModeSync from "@/components/AccountModeSync";
 
 const PLAN_LABELS: Record<string, string> = {
   "3j": "3 jours",
@@ -88,6 +90,7 @@ export default async function AccountPage() {
 
   return (
     <div className="min-h-screen" style={{ background: N.bg, fontFamily: "var(--font-dm-sans), system-ui, sans-serif" }}>
+      <Suspense fallback={null}><AccountModeSync /></Suspense>
 
       {/* Navbar */}
       <nav
