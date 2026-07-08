@@ -9,12 +9,34 @@ type ProfileFormProps = {
   email: string;
 };
 
+const inp: React.CSSProperties = {
+  background: "#0f0f15",
+  border: "1px solid #2a2a3a",
+  color: "#e2e8f0",
+  borderRadius: 12,
+  padding: "10px 14px",
+  fontSize: 14,
+  outline: "none",
+  width: "100%",
+  boxSizing: "border-box",
+};
+
+const lbl: React.CSSProperties = {
+  display: "block",
+  fontSize: 10,
+  fontWeight: 700,
+  letterSpacing: "0.14em",
+  textTransform: "uppercase",
+  marginBottom: 6,
+  color: "#64748b",
+};
+
 export default function ProfileForm({ initialFirstName, initialLastName, email }: ProfileFormProps) {
   const router = useRouter();
   const [firstName, setFirstName] = useState(initialFirstName ?? "");
-  const [lastName, setLastName] = useState(initialLastName ?? "");
-  const [saving, setSaving] = useState(false);
-  const [status, setStatus] = useState<{ type: "idle" | "success" | "error"; message: string }>({ type: "idle", message: "" });
+  const [lastName, setLastName]   = useState(initialLastName ?? "");
+  const [saving, setSaving]       = useState(false);
+  const [status, setStatus]       = useState<{ type: "idle" | "success" | "error"; message: string }>({ type: "idle", message: "" });
 
   const isDirty = firstName !== (initialFirstName ?? "") || lastName !== (initialLastName ?? "");
 
@@ -42,63 +64,69 @@ export default function ProfileForm({ initialFirstName, initialLastName, email }
   }
 
   return (
-    <div className="space-y-4">
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+    <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
         <div>
-          <label className="block text-xs font-bold uppercase tracking-wide mb-1.5" style={{ color: "#425C47" }}>
-            Prénom
-          </label>
+          <label style={lbl}>Prénom</label>
           <input
             type="text"
             value={firstName}
             onChange={(e) => { setFirstName(e.target.value); setStatus({ type: "idle", message: "" }); }}
             placeholder="Jean"
-            className="w-full rounded-xl border px-4 py-2.5 text-sm outline-none focus:ring-2 transition"
-            style={{ borderColor: "#E8E0D0", background: "#FDFAF5" }}
+            style={inp}
+            onFocus={e => (e.currentTarget.style.borderColor = "#818cf8")}
+            onBlur={e => (e.currentTarget.style.borderColor = "#2a2a3a")}
           />
         </div>
         <div>
-          <label className="block text-xs font-bold uppercase tracking-wide mb-1.5" style={{ color: "#425C47" }}>
-            Nom
-          </label>
+          <label style={lbl}>Nom</label>
           <input
             type="text"
             value={lastName}
             onChange={(e) => { setLastName(e.target.value); setStatus({ type: "idle", message: "" }); }}
             placeholder="Dupont"
-            className="w-full rounded-xl border px-4 py-2.5 text-sm outline-none focus:ring-2 transition"
-            style={{ borderColor: "#E8E0D0", background: "#FDFAF5" }}
+            style={inp}
+            onFocus={e => (e.currentTarget.style.borderColor = "#818cf8")}
+            onBlur={e => (e.currentTarget.style.borderColor = "#2a2a3a")}
           />
         </div>
       </div>
 
       <div>
-        <label className="block text-xs font-bold uppercase tracking-wide mb-1.5" style={{ color: "#425C47" }}>
-          Email
-        </label>
+        <label style={lbl}>Email</label>
         <input
           type="email"
           value={email}
           disabled
-          className="w-full rounded-xl border px-4 py-2.5 text-sm cursor-not-allowed"
-          style={{ borderColor: "#E8E0D0", background: "#f5f3ee", color: "#9a8f80" }}
+          style={{ ...inp, opacity: 0.45, cursor: "not-allowed" }}
         />
-        <p className="text-xs mt-1" style={{ color: "#9a8f80" }}>L&apos;email ne peut pas être modifié.</p>
+        <p style={{ fontSize: 11, marginTop: 4, color: "#475569" }}>L&apos;email ne peut pas être modifié.</p>
       </div>
 
       {isDirty && (
         <button
           onClick={handleSave}
           disabled={saving || !firstName.trim() || !lastName.trim()}
-          className="rounded-xl px-6 py-2.5 text-sm font-bold text-white transition disabled:opacity-60 disabled:cursor-not-allowed"
-          style={{ background: "#425C47" }}
+          style={{
+            background: "#818cf8",
+            color: "#fff",
+            border: "none",
+            borderRadius: 12,
+            padding: "10px 20px",
+            fontSize: 13,
+            fontWeight: 700,
+            cursor: saving || !firstName.trim() || !lastName.trim() ? "not-allowed" : "pointer",
+            opacity: saving || !firstName.trim() || !lastName.trim() ? 0.5 : 1,
+            transition: "opacity 0.15s",
+            alignSelf: "flex-start",
+          }}
         >
           {saving ? "Enregistrement…" : "Enregistrer"}
         </button>
       )}
 
       {status.message && (
-        <p className={`text-sm font-medium ${status.type === "error" ? "text-red-600" : "text-emerald-600"}`}>
+        <p style={{ fontSize: 13, fontWeight: 600, color: status.type === "error" ? "#f87171" : "#4ade80" }}>
           {status.type === "success" ? "✓ " : ""}{status.message}
         </p>
       )}

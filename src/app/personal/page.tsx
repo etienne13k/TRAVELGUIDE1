@@ -441,7 +441,7 @@ export default function Home() {
                 <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
               </svg>
               {phoneStatus.loggedIn && phoneStatus.email && (
-                <span className="text-xs font-medium hidden sm:inline max-w-[120px] truncate text-[#b8cdb4]">
+                <span className="text-xs font-medium hidden sm:inline-block max-w-[90px] truncate text-[#b8cdb4]">
                   {phoneStatus.email.split("@")[0]}
                 </span>
               )}
