@@ -74,7 +74,7 @@ export async function POST(req: NextRequest) {
     const anthropic = new Anthropic({ apiKey });
 
     const msg = await anthropic.messages.create({
-      model: "claude-haiku-4-5",
+      model: "claude-haiku-4-5-20251001",
       max_tokens: 1500,
       system: "Tu es un expert en voyages. Réponds UNIQUEMENT avec un tableau JSON valide, sans markdown ni ```json, juste le JSON brut.",
       messages: [{ role: "user", content: buildPrompt(answers) }],
