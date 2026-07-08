@@ -1,6 +1,6 @@
-﻿"use client";
+"use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import LangToggle from "@/components/LangToggle";
@@ -16,21 +16,71 @@ const inputStyle = {
   color: "var(--ct)",
 } as React.CSSProperties;
 
+type Step = "form" | "otp";
+
 export default function SignupForm({ turnstileSiteKey }: SignupFormProps) {
   const router = useRouter();
   const { isBusiness } = useMode();
   const brandName = isBusiness ? "Travel Business" : "TravelGuide";
   const backHref = isBusiness ? "/business" : "/personal";
+
+  // Form fields
   const [email, setEmail] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [antiBotAnswer, setAntiBotAnswer] = useState("");
   const [companyWebsite, setCompanyWebsite] = useState("");
+
+  // UI state
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [step, setStep] = useState<Step>("form");
 
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  // OTP state
+  const [otpDigits, setOtpDigits] = useState<string[]>(Array(6).fill(""));
+  const [otpLoading, setOtpLoading] = useState(false);
+  const [otpError, setOtpError] = useState("");
+  const [otpSuccess, setOtpSuccess] = useState("");
+  const [resendCountdown, setResendCountdown] = useState(0);
+  const [isSendingCode, setIsSendingCode] = useState(false);
+  const otpRefs = useRef<Array<HTMLInputElement | null>>([]);
+
+  function startCountdown() {
+    setResendCountdown(60);
+    const tick = () =>
+      setResendCountdown((c) => {
+        if (c <= 1) return 0;
+        window.setTimeout(tick, 1000);
+        return c - 1;
+      });
+    window.setTimeout(tick, 1000);
+  }
+
+  async function sendOtpCode() {
+    setIsSendingCode(true);
+    setOtpError("");
+    try {
+      const res = await fetch("/api/phone/send-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone: phoneNumber }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setOtpError(data.message || "Impossible d'envoyer le code.");
+      } else {
+        setOtpSuccess(`Code SMS envoyé au ${phoneNumber}.`);
+        startCountdown();
+      }
+    } catch {
+      setOtpError("Erreur réseau, réessayez.");
+    } finally {
+      setIsSendingCode(false);
+    }
+  }
+
+  async function handleSignup(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError("");
 
@@ -61,13 +111,194 @@ export default function SignupForm({ turnstileSiteKey }: SignupFormProps) {
         setError(data.error || "Erreur d'inscription");
       } else {
         window.posthog?.capture("signup_completed");
-        router.push("/account");
+        // Transition to OTP verification step
+        setStep("otp");
+        await sendOtpCode();
       }
     } catch {
       setError("Erreur réseau");
     } finally {
       setLoading(false);
     }
+  }
+
+  function updateOtpDigit(index: number, value: string) {
+    const digits = value.replace(/\D/g, "");
+    if (digits.length > 1) {
+      // Handle paste: fill all boxes
+      const next = Array(6).fill("");
+      digits.slice(0, 6).split("").forEach((d, i) => { next[i] = d; });
+      setOtpDigits(next);
+      otpRefs.current[Math.min(digits.length, 5)]?.focus();
+      return;
+    }
+    setOtpDigits((cur) => cur.map((d, i) => (i === index ? digits : d)));
+    if (digits && index < 5) otpRefs.current[index + 1]?.focus();
+  }
+
+  function handleOtpKeyDown(index: number, key: string) {
+    if (key === "Backspace" && !otpDigits[index] && index > 0) {
+      otpRefs.current[index - 1]?.focus();
+    }
+  }
+
+  async function handleVerifyOtp() {
+    const code = otpDigits.join("");
+    if (code.length !== 6) {
+      setOtpError("Entrez les 6 chiffres du code.");
+      return;
+    }
+    setOtpLoading(true);
+    setOtpError("");
+    try {
+      const res = await fetch("/api/phone/verify-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone: phoneNumber, code }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.verified) {
+        setOtpError(data.message || "Code incorrect ou expiré.");
+      } else {
+        window.posthog?.capture("phone_verified", { source: "signup" });
+        router.push("/account");
+      }
+    } catch {
+      setOtpError("Erreur réseau, réessayez.");
+    } finally {
+      setOtpLoading(false);
+    }
+  }
+
+  if (step === "otp") {
+    return (
+      <div
+        className="min-h-screen flex items-center justify-center px-4 py-12"
+        style={{ background: "var(--cb)", fontFamily: "var(--font-dm-sans), system-ui, sans-serif" }}
+      >
+        <div className="w-full max-w-md">
+          <div className="flex items-center justify-between mb-8">
+            <div />
+            <Link
+              href={backHref}
+              className="text-2xl font-bold"
+              style={{ fontFamily: "var(--font-playfair), Georgia, serif", color: "var(--ct)" }}
+            >
+              {brandName}
+            </Link>
+            <LangToggle />
+          </div>
+
+          <div className="rounded-2xl p-8" style={{ background: "var(--cc)", border: "1px solid var(--ce)" }}>
+            <h1
+              className="text-2xl font-bold mb-1"
+              style={{ fontFamily: "var(--font-playfair), Georgia, serif", color: "var(--ct)" }}
+            >
+              Vérification du téléphone
+            </h1>
+            <p className="text-sm mb-6" style={{ color: "var(--cm)" }}>
+              Un code SMS a été envoyé au <span style={{ color: "var(--ct)", fontWeight: 600 }}>{phoneNumber}</span>. Entrez les 6 chiffres ci-dessous.
+            </p>
+
+            <div className="space-y-6">
+              {/* OTP boxes */}
+              <div className="flex justify-between gap-2" aria-label="Code SMS à 6 chiffres">
+                {otpDigits.map((digit, index) => (
+                  <input
+                    key={index}
+                    ref={(el) => { otpRefs.current[index] = el; }}
+                    value={digit}
+                    onChange={(e) => updateOtpDigit(index, e.target.value)}
+                    onKeyDown={(e) => handleOtpKeyDown(index, e.key)}
+                    inputMode="numeric"
+                    autoComplete={index === 0 ? "one-time-code" : "off"}
+                    maxLength={1}
+                    className="rounded-xl text-center text-lg font-bold outline-none transition-all"
+                    style={{
+                      width: "100%",
+                      height: "56px",
+                      background: "var(--cd)",
+                      border: `1.5px solid ${digit ? "var(--ca)" : "var(--ce)"}`,
+                      color: "var(--ct)",
+                    }}
+                    onFocus={(e) => (e.target.style.borderColor = "var(--ca)")}
+                    onBlur={(e) => (e.target.style.borderColor = otpDigits[index] ? "var(--ca)" : "var(--ce)")}
+                  />
+                ))}
+              </div>
+
+              {otpError && (
+                <div
+                  className="rounded-lg px-4 py-3 text-sm"
+                  style={{ background: "rgba(220,38,38,0.1)", color: "#f87171", border: "1px solid rgba(220,38,38,0.25)" }}
+                >
+                  {otpError}
+                </div>
+              )}
+
+              {otpSuccess && !otpError && (
+                <div
+                  className="rounded-lg px-4 py-3 text-sm"
+                  style={{ background: "rgba(34,197,94,0.1)", color: "#4ade80", border: "1px solid rgba(34,197,94,0.25)" }}
+                >
+                  {otpSuccess}
+                </div>
+              )}
+
+              <button
+                type="button"
+                onClick={handleVerifyOtp}
+                disabled={otpLoading || otpDigits.join("").length !== 6}
+                className="w-full rounded-xl py-3 font-semibold text-sm transition-all"
+                style={{
+                  background: (otpLoading || otpDigits.join("").length !== 6) ? "var(--ce)" : "var(--ck)",
+                  color: "var(--ct)",
+                }}
+              >
+                {otpLoading ? "Vérification…" : "Vérifier le code"}
+              </button>
+
+              <div className="text-center">
+                <button
+                  type="button"
+                  onClick={async () => {
+                    setOtpDigits(Array(6).fill(""));
+                    setOtpError("");
+                    setOtpSuccess("");
+                    await sendOtpCode();
+                  }}
+                  disabled={isSendingCode || resendCountdown > 0}
+                  className="text-sm font-semibold transition-all"
+                  style={{
+                    color: (isSendingCode || resendCountdown > 0) ? "var(--cm)" : "var(--ca)",
+                    cursor: (isSendingCode || resendCountdown > 0) ? "not-allowed" : "pointer",
+                    background: "none",
+                    border: "none",
+                  }}
+                >
+                  {resendCountdown > 0
+                    ? `Renvoyer le code dans ${resendCountdown}s`
+                    : isSendingCode
+                    ? "Envoi…"
+                    : "Renvoyer le code"}
+                </button>
+              </div>
+
+              <div className="text-center">
+                <button
+                  type="button"
+                  onClick={() => router.push("/account")}
+                  className="text-xs"
+                  style={{ color: "var(--cm)", background: "none", border: "none", cursor: "pointer" }}
+                >
+                  Passer cette étape pour l&apos;instant →
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -99,7 +330,7 @@ export default function SignupForm({ turnstileSiteKey }: SignupFormProps) {
             Suivez vos guides de voyage en temps réel depuis votre espace personnel.
           </p>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSignup} className="space-y-4">
             <div>
               <label className="block text-sm font-medium mb-1" style={{ color: "var(--cs)" }}>
                 Email
@@ -107,13 +338,13 @@ export default function SignupForm({ turnstileSiteKey }: SignupFormProps) {
               <input
                 type="email"
                 value={email}
-                onChange={(event) => setEmail(event.target.value)}
+                onChange={(e) => setEmail(e.target.value)}
                 required
                 placeholder="vous@exemple.com"
                 className="w-full rounded-xl px-4 py-3 text-sm outline-none transition-all"
                 style={inputStyle}
-                onFocus={(event) => (event.target.style.borderColor = "#C9A84C")}
-                onBlur={(event) => (event.target.style.borderColor = "#232c20")}
+                onFocus={(e) => (e.target.style.borderColor = "var(--ca)")}
+                onBlur={(e) => (e.target.style.borderColor = "var(--ce)")}
               />
             </div>
 
@@ -124,7 +355,7 @@ export default function SignupForm({ turnstileSiteKey }: SignupFormProps) {
               <input
                 type="tel"
                 value={phoneNumber}
-                onChange={(event) => setPhoneNumber(event.target.value)}
+                onChange={(e) => setPhoneNumber(e.target.value)}
                 required
                 inputMode="tel"
                 autoComplete="tel"
@@ -132,8 +363,8 @@ export default function SignupForm({ turnstileSiteKey }: SignupFormProps) {
                 placeholder="+33612345678"
                 className="w-full rounded-xl px-4 py-3 text-sm outline-none transition-all"
                 style={inputStyle}
-                onFocus={(event) => (event.target.style.borderColor = "#C9A84C")}
-                onBlur={(event) => (event.target.style.borderColor = "#232c20")}
+                onFocus={(e) => (e.target.style.borderColor = "var(--ca)")}
+                onBlur={(e) => (e.target.style.borderColor = "var(--ce)")}
               />
               <p className="mt-1 text-xs" style={{ color: "var(--cm)" }}>
                 Format international E.164 requis. Exemple : +33612345678.
@@ -147,14 +378,14 @@ export default function SignupForm({ turnstileSiteKey }: SignupFormProps) {
               <input
                 type="password"
                 value={password}
-                onChange={(event) => setPassword(event.target.value)}
+                onChange={(e) => setPassword(e.target.value)}
                 required
                 minLength={8}
                 placeholder="Minimum 8 caractères"
                 className="w-full rounded-xl px-4 py-3 text-sm outline-none transition-all"
                 style={inputStyle}
-                onFocus={(event) => (event.target.style.borderColor = "#C9A84C")}
-                onBlur={(event) => (event.target.style.borderColor = "#232c20")}
+                onFocus={(e) => (e.target.style.borderColor = "var(--ca)")}
+                onBlur={(e) => (e.target.style.borderColor = "var(--ce)")}
               />
             </div>
 
@@ -165,16 +396,17 @@ export default function SignupForm({ turnstileSiteKey }: SignupFormProps) {
               <input
                 type="password"
                 value={confirm}
-                onChange={(event) => setConfirm(event.target.value)}
+                onChange={(e) => setConfirm(e.target.value)}
                 required
                 placeholder="••••••••"
                 className="w-full rounded-xl px-4 py-3 text-sm outline-none transition-all"
                 style={inputStyle}
-                onFocus={(event) => (event.target.style.borderColor = "#C9A84C")}
-                onBlur={(event) => (event.target.style.borderColor = "#232c20")}
+                onFocus={(e) => (e.target.style.borderColor = "var(--ca)")}
+                onBlur={(e) => (e.target.style.borderColor = "var(--ce)")}
               />
             </div>
 
+            {/* Honeypot */}
             <div className="hidden" aria-hidden="true">
               <label htmlFor="companyWebsite">Site web entreprise</label>
               <input
@@ -184,7 +416,7 @@ export default function SignupForm({ turnstileSiteKey }: SignupFormProps) {
                 tabIndex={-1}
                 autoComplete="off"
                 value={companyWebsite}
-                onChange={(event) => setCompanyWebsite(event.target.value)}
+                onChange={(e) => setCompanyWebsite(e.target.value)}
               />
             </div>
 
@@ -200,14 +432,14 @@ export default function SignupForm({ turnstileSiteKey }: SignupFormProps) {
                 <input
                   type="text"
                   value={antiBotAnswer}
-                  onChange={(event) => setAntiBotAnswer(event.target.value)}
+                  onChange={(e) => setAntiBotAnswer(e.target.value)}
                   required
                   inputMode="numeric"
                   placeholder="Réponse"
                   className="w-full rounded-xl px-4 py-3 text-sm outline-none transition-all"
                   style={inputStyle}
-                  onFocus={(event) => (event.target.style.borderColor = "var(--ca)")}
-                  onBlur={(event) => (event.target.style.borderColor = "var(--ce)")}
+                  onFocus={(e) => (e.target.style.borderColor = "var(--ca)")}
+                  onBlur={(e) => (e.target.style.borderColor = "var(--ce)")}
                 />
                 <p className="mt-2 text-xs" style={{ color: "var(--cm)" }}>
                   Cloudflare Turnstile s&apos;activera automatiquement dès que sa clé publique sera configurée.
@@ -216,7 +448,10 @@ export default function SignupForm({ turnstileSiteKey }: SignupFormProps) {
             )}
 
             {error && (
-              <div className="rounded-lg px-4 py-3 text-sm" style={{ background: "rgba(220,38,38,0.1)", color: "#f87171", border: "1px solid rgba(220,38,38,0.25)" }}>
+              <div
+                className="rounded-lg px-4 py-3 text-sm"
+                style={{ background: "rgba(220,38,38,0.1)", color: "#f87171", border: "1px solid rgba(220,38,38,0.25)" }}
+              >
                 {error}
               </div>
             )}

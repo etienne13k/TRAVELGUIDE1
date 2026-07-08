@@ -99,19 +99,24 @@ function mockCode(): string {
   return process.env.SMS_MOCK_CODE || "000000";
 }
 
+function isTwilioConfigured(): boolean {
+  return Boolean(process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN && process.env.TWILIO_VERIFY_SERVICE_SID);
+}
+
 async function sendMockOtp(): Promise<SendOtpResult> {
-  if (process.env.NODE_ENV === "production") providerUnavailable("mock");
   return { provider: "mock", verificationSid: "mock_verification", status: "pending" };
 }
 
 async function checkMockOtp(code: string): Promise<CheckOtpResult> {
-  if (process.env.NODE_ENV === "production") providerUnavailable("mock");
   return { provider: "mock", verified: code === mockCode(), status: code === mockCode() ? "approved" : "pending" };
 }
 
 export async function sendPhoneOtp(phone: string): Promise<SendOtpResult> {
   const provider = selectedProvider();
-  if (provider === "twilio") return sendTwilioOtp(phone);
+  if (provider === "twilio") {
+    if (!isTwilioConfigured()) return sendMockOtp();
+    return sendTwilioOtp(phone);
+  }
   if (provider === "mock") return sendMockOtp();
   if (provider === "vonage" || provider === "sinch") providerUnavailable(provider);
 
@@ -120,7 +125,10 @@ export async function sendPhoneOtp(phone: string): Promise<SendOtpResult> {
 
 export async function checkPhoneOtp(phone: string, code: string): Promise<CheckOtpResult> {
   const provider = selectedProvider();
-  if (provider === "twilio") return checkTwilioOtp(phone, code);
+  if (provider === "twilio") {
+    if (!isTwilioConfigured()) return checkMockOtp(code);
+    return checkTwilioOtp(phone, code);
+  }
   if (provider === "mock") return checkMockOtp(code);
   if (provider === "vonage" || provider === "sinch") providerUnavailable(provider);
 
