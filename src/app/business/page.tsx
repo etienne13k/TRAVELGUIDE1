@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { CART_UPDATED_EVENT, getCartCount } from "@/lib/cart";
+import { CART_UPDATED_EVENT, addCartItem, getCartCount } from "@/lib/cart";
 import RevealObserver from "@/components/RevealObserver";
 
 type Lang = "fr" | "en";
@@ -254,7 +254,15 @@ export default function BusinessPage() {
   }, []);
 
   function handleSubscribe() {
-    window.location.href = "https://buy.stripe.com/7sY8wP1JH8V6cHN8GI0Ba06";
+    addCartItem({
+      planId: "1mois",
+      planLabel: "Pack Premium — 10 guides business 7j",
+      price: 2000,
+      destination: "Pack Premium Business",
+      dates: "",
+      criteria: { mode: "business" },
+    });
+    window.location.href = "/cart";
   }
 
   return (
@@ -834,8 +842,8 @@ export default function BusinessPage() {
             </h2>
             <p className="max-w-xl mx-auto text-sm leading-relaxed" style={{ color: B.muted }}>
               {lang === "fr"
-                ? "Guide 7 jours à 6€ à la carte, ou Pack Premium à 20€/mois incluant 10 guides de 3 jours."
-                : "7-day guide at €6 per trip, or Pack Premium at €20/month including 10 x 3-day guides."}
+                ? "Guide 7 jours à 6€ à la carte, ou Pack Premium à 20€ incluant 10 guides 7 jours."
+                : "7-day guide at €6 per trip, or Pack Premium at €20 including 10 x 7-day guides."}
             </p>
           </div>
 
@@ -848,15 +856,15 @@ export default function BusinessPage() {
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 relative">
               <div className="flex-1">
                 <p className="text-[10px] font-mono tracking-widest uppercase mb-2" style={{ color: "rgba(59,130,246,0.6)" }}>
-                  {lang === "fr" ? "Pack Premium mensuel" : "Monthly Premium Pack"}
+                  {lang === "fr" ? "Pack Premium" : "Premium Pack"}
                 </p>
                 <h3 className="text-2xl sm:text-3xl font-bold mb-3" style={{ color: B.text, fontFamily: "var(--font-playfair), Georgia, serif" }}>
                   {lang === "fr" ? "Pack Premium Travel Business" : "Travel Business Premium Pack"}
                 </h3>
                 <ul className="space-y-1.5 text-sm" style={{ color: "rgba(255,255,255,0.65)" }}>
                   {(lang === "fr"
-                    ? ["10 guides de 3 jours inclus par mois","Pour ceux qui bougent énormément — chaque semaine","Gratuit à l'unité dès le Pack Premium actif","Guides disponibles immédiatement après l'achat"]
-                    : ["10 x 3-day guides included per month","For those who travel constantly — every week","Free per guide once Pack Premium is active","Guides available immediately after purchase"]
+                    ? ["10 guides 7 jours inclus","Achat unique — pas d'abonnement","Gratuit à l'unité dès le Pack Premium actif","Guides disponibles immédiatement après l'achat"]
+                    : ["10 x 7-day guides included","One-time purchase — no subscription","Free per guide once Pack Premium is active","Guides available immediately after purchase"]
                   ).map(f => (
                     <li key={f} className="flex items-center gap-2">
                       <span className="font-bold text-xs" style={{ color: B.accent }}>✓</span>{f}
@@ -868,9 +876,9 @@ export default function BusinessPage() {
                 <div>
                   <div className="flex items-end gap-1">
                     <span className="text-6xl font-black" style={{ color: B.accent, fontFamily: "var(--font-playfair), Georgia, serif" }}>20€</span>
-                    <span className="text-sm mb-2" style={{ color: B.muted }}>/mois</span>
+                    <span className="text-sm mb-2" style={{ color: B.muted }}>achat unique</span>
                   </div>
-                  <p className="text-xs mt-1" style={{ color: B.faint }}>{lang === "fr" ? "Résiliable à tout moment" : "Cancel anytime"}</p>
+                  <p className="text-xs mt-1" style={{ color: B.faint }}>{lang === "fr" ? "10 crédits valables sans limite de durée" : "10 credits with no expiry"}</p>
                 </div>
                 <button type="button" onClick={handleSubscribe}
                   className="font-bold px-8 py-3 rounded-xl text-sm whitespace-nowrap text-white transition-all hover:opacity-90 hover:scale-105"
