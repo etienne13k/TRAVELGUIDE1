@@ -34,6 +34,7 @@ function CartContent() {
   const [checkoutProfileUrl, setCheckoutProfileUrl] = useState<string | null>(null);
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [termsError, setTermsError] = useState<string | null>(null);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
   const autoAppliedRef = useRef(false);
 
   useEffect(() => {
@@ -42,6 +43,9 @@ function CartContent() {
       const saved = localStorage.getItem("tgai_promo");
       if (saved) setPromoCode(saved);
     });
+    fetch("/api/account/status").then(r => r.json()).then(d => {
+      if (d.email) setUserEmail(d.email);
+    }).catch(() => undefined);
   }, []);
 
   const total = getCartTotal(items);
@@ -139,6 +143,7 @@ function CartContent() {
       const params = new URLSearchParams();
       if (orderId) params.set("client_reference_id", orderId);
       if (normalizedPromoCode) params.set("prefilled_promo_code", normalizedPromoCode);
+      if (userEmail) params.set("prefilled_email", userEmail);
 
       const query = params.toString();
       const stripeUrl = query ? `${baseLink}?${query}` : baseLink;
