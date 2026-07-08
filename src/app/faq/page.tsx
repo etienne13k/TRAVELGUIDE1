@@ -23,7 +23,7 @@ const FAQ_FR = [
     cat: "Prix & Paiement",
     items: [
       { q: "Quelles sont les offres disponibles ?", a: "Nous proposons 4 offres : Guide 3 jours (3€), Guide 7 jours (6€), Guide 14 jours (12€) et Guide 1 mois (18€). Tous les prix sont en TTC, TVA non applicable (micro-entreprise)." },
-      { q: "Comment fonctionne le code promo WELCOME ?", a: "Le code WELCOME offre -25% sur votre première commande. Pour l'activer, vérifiez votre numéro de téléphone dans votre espace compte — cela débloque automatiquement le code. Il est valable une seule fois par compte." },
+      { q: "Comment fonctionne le code promo WELCOME ?", a: "Le code WELCOME offre -25% sur votre première commande. Il est valable une seule fois par compte." },
       { q: "Le paiement est-il sécurisé ?", a: "Oui. Les paiements sont traités exclusivement par Stripe, certifié PCI-DSS niveau 1 (le standard de sécurité le plus élevé pour les paiements en ligne). Nous ne voyons jamais votre numéro de carte bancaire." },
       { q: "Puis-je me faire rembourser ?", a: "Si votre guide n'est pas livré dans les 24 heures, vous avez droit à un remboursement intégral. Une fois le guide livré, le remboursement n'est pas possible (contenu numérique à exécution immédiate), sauf défaut grave signalé dans les 7 jours. Consultez nos CGV pour tous les détails." },
     ],
@@ -51,7 +51,6 @@ const FAQ_FR = [
       { q: "Mes données sont-elles en sécurité ?", a: "Oui. Vos données sont stockées sur Supabase (infrastructure AWS, datacenter européen), avec chiffrement en transit (HTTPS/TLS) et au repos. Vos mots de passe sont hachés avec bcrypt — nous n'y avons jamais accès." },
       { q: "L'IA garde-t-elle mes informations ?", a: "Non. Notre IA entraînée n'utilise pas vos données personnelles pour s'améliorer. Seules vos préférences de voyage sont transmises pour générer votre guide." },
       { q: "Mon email sera-t-il revendu ?", a: "Jamais. Votre email est utilisé uniquement pour vous livrer votre guide et confirmer votre commande. Si vous vous inscrivez à la newsletter, vous pouvez vous désinscrire à tout moment d'un seul clic." },
-      { q: "À quoi sert la vérification du numéro de téléphone ?", a: "Elle est optionnelle et sert uniquement à vérifier votre identité par SMS (code OTP) pour débloquer le code promo WELCOME. Votre numéro n'est pas utilisé à des fins commerciales et n'est pas revendu." },
     ],
   },
 ];
@@ -70,7 +69,7 @@ const FAQ_EN = [
     cat: "Pricing & Payment",
     items: [
       { q: "What plans are available?", a: "We offer 4 plans: 3-day guide (€3), 7-day guide (€6), 14-day guide (€12) and 1-month guide (€18). All prices are all-inclusive." },
-      { q: "How does the WELCOME promo code work?", a: "The WELCOME code gives -25% off your first order. To activate it, verify your phone number in your account — this automatically unlocks the code. Valid once per account." },
+      { q: "How does the WELCOME promo code work?", a: "The WELCOME code gives -25% off your first order. Valid once per account." },
       { q: "Is payment secure?", a: "Yes. Payments are processed exclusively by Stripe, PCI-DSS level 1 certified. We never see your card number." },
       { q: "Can I get a refund?", a: "If your guide is not delivered within 48 hours, you are entitled to a full refund. Once delivered, refunds are not possible (immediate digital content), except for serious defects reported within 7 days. See our Terms of Sale for full details." },
     ],

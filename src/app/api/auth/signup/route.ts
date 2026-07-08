@@ -6,12 +6,7 @@ import {
   getClientIp,
   hasReachedSignupIpLimit,
   isFallbackAntiBotValid,
-  isPhoneAlreadyUsed,
-  isValidPhone,
-  normalizePhone,
   recordSignupIp,
-  signupErrors,
-  type SignupErrorCode,
   verifyTurnstileToken,
 } from "@/lib/signup-anti-abuse";
 
@@ -19,11 +14,6 @@ type PgError = Error & {
   code?: string;
   constraint?: string;
 };
-
-function errorResponse(code: SignupErrorCode, status: number) {
-  const messages = signupErrors[code];
-  return NextResponse.json({ error: messages.fr, code, messages }, { status });
-}
 
 function isUniqueViolation(error: unknown, constraint: string): boolean {
   const pgError = error as PgError;
@@ -37,22 +27,21 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const normalizedEmail = typeof body.email === "string" ? body.email.toLowerCase().trim() : "";
     const password = typeof body.password === "string" ? body.password : "";
-    const phoneNumber = normalizePhone(body.phoneNumber);
 
-    if (!normalizedEmail || !password || !phoneNumber) {
-      return NextResponse.json({ error: "Email, téléphone et mot de passe requis" }, { status: 400 });
+    if (!normalizedEmail || !password) {
+      return NextResponse.json({ error: "Email et mot de passe requis" }, { status: 400 });
     }
     if (password.length < 8) {
       return NextResponse.json({ error: "Le mot de passe doit faire au moins 8 caractères" }, { status: 400 });
-    }
-    if (!isValidPhone(phoneNumber)) {
-      return errorResponse("invalid_phone", 400);
     }
 
     const pool = getPool();
 
     if (await hasReachedSignupIpLimit(pool, clientIp)) {
-      return errorResponse("ip_limit", 429);
+      return NextResponse.json(
+        { error: "Trop de comptes créés depuis votre réseau. Réessayez demain." },
+        { status: 429 }
+      );
     }
 
     const turnstileConfigured = Boolean(
@@ -64,7 +53,10 @@ export async function POST(req: NextRequest) {
       : isFallbackAntiBotValid(body.antiBotAnswer, body.companyWebsite);
 
     if (!captchaPassed) {
-      return errorResponse("captcha_failed", 400);
+      return NextResponse.json(
+        { error: "Vérification anti-robot échouée. Réessayez." },
+        { status: 400 }
+      );
     }
 
     const client = await pool.connect();
@@ -81,15 +73,10 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: "Un compte existe déjà avec cet email" }, { status: 409 });
       }
 
-      if (await isPhoneAlreadyUsed(client, phoneNumber)) {
-        await client.query("ROLLBACK");
-        return errorResponse("phone_taken", 409);
-      }
-
       const passwordHash = await bcrypt.hash(password, 12);
       const { rows: inserted } = await client.query(
-        "INSERT INTO users (email, phone_number, password_hash) VALUES ($1, $2, $3) RETURNING id, email",
-        [normalizedEmail, phoneNumber, passwordHash]
+        "INSERT INTO users (email, password_hash) VALUES ($1, $2) RETURNING id, email",
+        [normalizedEmail, passwordHash]
       );
       const user = inserted[0];
 
@@ -124,9 +111,6 @@ export async function POST(req: NextRequest) {
       await client.query("ROLLBACK");
       if (isUniqueViolation(error, "users_email_key")) {
         return NextResponse.json({ error: "Un compte existe déjà avec cet email" }, { status: 409 });
-      }
-      if (isUniqueViolation(error, "users_phone_number_unique")) {
-        return errorResponse("phone_taken", 409);
       }
       throw error;
     } finally {

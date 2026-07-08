@@ -1,9 +1,7 @@
 import { getPool } from "@/lib/db";
-import { getPhoneStatus } from "@/lib/phone-verification";
 
 export const PROFILE_URL = "/account/profile";
 export const PROMO_REQUIRES_LOGIN_MESSAGE = "Connectez-vous pour utiliser ce code.";
-export const PROMO_REQUIRES_VERIFIED_PHONE_MESSAGE = "Pour utiliser ce code, veuillez d'abord vérifier votre numéro de téléphone dans votre profil.";
 export const PROMO_ALREADY_USED_MESSAGE = "Ce code a déjà été utilisé sur votre compte.";
 
 type PromoConfig = {
@@ -62,17 +60,6 @@ export async function validateManagedPromoForUser(params: {
   }
 
   const pool = getPool();
-  const phoneStatus = await getPhoneStatus(pool, params.userId);
-
-  if (!phoneStatus.phone || !phoneStatus.phoneVerified) {
-    return {
-      valid: false,
-      error: "phone_unverified",
-      message: PROMO_REQUIRES_VERIFIED_PHONE_MESSAGE,
-      profileUrl: PROFILE_URL,
-      status: 403,
-    };
-  }
 
   const { rows: usages } = await pool.query<{ id: string }>(
     "SELECT id FROM promo_usages WHERE user_id = $1 AND promo_code = $2 LIMIT 1",

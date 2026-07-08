@@ -3,10 +3,8 @@ import Link from "next/link";
 import { getServerSession } from "@/lib/auth";
 import { getPool } from "@/lib/db";
 import LogoutButton from "@/components/LogoutButton";
-import PhoneVerification from "@/components/PhoneVerification";
 import ProfileForm from "@/components/ProfileForm";
 import LangToggle from "@/components/LangToggle";
-import { getPhoneStatus } from "@/lib/phone-verification";
 
 const PLAN_LABELS: Record<string, string> = {
   "3j": "3 jours",
@@ -75,17 +73,14 @@ const N = {
   muted:  "var(--cm)",
   faint:  "var(--cv)",
   accent: "var(--ca)",
-  accentFaint: "var(--caf)",
-  accentBorder: "var(--cab)",
 };
 
 export default async function AccountPage() {
   const session = await getServerSession();
   if (!session) redirect("/login");
 
-  const [orders, phoneStatus, profile] = await Promise.all([
+  const [orders, profile] = await Promise.all([
     getOrders(session.userId),
-    getPhoneStatus(getPool(), session.userId),
     getProfile(session.userId),
   ]);
 
@@ -136,24 +131,6 @@ export default async function AccountPage() {
             email={session.email}
           />
 
-          <div className="my-6" style={{ borderTop: `1px solid ${N.border}` }} />
-
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              <span className="text-sm font-semibold" style={{ color: N.text }}>Numéro de téléphone</span>
-              {phoneStatus.phoneVerified ? (
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ background: "rgba(74,222,128,0.12)", color: "#4ade80", border: "1px solid rgba(74,222,128,0.28)" }}>Vérifié</span>
-              ) : (
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ background: N.accentFaint, color: N.accent, border: `1px solid ${N.accentBorder}` }}>Non vérifié</span>
-              )}
-            </div>
-            {!phoneStatus.phoneVerified && (
-              <p className="text-sm mb-3" style={{ color: N.muted }}>
-                Vérifiez votre numéro pour débloquer le code <span className="font-mono font-bold" style={{ color: N.accent }}>WELCOME</span> (-25% sur votre premier guide).
-              </p>
-            )}
-            <PhoneVerification initialPhone={phoneStatus.phone} initialVerified={phoneStatus.phoneVerified} />
-          </div>
         </section>
 
         {/* Commandes */}

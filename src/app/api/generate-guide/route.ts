@@ -58,17 +58,6 @@ export async function POST(req: NextRequest) {
       const limitPool = new Pool({ connectionString: process.env.DATABASE_URL, ssl: { rejectUnauthorized: false } });
       await limitPool.query(`CREATE TABLE IF NOT EXISTS guide_limits (email text NOT NULL, week_start date NOT NULL, count int DEFAULT 1, PRIMARY KEY (email, week_start))`);
 
-      // Check if account phone is verified
-      const { rows: userRows } = await limitPool.query(
-        `SELECT phone_verified FROM users WHERE email = $1 LIMIT 1`,
-        [session.email.toLowerCase()]
-      );
-      const isVerified = userRows[0]?.phone_verified === true;
-      if (!isVerified) {
-        await limitPool.end();
-        return NextResponse.json({ error: "Votre numéro de téléphone doit être vérifié pour générer un guide." }, { status: 403 });
-      }
-
       // Check weekly count
       const weekStart = new Date();
       weekStart.setDate(weekStart.getDate() - weekStart.getDay());

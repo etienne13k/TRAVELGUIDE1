@@ -38,17 +38,6 @@ export async function POST(req: NextRequest) {
       if (session?.email) {
         const limitPool = new Pool({ connectionString: process.env.DATABASE_URL, ssl: { rejectUnauthorized: false } });
 
-        // Check phone verified
-        const { rows: userRows } = await limitPool.query(
-          `SELECT phone_verified FROM users WHERE email = $1 LIMIT 1`,
-          [session.email.toLowerCase()]
-        );
-        const isVerified = userRows[0]?.phone_verified === true;
-        if (!isVerified) {
-          await limitPool.end();
-          return NextResponse.json({ error: "Numéro de téléphone non vérifié.", code: "phone_unverified" }, { status: 403 });
-        }
-
         // 3-day window: floor to nearest 3-day block from epoch
         await limitPool.query(`CREATE TABLE IF NOT EXISTS suggestion_limits (email text NOT NULL, period_start date NOT NULL, count int DEFAULT 1, PRIMARY KEY (email, period_start))`);
         const epochDays = Math.floor(Date.now() / 86400000);

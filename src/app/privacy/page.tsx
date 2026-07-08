@@ -26,10 +26,6 @@ Pour toute question relative à vos données personnelles, écrivez-nous directe
 - Adresse e-mail : pour créer votre compte, vous livrer votre guide et vous contacter sur votre commande uniquement.
 - Mot de passe : stocké sous forme chiffrée (hachage bcrypt). Nous n'y avons pas accès.
 
-**Numéro de téléphone :**
-- Collecté uniquement pour la vérification d'identité par SMS (code OTP via Twilio).
-- Non utilisé à des fins commerciales, non revendu, non partagé à des tiers non mentionnés.
-
 **Données du questionnaire de voyage :**
 - Destination, dates, préférences de voyage, style de voyage, budget, intérêts.
 - Ces données sont **non sensibles** (aucune donnée de santé, aucune donnée financière précise, aucune opinion politique).
@@ -51,7 +47,6 @@ Vos réponses au questionnaire (destination, préférences, dates) sont envoyée
 **Ce que l'IA ne reçoit PAS :**
 - Votre nom complet
 - Votre adresse e-mail
-- Votre numéro de téléphone
 - Vos coordonnées bancaires
 
 **Important :** N'incluez dans vos réponses et vos notes libres **aucune information personnelle sensible** (numéro de sécurité sociale, données médicales précises, coordonnées bancaires, mots de passe, etc.). Ces informations n'ont aucune utilité pour générer votre guide et leur traitement par une IA tiers n'est pas couvert par cette politique.
@@ -65,7 +60,6 @@ Notre IA entraînée n'utilise pas les données soumises pour s'améliorer. Les 
 |--------|-------------|-------------|
 | E-mail | Livraison du guide, confirmation d'achat, support client | Exécution du contrat |
 | E-mail (newsletter) | Envoi d'actualités Travel IA | Consentement explicite |
-| Téléphone | Vérification OTP, déblocage code promo WELCOME | Intérêt légitime / consentement |
 | Questionnaire | Génération de votre guide par IA | Exécution du contrat |
 | Paiement | Traitement de la transaction | Exécution du contrat |
 | Analytics | Amélioration du service | Intérêt légitime |
@@ -100,7 +94,6 @@ Nous ne vous enverrons **jamais** d'e-mails commerciaux non sollicités.`,
 | **Supabase** | Base de données, authentification | UE (hébergement AWS eu-central) |
 | **Vercel** | Hébergement du site web | UE / USA (Standard Contractual Clauses) |
 | **Stripe** | Paiement en ligne | USA (SCC + Privacy Shield) |
-| **Twilio** | Vérification SMS (OTP) | USA (SCC) |
 | **IA entraînée** | Génération du guide par IA | Données questionnaire uniquement, non personnelles |
 | **PostHog** | Analytics anonymisés | EU Cloud |
 
@@ -110,7 +103,6 @@ Aucun autre tiers n'a accès à vos données personnelles.`,
     id: "conservation",
     title: "7. Durée de conservation",
     body: `- **Compte et e-mail :** conservés tant que votre compte est actif, puis supprimés sous 30 jours après demande de clôture.
-- **Numéro de téléphone :** conservé jusqu'à suppression du compte.
 - **Données du questionnaire :** conservées dans votre historique de commande pour vous permettre de les consulter. Supprimées à la clôture du compte.
 - **Données de paiement :** gérées par Stripe selon ses propres règles de conservation (obligations légales comptables — 10 ans).
 - **Logs de navigation (PostHog) :** 12 mois, données anonymisées.`,
@@ -171,10 +163,6 @@ For any questions regarding your personal data, write to us directly at the addr
 - Email address: to create your account, deliver your guide and contact you about your order only.
 - Password: stored in encrypted form (bcrypt hash). We do not have access to it.
 
-**Phone number:**
-- Collected solely for SMS identity verification (OTP code via Twilio).
-- Not used for commercial purposes, not resold, not shared with unlisted third parties.
-
 **Travel questionnaire data:**
 - Destination, dates, travel preferences, travel style, budget, interests.
 - This data is **non-sensitive** (no health data, no precise financial data, no political opinions).
@@ -196,7 +184,6 @@ Your questionnaire answers (destination, preferences, dates) are sent to our tra
 **What AI does NOT receive:**
 - Your full name
 - Your email address
-- Your phone number
 - Your banking details
 
 **Important:** Do not include in your answers and free-text notes **any sensitive personal information** (social security number, precise medical data, banking details, passwords, etc.). This information is of no use for generating your guide and its processing by a third-party AI is not covered by this policy.
@@ -210,7 +197,6 @@ Our trained AI does not use submitted data to improve itself. Questionnaire data
 |------|-----|-------------|
 | Email | Guide delivery, purchase confirmation, customer support | Contract performance |
 | Email (newsletter) | Sending Travel IA news | Explicit consent |
-| Phone | OTP verification, WELCOME promo code unlock | Legitimate interest / consent |
 | Questionnaire | AI guide generation | Contract performance |
 | Payment | Transaction processing | Contract performance |
 | Analytics | Service improvement | Legitimate interest |
@@ -245,7 +231,6 @@ We will **never** send you unsolicited commercial emails.`,
 | **Supabase** | Database, authentication | EU (AWS eu-central hosting) |
 | **Vercel** | Website hosting | EU / USA (Standard Contractual Clauses) |
 | **Stripe** | Online payment | USA (SCC + Privacy Shield) |
-| **Twilio** | SMS verification (OTP) | USA (SCC) |
 | **Trained AI** | AI guide generation | Questionnaire data only, non-personal |
 | **PostHog** | Anonymized analytics | EU Cloud |
 
@@ -255,7 +240,6 @@ No other third party has access to your personal data.`,
     id: "conservation",
     title: "7. Data retention",
     body: `- **Account and email:** retained while your account is active, then deleted within 30 days of closure request.
-- **Phone number:** retained until account deletion.
 - **Questionnaire data:** retained in your order history for your reference. Deleted upon account closure.
 - **Payment data:** managed by Stripe according to its own retention rules (legal accounting obligations — 10 years).
 - **Navigation logs (PostHog):** 12 months, anonymized data.`,
@@ -304,7 +288,7 @@ const UI = {
     subtitle: "Transparent sur ce que nous faisons de vos données. Aucune surprise, aucune revente.",
     cards: [
       { title: "Zéro revente", desc: "Vos données ne sont jamais vendues à des tiers ou annonceurs." },
-      { title: "IA sans données perso", desc: "Notre IA entraînée reçoit uniquement vos préférences de voyage, pas votre email ni téléphone." },
+      { title: "IA sans données perso", desc: "Notre IA entraînée reçoit uniquement vos préférences de voyage, pas votre email ni vos données personnelles." },
       { title: "Email = commande only", desc: "On vous écrit uniquement pour votre guide et votre commande. Newsletter = opt-in." },
     ],
     toc: "Sommaire",
@@ -316,7 +300,7 @@ const UI = {
     subtitle: "Transparent about what we do with your data. No surprises, no selling.",
     cards: [
       { title: "Zero resale", desc: "Your data is never sold to third parties or advertisers." },
-      { title: "AI without personal data", desc: "Our trained AI receives only your travel preferences, not your email or phone." },
+      { title: "AI without personal data", desc: "Our trained AI receives only your travel preferences, not your email or personal details." },
       { title: "Email = order only", desc: "We only email you about your guide and order. Newsletter = opt-in." },
     ],
     toc: "Contents",

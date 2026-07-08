@@ -8,11 +8,9 @@ import RevealObserver from "@/components/RevealObserver";
 
 type Lang = "fr" | "en";
 
-type PhoneStatus = {
+type AccountStatus = {
   loggedIn: boolean;
   email?: string;
-  phone: string | null;
-  phoneVerified: boolean;
   welcomeUsed: boolean;
 };
 
@@ -339,7 +337,7 @@ const translations = {
 export default function Home() {
   const [lang, setLang] = useState<Lang>("fr");
   const [cartCount, setCartCount] = useState(0);
-  const [phoneStatus, setPhoneStatus] = useState<PhoneStatus>({ loggedIn: false, phone: null, phoneVerified: false, welcomeUsed: false });
+  const [accountStatus, setAccountStatus] = useState<AccountStatus>({ loggedIn: false, welcomeUsed: false });
   const [exampleExpanded, setExampleExpanded] = useState(false);
   const tx = translations[lang];
 
@@ -372,10 +370,10 @@ export default function Home() {
   useEffect(() => {
     let cancelled = false;
 
-    fetch("/api/phone/status")
+    fetch("/api/account/status")
       .then((response) => response.ok ? response.json() : null)
       .then((data) => {
-        if (!cancelled && data) setPhoneStatus(data);
+        if (!cancelled && data) setAccountStatus(data);
       })
       .catch(() => undefined);
 
@@ -693,8 +691,8 @@ export default function Home() {
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {tx.plans.map((plan, pIdx) => {
               const isInverted = plan.popular;
-              const isGiftPlan = !phoneStatus.welcomeUsed; // disparaît si déjà utilisé
-              const giftUnlocked = phoneStatus.loggedIn && phoneStatus.phoneVerified && !phoneStatus.welcomeUsed;
+              const isGiftPlan = !accountStatus.welcomeUsed; // disparaît si déjà utilisé
+              const giftUnlocked = accountStatus.loggedIn && !accountStatus.welcomeUsed;
               const giftTooltip = giftUnlocked ? tx.gift_unlocked_tooltip : tx.gift_tooltip;
               return (
                 <div

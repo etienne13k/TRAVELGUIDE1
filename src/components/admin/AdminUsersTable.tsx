@@ -34,7 +34,6 @@ const STATUS_LABELS: Record<string, string> = {
 
 function accountStatus(user: AdminUser) {
   if (user.is_suspended) return { label: "🚫 Suspendu", color: "text-red-200 bg-red-400/10 border-red-400/25" };
-  if (!user.phone_number) return { label: "📵 Téléphone non vérifié", color: "text-amber-200 bg-amber-400/10 border-amber-400/25" };
   return { label: "✅ Actif", color: "text-emerald-200 bg-emerald-400/10 border-emerald-400/25" };
 }
 
@@ -73,10 +72,6 @@ function UserPanel({ user, onClose }: { user: AdminUser; onClose: () => void }) 
           <span className={`mt-4 inline-flex rounded-full border px-3 py-1 text-xs font-semibold ${status.color}`}>{status.label}</span>
 
           <div className="mt-6 grid gap-3 sm:grid-cols-2">
-            <div className="rounded-2xl border border-white/10 bg-[#0f172a] p-4">
-              <p className="text-xs uppercase tracking-wide text-slate-500">Téléphone</p>
-              <p className="mt-1 text-sm text-white">{user.phone_number || "Non renseigné"}</p>
-            </div>
             <div className="rounded-2xl border border-white/10 bg-[#0f172a] p-4">
               <p className="text-xs uppercase tracking-wide text-slate-500">Inscription</p>
               <p className="mt-1 text-sm text-white">{formatDate(user.created_at)}</p>
@@ -132,7 +127,6 @@ export default function AdminUsersTable({ users }: { users: AdminUser[] }) {
               <tr>
                 <th className="px-5 py-4">#</th>
                 <th className="px-5 py-4">Email</th>
-                <th className="px-5 py-4">Téléphone</th>
                 <th className="px-5 py-4">Date inscription</th>
                 <th className="px-5 py-4">Nb commandes</th>
                 <th className="px-5 py-4">Statut compte</th>
@@ -146,7 +140,6 @@ export default function AdminUsersTable({ users }: { users: AdminUser[] }) {
                   <tr key={user.id} className="hover:bg-white/[0.03]">
                     <td className="px-5 py-4 font-mono text-xs text-slate-500">{index + 1}</td>
                     <td className="px-5 py-4 text-white">{user.email}</td>
-                    <td className="px-5 py-4 text-slate-300">{user.phone_number || "—"}</td>
                     <td className="px-5 py-4 text-slate-300">{formatDate(user.created_at)}</td>
                     <td className="px-5 py-4 text-slate-300">{user.orders_count}</td>
                     <td className="px-5 py-4"><span className={`rounded-full border px-3 py-1 text-xs font-semibold ${status.color}`}>{status.label}</span></td>
@@ -157,7 +150,7 @@ export default function AdminUsersTable({ users }: { users: AdminUser[] }) {
                 );
               })}
               {users.length === 0 && (
-                <tr><td colSpan={7} className="px-5 py-12 text-center text-slate-400">Aucun utilisateur inscrit.</td></tr>
+                <tr><td colSpan={6} className="px-5 py-12 text-center text-slate-400">Aucun utilisateur inscrit.</td></tr>
               )}
             </tbody>
           </table>

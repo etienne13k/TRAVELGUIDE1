@@ -177,7 +177,7 @@ Il est expressément interdit, sans accord écrit préalable du Vendeur, de :
         title: "Article 10 — Données Personnelles",
         body: `Le Vendeur traite les données personnelles des Clients conformément au Règlement Général sur la Protection des Données (RGPD — Règlement UE 2016/679) et à la loi Informatique et Libertés du 6 janvier 1978 modifiée.
 
-**Données collectées :** adresse email, mot de passe (chiffré), numéro de téléphone (optionnel), données du questionnaire de voyage (destination, préférences, dates, budget).
+**Données collectées :** adresse email, mot de passe (chiffré), données du questionnaire de voyage (destination, préférences, dates, budget).
 
 **Finalités :** gestion de la commande, génération et livraison du guide, assistance client, amélioration du service.
 

@@ -3,7 +3,6 @@ import type { Pool, PoolClient } from "pg";
 
 const SIGNUP_WINDOW_HOURS = 24;
 const SIGNUP_LIMIT_PER_IP = 3;
-const PHONE_REGEX = /^\+[1-9]\d{1,14}$/;
 
 export const signupErrors = {
   captcha_failed: {
@@ -18,14 +17,6 @@ export const signupErrors = {
     fr: "Trop de comptes créés depuis votre réseau. Réessayez demain.",
     en: "Too many accounts created from your network. Try again tomorrow.",
   },
-  invalid_phone: {
-    fr: "Format téléphone invalide (ex: +33612345678).",
-    en: "Invalid phone format (example: +33612345678).",
-  },
-  phone_taken: {
-    fr: "Ce numéro de téléphone est déjà associé à un compte.",
-    en: "This phone number is already linked to an account.",
-  },
 };
 
 export type SignupErrorCode = keyof typeof signupErrors;
@@ -36,14 +27,6 @@ export function getClientIp(req: NextRequest): string {
     req.headers.get("x-real-ip") ||
     "0.0.0.0"
   );
-}
-
-export function normalizePhone(phone: unknown): string {
-  return typeof phone === "string" ? phone.trim() : "";
-}
-
-export function isValidPhone(phone: string): boolean {
-  return PHONE_REGEX.test(phone);
 }
 
 export async function hasReachedSignupIpLimit(pool: Pool, ipAddress: string): Promise<boolean> {
@@ -64,21 +47,6 @@ export async function recordSignupIp(client: PoolClient, ipAddress: string): Pro
     "INSERT INTO ip_logs (ip_address, action) VALUES ($1, $2)",
     [ipAddress, "signup"]
   );
-}
-
-export async function isPhoneAlreadyUsed(
-  client: Pool | PoolClient,
-  phoneNumber: string,
-  exceptUserId?: string
-): Promise<boolean> {
-  const params = exceptUserId ? [phoneNumber, exceptUserId] : [phoneNumber];
-  const excludeSelf = exceptUserId ? "AND id <> $2" : "";
-  const { rows } = await client.query(
-    `SELECT id FROM users WHERE phone_number = $1 ${excludeSelf} LIMIT 1`,
-    params
-  );
-
-  return rows.length > 0;
 }
 
 export function isFallbackAntiBotValid(answer: unknown, honeypot: unknown): boolean {

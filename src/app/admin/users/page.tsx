@@ -61,7 +61,7 @@ export default async function AdminUsersPage() {
         <h1 className="mt-2 text-3xl font-bold text-white md:text-4xl" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
           Gestion utilisateurs
         </h1>
-        <p className="mt-2 text-sm text-slate-400">Comptes clients, statut téléphone, commandes et suspension.</p>
+        <p className="mt-2 text-sm text-slate-400">Comptes clients, commandes et suspension.</p>
       </div>
       <AdminUsersTable users={users} />
     </AdminShell>
