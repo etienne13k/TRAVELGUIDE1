@@ -850,9 +850,9 @@ export default function BusinessPage() {
           </div>
 
           {/* ABONNEMENT — featured */}
-          <div className="relative rounded-2xl p-8 sm:p-10 mb-6 overflow-hidden" style={{ background: `linear-gradient(135deg, ${B.dark2}, ${B.dark1})`, border: `1px solid ${B.accentBorder}` }}>
-            <div className="absolute top-0 right-0 w-64 h-64 rounded-full -translate-y-1/2 translate-x-1/2 pointer-events-none" style={{ background: "rgba(59,130,246,0.05)" }} />
-            <div className="absolute -top-3 left-8 text-white text-[11px] font-bold px-4 py-1 rounded-full" style={{ background: B.accent }}>
+          <div className="relative rounded-2xl p-8 sm:p-10 mb-6 mt-6" style={{ background: `linear-gradient(135deg, ${B.dark2}, ${B.dark1})`, border: `1px solid ${B.accentBorder}` }}>
+            <div className="absolute top-0 right-0 w-64 h-64 rounded-full -translate-y-1/2 translate-x-1/2 pointer-events-none overflow-hidden" style={{ background: "rgba(59,130,246,0.05)" }} />
+            <div className="absolute -top-4 left-8 text-white text-[11px] font-bold px-4 py-1 rounded-full" style={{ background: B.accent }}>
               {lang === "fr" ? "★ 10 guides inclus" : "★ 10 guides included"}
             </div>
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 relative">
