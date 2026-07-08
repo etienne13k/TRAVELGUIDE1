@@ -58,7 +58,7 @@ export default function ContactPage() {
           <div>
             <div className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 mb-6" style={{ background: "var(--cc)", border: "1px solid var(--ce)" }}>
               <span className="w-2 h-2 rounded-full animate-pulse" style={{ background: "var(--ca)" }} />
-              <span className="text-xs font-bold uppercase tracking-wide" style={{ color: "var(--cm)" }}>On vous répond sous 48h</span>
+              <span className="text-xs font-bold uppercase tracking-wide" style={{ color: "var(--cm)" }}>On vous répond sous 24h</span>
             </div>
             <h1 className="text-3xl sm:text-4xl font-bold mb-4" style={{ fontFamily: "var(--font-playfair), Georgia, serif", color: "var(--ct)" }}>
               Une question ?<br />On est là.
@@ -81,7 +81,7 @@ export default function ContactPage() {
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                   ),
                   title: "Délai de réponse",
-                  desc: "Généralement sous 48h en semaine",
+                  desc: "Généralement sous 24h en semaine",
                 },
                 {
                   icon: (
@@ -115,7 +115,7 @@ export default function ContactPage() {
                   Message envoyé !
                 </h2>
                 <p className="text-sm mb-6" style={{ color: "var(--cm)" }}>
-                  Nous avons bien reçu votre message et vous répondrons sous 48h.
+                  Nous avons bien reçu votre message et vous répondrons sous 24h.
                 </p>
                 <button
                   type="button"

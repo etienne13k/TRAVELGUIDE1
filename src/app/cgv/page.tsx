@@ -50,7 +50,7 @@ Chaque guide est livré en format **PDF**, téléchargeable depuis l'espace clie
 
 **3.3 Délais de livraison**
 - Délai standard : quelques minutes après validation du questionnaire.
-- Délai maximum garanti : 48 heures ouvrées à compter de la validation du questionnaire.
+- Délai maximum garanti : 24 heures ouvrées à compter de la validation du questionnaire.
 
 **3.4 Langue du guide**
 Le guide est généré dans la langue choisie par le Client lors du questionnaire (français ou anglais).`,
@@ -116,7 +116,7 @@ Cette case est obligatoire pour valider la commande. La renonciation est enregis
         id: "art7",
         title: "Article 7 — Politique de Remboursement",
         body: `**7.1 Service non rendu dans les délais**
-Si le guide n'est pas livré dans les 48 heures suivant la validation du questionnaire, le Client peut demander un remboursement intégral par email à ${CONTACT} en indiquant son numéro de commande. Le remboursement est effectué sous 14 jours par le même moyen de paiement.
+Si le guide n'est pas livré dans les 24 heures suivant la validation du questionnaire, le Client peut demander un remboursement intégral par email à ${CONTACT} en indiquant son numéro de commande. Le remboursement est effectué sous 14 jours par le même moyen de paiement.
 
 **7.2 Guide livré**
 Une fois le guide généré et mis à disposition dans l'espace client, aucun remboursement n'est accordé, conformément à la renonciation au droit de rétractation (Art. 6.3).

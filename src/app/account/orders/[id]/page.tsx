@@ -42,7 +42,7 @@ const ESTIMATED_DELIVERY: Record<string, string> = {
   "3j":    "Livraison estimée dans 2–4h",
   "7j":    "Livraison estimée dans 4–12h",
   "14j":   "Livraison estimée dans 12–24h",
-  "1mois": "Livraison estimée dans 24–48h",
+  "1mois": "Livraison estimée dans 24–24h",
 };
 
 interface Order {

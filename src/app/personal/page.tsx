@@ -19,14 +19,14 @@ const translations = {
   fr: {
     banner_messages: [
       "🏷️ -25% sur votre premier guide avec le code WELCOME",
-      "✈️ Jusqu'à 6€ économisés · Livraison 48h · Sans abonnement",
+      "✈️ Jusqu'à 6€ économisés · Livraison 24h · Sans abonnement",
       "🌍 Paris · Tokyo · Bali · Bangkok · New York · et bien plus",
     ],
     nav_cta: "Créer mon guide",
     hero_title: "TravelGuide",
     hero_sub: "Vous savez où aller — ou laissez l'IA vous suggérer la destination parfaite. Guide personnalisé, livré en PDF.",
     hero_cta: "Créer mon guide",
-    hero_sub_cta: "À partir de 3€ · Sans abonnement · Livraison sous 48h",
+    hero_sub_cta: "À partir de 3€ · Sans abonnement · Livraison sous 24h",
     how_title: "Comment ça marche",
     how_steps: [
       {
@@ -131,7 +131,7 @@ const translations = {
     social_stats: [
       { number: "4.9★", label: "note moyenne" },
       { number: "2000+", label: "destinations" },
-      { number: "48h", label: "livraison garantie" },
+      { number: "24h", label: "livraison garantie" },
     ],
     bottom_title: "Prêt pour votre prochain voyage ?",
     bottom_sub: "Rejoignez des centaines de voyageurs qui ont optimisé leur aventure avec TravelGuide.",
@@ -149,7 +149,7 @@ const translations = {
       { day: "J3", title: "Harajuku & Shibuya", sub: "Takeshita St. + Carrefour légendaire", color: "#425B48" },
     ],
     hero_card_more: "+ 4 jours supplémentaires…",
-    hero_card_delivery: "Livraison 48h",
+    hero_card_delivery: "Livraison 24h",
     nav_account_label: "Mon compte",
     hero_badge_ai: "Propulsé par IA entraînée",
     hero_badge_delivery: "Livraison",
@@ -178,14 +178,14 @@ const translations = {
   en: {
     banner_messages: [
       "🏷️ -25% on your first guide with code WELCOME",
-      "✈️ Save up to €4 · 48h delivery · No subscription",
+      "✈️ Save up to €4 · 24h delivery · No subscription",
       "🌍 Paris · Tokyo · Bali · Bangkok · New York · and much more",
     ],
     nav_cta: "Create my guide",
     hero_title: "TravelGuide",
     hero_sub: "Know where you're going — or let the AI suggest your perfect destination. Personalised guide, delivered as PDF.",
     hero_cta: "Create my guide",
-    hero_sub_cta: "From €3 · No subscription · Delivered in 48h",
+    hero_sub_cta: "From €3 · No subscription · Delivered in 24h",
     how_title: "How it works",
     how_steps: [
       {
@@ -201,7 +201,7 @@ const translations = {
       {
         n: "03",
         title: "Receive your guide",
-        desc: "Professional PDF delivered to your inbox within 48h. Ready to explore.",
+        desc: "Professional PDF delivered to your inbox within 24h. Ready to explore.",
       },
     ],
     pricing_title: "Choose your adventure",
@@ -289,7 +289,7 @@ const translations = {
     social_stats: [
       { number: "4.9★", label: "average rating" },
       { number: "2000+", label: "destinations" },
-      { number: "48h", label: "delivery guaranteed" },
+      { number: "24h", label: "delivery guaranteed" },
     ],
     bottom_title: "Ready for your next journey?",
     bottom_sub: "Join hundreds of travelers who have optimized their adventure with TravelGuide.",
@@ -440,11 +440,6 @@ export default function Home() {
                 <circle cx="12" cy="8" r="4" />
                 <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
               </svg>
-              {phoneStatus.loggedIn && phoneStatus.email && (
-                <span className="text-xs font-medium hidden sm:inline-block max-w-[90px] truncate text-[#b8cdb4]">
-                  {phoneStatus.email.split("@")[0]}
-                </span>
-              )}
             </Link>
             <Link
               href="/cart"
@@ -498,7 +493,7 @@ export default function Home() {
             </div>
             <div className="flex items-center gap-4 sm:gap-6 mt-8 sm:mt-10">
               {[
-                { val: "48h", label: tx.hero_badge_delivery },
+                { val: "24h", label: tx.hero_badge_delivery },
                 { val: "100%", label: tx.hero_badge_custom },
                 { val: "4.9★", label: tx.hero_badge_rating },
               ].map((b, i) => (
@@ -588,7 +583,7 @@ export default function Home() {
             {tx.how_steps.map((step) => (
               <div
                 key={step.n}
-                className="group bg-white/8 hover:bg-white/13 backdrop-blur-sm border border-white/15 hover:border-white/25 rounded-2xl p-8 text-center transition-all duration-300"
+                className="group bg-white/8 hover:bg-white/13 backdrop-blur-sm border border-white/15 hover:border-white/25 rounded-2xl p-8 text-center transition-all duration-300 hover:scale-[1.03]"
               >
                 <div className="font-black text-5xl text-[#C9A84C]/70 leading-none mb-6 group-hover:text-[#C9A84C] transition-colors"
                   style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
@@ -629,7 +624,7 @@ export default function Home() {
           </div>
           <div className="grid sm:grid-cols-2 gap-6">
             {/* Q1 */}
-            <div className="rounded-3xl border border-[#232c20] bg-[#161c14] p-8 hover:border-[#425C47] transition-all duration-300 group">
+            <div className="rounded-3xl border border-[#232c20] bg-[#161c14] p-8 hover:border-[#425C47] transition-all duration-300 hover:scale-[1.02] group">
               <div className="w-12 h-12 rounded-xl bg-[#232c20] flex items-center justify-center mb-5 group-hover:bg-[#2a3527] transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
               </div>
@@ -653,7 +648,7 @@ export default function Home() {
               </a>
             </div>
             {/* Q2 */}
-            <div className="rounded-3xl border border-[#c9a84c]/20 bg-[#161c14] p-8 hover:border-[#C9A84C]/50 transition-all duration-300 group">
+            <div className="rounded-3xl border border-[#c9a84c]/20 bg-[#161c14] p-8 hover:border-[#C9A84C]/50 transition-all duration-300 hover:scale-[1.02] group">
               <div className="w-12 h-12 rounded-xl bg-[#c9a84c]/10 flex items-center justify-center mb-5 group-hover:bg-[#c9a84c]/20 transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
               </div>
@@ -1042,7 +1037,7 @@ export default function Home() {
             {tx.social_stats.map((stat) => (
               <div
                 key={stat.label}
-                className="rounded-2xl px-6 py-8 flex flex-col items-center gap-2 transition-colors"
+                className="rounded-2xl px-6 py-8 flex flex-col items-center gap-2 transition-all duration-200 hover:scale-105 cursor-default"
                 style={{ background: "var(--cc)", border: "1px solid var(--ce)" }}
               >
                 <span

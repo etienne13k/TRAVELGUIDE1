@@ -11,7 +11,7 @@ const FAQ_FR = [
     cat: "Commande & Livraison",
     items: [
       { q: "Comment fonctionne TravelGuide AI ?", a: "Vous sélectionnez une offre, renseignez un questionnaire sur votre voyage (destination, dates, budget, préférences) et notre IA génère automatiquement un guide personnalisé en PDF, livré dans votre espace client et par email sous quelques minutes." },
-      { q: "Combien de temps pour recevoir mon guide ?", a: "En général quelques minutes après la validation du questionnaire. Le délai maximum garanti est de 48 heures ouvrées. Si vous ne recevez rien au-delà, contactez-nous à travel-guide@nanocorp.app." },
+      { q: "Combien de temps pour recevoir mon guide ?", a: "En général quelques minutes après la validation du questionnaire. Le délai maximum garanti est de 24 heures ouvrées. Si vous ne recevez rien au-delà, contactez-nous à travel-guide@nanocorp.app." },
       { q: "Mon guide est-il vraiment personnalisé ?", a: "Oui. Chaque guide est généré à partir de vos réponses spécifiques : destination exacte, dates, style de voyage, budget quotidien, intérêts (culture, gastronomie, nature…), préférences alimentaires, etc. Deux guides pour la même destination sont différents selon les profils." },
       { q: "Sous quel format reçois-je mon guide ?", a: "Votre guide est livré en PDF, téléchargeable depuis votre espace client et envoyé à l'email fourni lors de la commande. Vous pouvez le re-télécharger à tout moment depuis votre compte." },
       { q: "Puis-je commander plusieurs guides ?", a: "Oui, sans limite. Chaque commande génère un guide indépendant. Vous pouvez commander des guides pour différentes destinations, différentes durées ou différents voyageurs." },
@@ -23,7 +23,7 @@ const FAQ_FR = [
       { q: "Quelles sont les offres disponibles ?", a: "Nous proposons 4 offres : Guide 3 jours (3€), Guide 7 jours (6€), Guide 14 jours (12€) et Guide 1 mois (18€). Tous les prix sont en TTC, TVA non applicable (micro-entreprise)." },
       { q: "Comment fonctionne le code promo WELCOME ?", a: "Le code WELCOME offre -25% sur votre première commande. Pour l'activer, vérifiez votre numéro de téléphone dans votre espace compte — cela débloque automatiquement le code. Il est valable une seule fois par compte." },
       { q: "Le paiement est-il sécurisé ?", a: "Oui. Les paiements sont traités exclusivement par Stripe, certifié PCI-DSS niveau 1 (le standard de sécurité le plus élevé pour les paiements en ligne). Nous ne voyons jamais votre numéro de carte bancaire." },
-      { q: "Puis-je me faire rembourser ?", a: "Si votre guide n'est pas livré dans les 48 heures, vous avez droit à un remboursement intégral. Une fois le guide livré, le remboursement n'est pas possible (contenu numérique à exécution immédiate), sauf défaut grave signalé dans les 7 jours. Consultez nos CGV pour tous les détails." },
+      { q: "Puis-je me faire rembourser ?", a: "Si votre guide n'est pas livré dans les 24 heures, vous avez droit à un remboursement intégral. Une fois le guide livré, le remboursement n'est pas possible (contenu numérique à exécution immédiate), sauf défaut grave signalé dans les 7 jours. Consultez nos CGV pour tous les détails." },
     ],
   },
   {
@@ -168,7 +168,7 @@ export default function FAQPage() {
             {lang === "fr" ? "Vous n'avez pas trouvé votre réponse ?" : "Didn't find your answer?"}
           </h3>
           <p className="text-sm mb-5" style={{ color: "var(--cm)" }}>
-            {lang === "fr" ? "Notre équipe répond sous 48h." : "Our team replies within 48 hours."}
+            {lang === "fr" ? "Notre équipe répond sous 24h." : "Our team replies within 48 hours."}
           </p>
           <Link
             href="/contact"
