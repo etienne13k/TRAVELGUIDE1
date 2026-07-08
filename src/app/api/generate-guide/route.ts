@@ -137,7 +137,7 @@ export async function POST(req: NextRequest) {
     const response = await anthropic.messages.create({
       model: "claude-haiku-4-5-20251001",
       max_tokens: getMaxTokens(input.duration),
-      system: buildSystemPrompt(input.language === "en" ? "en" : "fr"),
+      system: buildSystemPrompt(input),
       messages: [{ role: "user", content: buildUserMessage(input) }],
     });
     guideContent = response.content
