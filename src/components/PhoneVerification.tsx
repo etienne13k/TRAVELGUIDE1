@@ -170,7 +170,7 @@ export default function PhoneVerification({ initialPhone, initialVerified = fals
           <div>
             <p className="font-bold">Numéro vérifié</p>
             <p className="text-sm text-emerald-700">{verifiedPhone ? maskPhone(verifiedPhone) : "Votre numéro est validé."}</p>
-            <p className="mt-2 text-xs text-emerald-700">Le code WELCOME (-40% sur votre premier guide) est maintenant débloqué !</p>
+            <p className="mt-2 text-xs text-emerald-700">Le code WELCOME (-25% sur votre premier guide) est maintenant débloqué !</p>
           </div>
         </div>
       </div>
@@ -183,7 +183,7 @@ export default function PhoneVerification({ initialPhone, initialVerified = fals
         <span className="rounded-2xl bg-[#fdf8f0] p-3 text-2xl shadow-inner">📱</span>
         <div>
           <h3 className="font-bold" style={{ color: "#425C47" }}>Vérification téléphone</h3>
-          <p className="text-sm" style={{ color: "#7a7060" }}>Recevez un code SMS pour débloquer le code WELCOME (-40% sur votre premier guide).</p>
+          <p className="text-sm" style={{ color: "#7a7060" }}>Recevez un code SMS pour débloquer le code WELCOME (-25% sur votre premier guide).</p>
         </div>
       </div>
 

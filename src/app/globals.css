@@ -92,8 +92,15 @@ body {
   will-change: transform;
 }
 
+.animate-ticker-slow {
+  animation: ticker 56s linear infinite;
+  display: flex;
+  width: max-content;
+  will-change: transform;
+}
+
 .banner-ticker-wrap:hover .animate-ticker,
-.business-ticker-wrap:hover .animate-ticker {
+.business-ticker-wrap:hover .animate-ticker-slow {
   animation-play-state: paused;
 }
 

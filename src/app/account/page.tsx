@@ -160,7 +160,7 @@ export default async function AccountPage() {
             </div>
             {!phoneStatus.phoneVerified && (
               <p className="text-sm mb-3" style={{ color: N.muted }}>
-                Vérifiez votre numéro pour débloquer le code <span className="font-mono font-bold" style={{ color: N.accent }}>WELCOME</span> (-40% sur votre premier guide).
+                Vérifiez votre numéro pour débloquer le code <span className="font-mono font-bold" style={{ color: N.accent }}>WELCOME</span> (-25% sur votre premier guide).
               </p>
             )}
             <PhoneVerification initialPhone={phoneStatus.phone} initialVerified={phoneStatus.phoneVerified} />

@@ -274,7 +274,7 @@ export default function BusinessPage() {
         className="business-ticker-wrap fixed top-0 w-full z-[60] overflow-hidden h-12 flex items-center justify-center cursor-default"
         style={{ background: `linear-gradient(90deg, ${B.accent}, #6366f1, ${B.accent})` }}
       >
-        <div className="animate-ticker whitespace-nowrap text-sm font-bold text-white">
+        <div className="animate-ticker-slow whitespace-nowrap text-sm font-bold text-white">
           {[...tx.banner_messages, ...tx.banner_messages].map((msg, i) => (
             <span key={i} className="inline-block px-10">{msg}</span>
           ))}
@@ -748,6 +748,28 @@ export default function BusinessPage() {
                     tip: lang === "fr" ? "Réservation obligatoire · Parking souterrain à proximité" : "Reservation required · Underground parking nearby",
                     tag: lang === "fr" ? "Clients" : "Clients",
                     color: "#3b82f6",
+                  },
+                  {
+                    time: lang === "fr" ? "15h30" : "3:30pm",
+                    label: lang === "fr" ? "Après-midi" : "Afternoon",
+                    title: lang === "fr" ? "Réunions bilatérales — Espace Partenaires" : "Bilateral Meetings — Partner Space",
+                    desc: lang === "fr"
+                      ? "3 créneaux de 30 min réservés avec vos prospects prioritaires. Salle privative au 2e étage, équipée écran + paperboard. Agenda synchronisé avec votre CRM."
+                      : "3 x 30-min slots booked with your priority prospects. Private room on 2nd floor with screen and whiteboard. Agenda synced with your CRM.",
+                    tip: lang === "fr" ? "Confirmation des RDV par email · Accès badge" : "RDV confirmed by email · Badge access required",
+                    tag: lang === "fr" ? "Stratégie" : "Strategy",
+                    color: "#8b5cf6",
+                  },
+                  {
+                    time: lang === "fr" ? "19h00" : "7pm",
+                    label: lang === "fr" ? "Soirée" : "Evening",
+                    title: lang === "fr" ? "Networking Dinner — Steigenberger" : "Networking Dinner — Steigenberger",
+                    desc: lang === "fr"
+                      ? "Dîner de networking organisé par les exposants clés. Tenue de soirée recommandée. Opportunité directe de rencontrer les décideurs hors cadre professionnel."
+                      : "Networking dinner hosted by key exhibitors. Smart dress recommended. Direct opportunity to meet decision-makers outside a formal setting.",
+                    tip: lang === "fr" ? "Inscription préalable requise · Tenue business" : "Prior registration required · Business dress code",
+                    tag: lang === "fr" ? "Réseau" : "Network",
+                    color: "#10b981",
                   },
                 ] as const).slice(0, exampleExpanded ? 99 : 2).map((item, idx, arr) => (
                   <div key={item.time} className="flex gap-4 py-4" style={{ borderBottom: idx < arr.length - 1 ? `1px solid ${B.border}` : "none" }}>
