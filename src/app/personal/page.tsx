@@ -699,7 +699,7 @@ export default function Home() {
               return (
                 <div
                   key={plan.plan_key}
-                  className={`reveal reveal-d${Math.min(pIdx + 1, 4) as 1|2|3|4} relative rounded-2xl p-6 border flex flex-col transition-all duration-300 hover:shadow-2xl hover:-translate-y-1.5 ${
+                  className={`relative rounded-2xl p-6 border flex flex-col transition-all duration-300 hover:shadow-2xl hover:-translate-y-1.5 ${
                     isInverted
                       ? "bg-gradient-to-br from-[#1e3324] to-[#162818] text-white border-[#2a4433] shadow-[0_8px_32px_rgba(66,92,71,0.3)]"
                       : "bg-[#161c14] text-[#d8e3d5] border-[#232c20]"
@@ -1040,7 +1040,7 @@ export default function Home() {
             {tx.social_stats.map((stat, sIdx) => (
               <div
                 key={sIdx}
-                className={`reveal-scale reveal-scale-d${(sIdx + 1) as 1|2|3} rounded-2xl px-6 py-8 flex flex-col items-center gap-2 transition-all duration-200 hover:scale-105 cursor-default`}
+                className="rounded-2xl px-6 py-8 flex flex-col items-center gap-2 transition-all duration-200 hover:scale-105 cursor-default"
                 style={{ background: "var(--cc)", border: "1px solid var(--ce)" }}
               >
                 <span
