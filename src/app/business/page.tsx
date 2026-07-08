@@ -257,7 +257,7 @@ export default function BusinessPage() {
     addCartItem({
       planId: "1mois",
       planLabel: "Pack Premium — 10 guides business 7j",
-      price: 2000,
+      price: 4500,
       destination: "Pack Premium Business",
       dates: "",
       criteria: { mode: "business" },

@@ -119,16 +119,7 @@ export function addCartItem(input: CartItemInput): CartItem {
     updatedAt: timestamp,
   };
 
-  // For business mode: subscription (1mois) and guide (7j) can coexist
-  // For personal mode: only 1 item (guide replaces previous guide)
-  if (typeof window !== "undefined" && localStorage.getItem("tgai_mode") === "business") {
-    const existing = loadCart();
-    const isSubscription = input.planId === "1mois";
-    const kept = existing.filter(i => isSubscription ? i.planId !== "1mois" : i.planId === "1mois");
-    saveCart([...kept, item]);
-  } else {
-    saveCart([item]);
-  }
+  saveCart([item]);
   return item;
 }
 
