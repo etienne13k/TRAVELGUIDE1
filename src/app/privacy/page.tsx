@@ -149,9 +149,184 @@ Cette politique peut être mise à jour. La date de dernière modification est i
   },
 ];
 
+const SECTIONS_EN = [
+  {
+    id: "qui",
+    title: "1. Who are we?",
+    body: `Travel IA is an AI-powered personalized travel guide generation service, published by NanoCorp.
+
+**Contact:** travel-ia@nanocorp.app
+**Website:** https://travelguide-ai.com
+
+For any questions regarding your personal data, write to us directly at the address above.`,
+  },
+  {
+    id: "collecte",
+    title: "2. What data do we collect?",
+    body: `We only collect what is strictly necessary:
+
+**Account data:**
+- Email address: to create your account, deliver your guide and contact you about your order only.
+- Password: stored in encrypted form (bcrypt hash). We do not have access to it.
+
+**Phone number:**
+- Collected solely for SMS identity verification (OTP code via Twilio).
+- Not used for commercial purposes, not resold, not shared with unlisted third parties.
+
+**Travel questionnaire data:**
+- Destination, dates, travel preferences, travel style, budget, interests.
+- This data is **non-sensitive** (no health data, no precise financial data, no political opinions).
+- It is transmitted to our trained AI solely to generate your personalized guide.
+
+**Payment data:**
+- Managed exclusively by Stripe. We never see or store your credit card number.
+
+**Navigation data (analytics):**
+- PostHog collects anonymized data about site usage (pages visited, clicks) to improve user experience. This data cannot personally identify you.`,
+  },
+  {
+    id: "ia",
+    title: "3. AI and your data — what you need to know",
+    body: `**How AI uses your data:**
+
+Your questionnaire answers (destination, preferences, dates) are sent to our trained AI to generate your travel guide. This is the core purpose of the service.
+
+**What AI does NOT receive:**
+- Your full name
+- Your email address
+- Your phone number
+- Your banking details
+
+**Important:** Do not include in your answers and free-text notes **any sensitive personal information** (social security number, precise medical data, banking details, passwords, etc.). This information is of no use for generating your guide and its processing by a third-party AI is not covered by this policy.
+
+Our trained AI does not use submitted data to improve itself. Questionnaire data is processed solely to generate your guide, with no reuse for training purposes.`,
+  },
+  {
+    id: "utilisation",
+    title: "4. How do we use your data?",
+    body: `| Data | Use | Legal basis |
+|------|-----|-------------|
+| Email | Guide delivery, purchase confirmation, customer support | Contract performance |
+| Email (newsletter) | Sending Travel IA news | Explicit consent |
+| Phone | OTP verification, WELCOME promo code unlock | Legitimate interest / consent |
+| Questionnaire | AI guide generation | Contract performance |
+| Payment | Transaction processing | Contract performance |
+| Analytics | Service improvement | Legitimate interest |
+
+**What we NEVER do:**
+- Sell your data to third parties
+- Use your email for advertising without your consent
+- Share your information with advertisers
+- Create advertising profiles`,
+  },
+  {
+    id: "newsletter",
+    title: "5. Newsletter and communications",
+    body: `**Newsletter subscription:**
+- Only on voluntary subscription (pop-up or dedicated form).
+- You can unsubscribe at any time via the link in every email.
+
+**Purchase-related emails:**
+- Order confirmation
+- PDF guide delivery
+- Responses to your support requests
+
+We will **never** send you unsolicited commercial emails.`,
+  },
+  {
+    id: "soustraitants",
+    title: "6. Sub-processors and data transfers",
+    body: `We use the following providers. Each is subject to GDPR-compliant processing contracts:
+
+| Provider | Role | Location |
+|----------|------|----------|
+| **Supabase** | Database, authentication | EU (AWS eu-central hosting) |
+| **Vercel** | Website hosting | EU / USA (Standard Contractual Clauses) |
+| **Stripe** | Online payment | USA (SCC + Privacy Shield) |
+| **Twilio** | SMS verification (OTP) | USA (SCC) |
+| **Trained AI** | AI guide generation | Questionnaire data only, non-personal |
+| **PostHog** | Anonymized analytics | EU Cloud |
+
+No other third party has access to your personal data.`,
+  },
+  {
+    id: "conservation",
+    title: "7. Data retention",
+    body: `- **Account and email:** retained while your account is active, then deleted within 30 days of closure request.
+- **Phone number:** retained until account deletion.
+- **Questionnaire data:** retained in your order history for your reference. Deleted upon account closure.
+- **Payment data:** managed by Stripe according to its own retention rules (legal accounting obligations — 10 years).
+- **Navigation logs (PostHog):** 12 months, anonymized data.`,
+  },
+  {
+    id: "droits",
+    title: "8. Your GDPR rights",
+    body: `Under the General Data Protection Regulation (GDPR — EU 2016/679), you have the following rights:
+
+- **Right of access**: obtain a copy of your personal data
+- **Right of rectification**: correct inaccurate data
+- **Right to erasure** ("right to be forgotten"): request deletion of your data
+- **Right to portability**: receive your data in a readable format
+- **Right to object**: object to certain processing (e.g. newsletter)
+- **Right to restriction**: restrict processing in certain cases
+
+**To exercise your rights:** Contact us at travel-ia@nanocorp.app with proof of identity. We respond within 30 days.
+
+In case of dispute, you can also contact the **ICO** (UK) or your national data protection authority.`,
+  },
+  {
+    id: "cookies",
+    title: "9. Cookies and trackers",
+    body: `**Strictly necessary cookies:** User session (encrypted JWT). Essential to the service. Duration: 7 days.
+
+**Analytics cookies (PostHog):** Anonymized usage analysis. You can refuse them without any impact on the service.
+
+No advertising or third-party tracking cookies are placed on your browser.`,
+  },
+  {
+    id: "contact",
+    title: "10. Contact & updates",
+    body: `**DPO / Privacy contact:** travel-ia@nanocorp.app
+
+This policy may be updated. The last modification date is shown at the top of the page. In case of substantial changes, you will be notified by email.
+
+**Current version:** June 2026`,
+  },
+];
+
+const UI = {
+  fr: {
+    back: "← Retour au site",
+    badge: "RGPD conforme · Juin 2026",
+    title: "Politique de Confidentialité",
+    subtitle: "Transparent sur ce que nous faisons de vos données. Aucune surprise, aucune revente.",
+    cards: [
+      { title: "Zéro revente", desc: "Vos données ne sont jamais vendues à des tiers ou annonceurs." },
+      { title: "IA sans données perso", desc: "Notre IA entraînée reçoit uniquement vos préférences de voyage, pas votre email ni téléphone." },
+      { title: "Email = commande only", desc: "On vous écrit uniquement pour votre guide et votre commande. Newsletter = opt-in." },
+    ],
+    toc: "Sommaire",
+  },
+  en: {
+    back: "← Back to site",
+    badge: "GDPR compliant · June 2026",
+    title: "Privacy Policy",
+    subtitle: "Transparent about what we do with your data. No surprises, no selling.",
+    cards: [
+      { title: "Zero resale", desc: "Your data is never sold to third parties or advertisers." },
+      { title: "AI without personal data", desc: "Our trained AI receives only your travel preferences, not your email or phone." },
+      { title: "Email = order only", desc: "We only email you about your guide and order. Newsletter = opt-in." },
+    ],
+    toc: "Contents",
+  },
+};
+
 export default function PrivacyPage() {
   const [activeSection, setActiveSection] = useState<string>("qui");
+  const [lang, setLang] = useState<"fr" | "en">("fr");
   const { isBusiness } = useMode();
+  const sections = lang === "fr" ? SECTIONS_FR : SECTIONS_EN;
+  const ui = UI[lang];
   const brandName = isBusiness ? "Travel Business" : "TravelGuide";
   const backHref = isBusiness ? "/business" : "/personal";
 
@@ -216,32 +391,36 @@ export default function PrivacyPage() {
       <header className="sticky top-0 z-10 backdrop-blur border-b" style={{ background: "var(--cb)", borderColor: "var(--ce)" }}>
         <div className="max-w-5xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
           <Link href={backHref} className="text-sm font-medium transition-colors" style={{ color: "var(--cm)" }}>
-            ← Retour au site
+            {ui.back}
           </Link>
           <span className="font-bold" style={{ fontFamily: "var(--font-playfair), Georgia, serif", color: "var(--ct)" }}>{brandName}</span>
-          <div className="w-24" />
+          <div className="flex items-center gap-1 rounded-lg p-1" style={{ background: "var(--cc)", border: "1px solid var(--ce)" }}>
+            {(["fr", "en"] as const).map(l => (
+              <button key={l} onClick={() => setLang(l)}
+                className="rounded-md px-2 py-0.5 text-xs font-bold transition-all"
+                style={lang === l ? { background: "var(--ce)", color: "var(--ct)" } : { color: "var(--cm)", opacity: 0.6 }}>
+                {l === "fr" ? "🇫🇷 FR" : "🇬🇧 EN"}
+              </button>
+            ))}
+          </div>
         </div>
       </header>
 
       <main className="max-w-5xl mx-auto px-4 sm:px-6 py-12">
         <div className="mb-12 text-center">
           <div className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 mb-4" style={{ background: "var(--cc)", border: "1px solid var(--ce)" }}>
-            <span className="text-xs font-bold uppercase tracking-wide" style={{ color: "var(--cm)" }}>RGPD conforme · Juin 2026</span>
+            <span className="text-xs font-bold uppercase tracking-wide" style={{ color: "var(--cm)" }}>{ui.badge}</span>
           </div>
           <h1 className="text-3xl sm:text-4xl font-bold mb-3" style={{ fontFamily: "var(--font-playfair), Georgia, serif", color: "var(--ct)" }}>
-            Politique de Confidentialité
+            {ui.title}
           </h1>
           <p className="max-w-xl mx-auto text-base" style={{ color: "var(--cm)" }}>
-            Transparent sur ce que nous faisons de vos données. Aucune surprise, aucune revente.
+            {ui.subtitle}
           </p>
         </div>
 
         <div className="grid sm:grid-cols-3 gap-4 mb-14">
-          {[
-            { title: "Zéro revente", desc: "Vos données ne sont jamais vendues à des tiers ou annonceurs." },
-            { title: "IA sans données perso", desc: "Notre IA entraînée reçoit uniquement vos préférences de voyage, pas votre email ni téléphone." },
-            { title: "Email = commande only", desc: "On vous écrit uniquement pour votre guide et votre commande. Newsletter = opt-in." },
-          ].map(card => (
+          {ui.cards.map(card => (
             <div key={card.title} className="rounded-2xl p-5 text-center" style={{ border: "1px solid var(--ce)", background: "var(--cc)" }}>
               <div className="font-bold text-sm mb-1" style={{ color: "var(--ct)" }}>{card.title}</div>
               <p className="text-xs leading-relaxed" style={{ color: "var(--cm)" }}>{card.desc}</p>
@@ -252,9 +431,9 @@ export default function PrivacyPage() {
         <div className="grid lg:grid-cols-[220px_1fr] gap-8">
           <nav className="hidden lg:block">
             <div className="sticky top-24 rounded-2xl p-4" style={{ border: "1px solid var(--ce)", background: "var(--cc)" }}>
-              <p className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: "var(--cf)" }}>Sommaire</p>
+              <p className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: "var(--cf)" }}>{ui.toc}</p>
               <ul className="space-y-1">
-                {SECTIONS_FR.map(s => (
+                {sections.map(s => (
                   <li key={s.id}>
                     <a
                       href={`#${s.id}`}
@@ -279,7 +458,7 @@ export default function PrivacyPage() {
               <span className="font-bold">Information importante :</span> N&apos;incluez jamais d&apos;informations sensibles (données médicales précises, coordonnées bancaires, mots de passe) dans les notes libres du questionnaire. Ces données seraient traitées par l&apos;IA sans les garanties adaptées.
             </div>
 
-            {SECTIONS_FR.map(section => (
+            {sections.map(section => (
               <section key={section.id} id={section.id}>
                 <h2 className="text-lg font-bold mb-3 pb-2 border-b" style={{ fontFamily: "var(--font-playfair), Georgia, serif", color: "var(--ct)", borderColor: "var(--ce)" }}>
                   {section.title}

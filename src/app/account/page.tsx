@@ -124,17 +124,6 @@ export default async function AccountPage() {
           </p>
         </div>
 
-        {/* Retour vers les pages */}
-        <div className="flex gap-3">
-          <Link href="/personal" className="rounded-full px-4 py-2 text-xs font-semibold transition-all hover:opacity-80"
-            style={{ background: "rgba(201,168,76,0.12)", border: "1px solid rgba(201,168,76,0.28)", color: "#c9a84c" }}>
-            ← TravelGuide
-          </Link>
-          <Link href="/business" className="rounded-full px-4 py-2 text-xs font-semibold transition-all hover:opacity-80"
-            style={{ background: "rgba(59,130,246,0.10)", border: "1px solid rgba(59,130,246,0.25)", color: "#60a5fb" }}>
-            ← Travel Business
-          </Link>
-        </div>
 
         {/* Profil */}
         <section className="rounded-2xl p-6" style={{ background: N.card, border: `1px solid ${N.border}` }}>
