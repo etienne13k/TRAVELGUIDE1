@@ -179,7 +179,7 @@ const translations = {
   en: {
     banner_messages: [
       "🏷️ -25% on your first guide with code WELCOME",
-      "✈️ Save up to €4 · 24h delivery · No subscription",
+      "✈️ Save up to €6 · 24h delivery · No subscription",
       "🌍 Paris · Tokyo · Bali · Bangkok · New York · and much more",
     ],
     nav_cta: "Create my guide",
@@ -265,7 +265,7 @@ const translations = {
         plan_key: "14j",
       },
       {
-        name: "Évasion Guide",
+        name: "Escape Guide",
         duration: "1 month",
         price: "€16",
         oldPrice: "€22",
@@ -324,7 +324,7 @@ const translations = {
     example_cover_days_label: "days",
     example_cover_travelers_label: "travelers",
     example_cover_budget_label: "budget/d",
-    example_cover_generated: "Generated 08/06/2026 · PDF · IA entraînée",
+    example_cover_generated: "Generated 08/06/2026 · PDF · Trained AI",
     example_day_mono: "DAY 3 — DETAILED SCHEDULE",
     example_day_desc: "Youth culture, shopping & urban sunset",
     example_day_items: [
