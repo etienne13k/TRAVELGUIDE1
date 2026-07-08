@@ -105,7 +105,7 @@ export default function Home() {
           />
           {/* Top accent line */}
           <div
-            className="absolute top-0 left-0 h-[2px] w-0 group-hover:w-full transition-all duration-500"
+            className="absolute top-0 right-0 h-[2px] w-0 group-hover:w-full transition-all duration-500"
             style={{ background: "#3b82f6" }}
           />
 
