@@ -1391,3 +1391,35 @@ Après configuration, pousser/redéployer puis vérifier `/api/health` : les tro
 - Test HTTP local : `/admin` non authentifié renvoie `307` vers `/admin/login`, puis `POST /api/admin/auth/login` avec `admin@spiregg.app` / `SpireggAdmin2025!` renvoie `200` et pose `tgai_admin_session`.
 - Test headless `agent-browser` local : connexion réussie et arrivée sur `/admin` avec le dashboard commandes visible.
 - À valider après push/deploy : même test sur `https://travel-ia.nanocorp.app/admin`.
+
+---
+
+## Mise à jour 2026-07-08 — Configuration Anthropic pour suggestions de destinations
+
+### Exploration IA
+- Routes Claude identifiées : `src/app/api/suggest-destinations/route.ts` (3 destinations sur-mesure), `src/app/api/generate-guide/route.ts` (génération de guide PDF + contrôle cohérence), `src/app/api/validate-input/route.ts` (validation IA des champs questionnaire).
+- Le frontend appelle les suggestions depuis `src/app/questionnaire/page.tsx` via `POST /api/suggest-destinations`, puis affiche les cartes de destination dans le flow `discover`.
+- Ancien modèle trouvé dans les routes : `claude-haiku-4-5-20251001`.
+- Variables Vercel avant intervention : `ADMIN_JWT_SECRET`, `DATABASE_URL`; `ANTHROPIC_API_KEY` absente. La table DB fallback `app_config` n'existe pas, donc aucune clé Anthropic récupérable côté base.
+- Les fichiers uploadés sont deux captures d'écran d'erreurs DB (`ip_logs` / `users` absentes), sans clé Anthropic exploitable.
+
+### Changements livrés
+- Ajout de `src/lib/anthropic.ts` pour centraliser la récupération de `ANTHROPIC_API_KEY`, le client SDK Anthropic et le modèle par défaut `claude-sonnet-4-5`.
+- Mise à jour de `src/app/api/suggest-destinations/route.ts` pour utiliser `claude-sonnet-4-5`, durcir le prompt voyage, augmenter la marge de tokens et valider strictement les 3 objets JSON attendus avant affichage frontend.
+- Mise à jour de `src/app/api/generate-guide/route.ts` et `src/app/api/validate-input/route.ts` pour partager la configuration Anthropic et ne plus référencer l'ancien modèle.
+- Documentation de `ANTHROPIC_API_KEY` et `ANTHROPIC_MODEL` dans `.env.example`; référence modèle mise à jour dans `prompts/travel-guide-master-prompt.md`.
+- Variable Vercel `ANTHROPIC_MODEL=claude-sonnet-4-5` créée via `nanocorp site env set`.
+
+### Validation
+- `npm run build` passe.
+- Lint ciblé sur les fichiers Anthropic modifiés passe.
+- Test local `POST /api/suggest-destinations` sans clé renvoie explicitement `503 {"error":"ANTHROPIC_API_KEY manquante"}`.
+- `npm run lint` et `npx tsc --noEmit` échouent encore sur des erreurs préexistantes hors scope (hooks/setState, imports CommonJS, types implicites admin/business, etc.).
+
+### À faire
+- Fournir une vraie clé Anthropic `sk-ant-...` et la définir dans Vercel : `nanocorp site env set --vars '[{"key":"ANTHROPIC_API_KEY","value":"sk-ant-..."}]'`.
+- Relancer un test réel de génération de destinations après ajout de la clé, puis vérifier l'affichage des cartes côté questionnaire.
+
+### Note build Next.js 16
+- Après réalignement sur Next `16.2.7`, les docs locales consultées sont `node_modules/next/dist/docs/01-app/01-getting-started/15-route-handlers.md`, `16-proxy.md` et `02-guides/environment-variables.md`.
+- Build Next 16 corrigé en supprimant l'ancien `src/middleware.ts` redondant avec `src/proxy.ts`, en retirant la clé `eslint` non supportée de `next.config.ts`, et en lançant `next build --webpack` car l'app garde une configuration webpack personnalisée.

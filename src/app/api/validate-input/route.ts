@@ -1,22 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import Anthropic from "@anthropic-ai/sdk";
-import { Pool } from "pg";
+import { createAnthropicClient, getAnthropicApiKey, getAnthropicModel } from "@/lib/anthropic";
 
 interface FieldToValidate {
   name: string;
   label: string;
   value: string;
-}
-
-async function getApiKey(): Promise<string | null> {
-  if (process.env.ANTHROPIC_API_KEY) return process.env.ANTHROPIC_API_KEY;
-  if (!process.env.DATABASE_URL) return null;
-  try {
-    const pool = new Pool({ connectionString: process.env.DATABASE_URL, ssl: { rejectUnauthorized: false } });
-    const res = await pool.query("SELECT value FROM app_config WHERE key = 'ANTHROPIC_API_KEY' LIMIT 1");
-    await pool.end();
-    return res.rows[0]?.value ?? null;
-  } catch { return null; }
 }
 
 export async function POST(req: NextRequest) {
@@ -37,16 +25,16 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ errors: {} });
     }
 
-    const apiKey = await getApiKey();
+    const apiKey = await getAnthropicApiKey();
     if (!apiKey) {
       console.warn("[validate-input] No API key available");
       return NextResponse.json({ errors: {} });
     }
 
-    const client = new Anthropic({ apiKey });
+    const client = createAnthropicClient(apiKey);
 
     const message = await client.messages.create({
-      model: "claude-haiku-4-5-20251001",
+      model: getAnthropicModel(),
       max_tokens: 512,
       system: `Tu es un validateur de formulaire de questionnaire voyage. Tu dois être STRICT sur les noms de villes.
 

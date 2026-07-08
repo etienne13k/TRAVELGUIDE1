@@ -1,26 +1,15 @@
-﻿import { NextRequest, NextResponse } from "next/server";
-import Anthropic from "@anthropic-ai/sdk";
+import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
 import { createSupabaseServiceRoleClient, type Json } from "@/lib/supabase";
 import { ensureAdminSchema } from "@/lib/admin-db";
 import { buildSystemPrompt, buildUserMessage, getMaxTokens, type GuideInput } from "@/lib/guide-prompt";
+import { createAnthropicClient, getAnthropicApiKey, getAnthropicModel, getAnthropicText } from "@/lib/anthropic";
 import { generateGuidePDF } from "@/lib/pdf-generator";
 import { getServerSession } from "@/lib/auth";
 import { Pool } from "pg";
 import crypto from "crypto";
 
 export const maxDuration = 60;
-
-async function getApiKey(): Promise<string | null> {
-  if (process.env.ANTHROPIC_API_KEY) return process.env.ANTHROPIC_API_KEY;
-  if (!process.env.DATABASE_URL) return null;
-  try {
-    const pool = new Pool({ connectionString: process.env.DATABASE_URL, ssl: { rejectUnauthorized: false } });
-    const res = await pool.query("SELECT value FROM app_config WHERE key = 'ANTHROPIC_API_KEY' LIMIT 1");
-    await pool.end();
-    return res.rows[0]?.value ?? null;
-  } catch { return null; }
-}
 
 async function markOrderError(orderId: string | null, message: string) {
   if (!orderId) return;
@@ -34,7 +23,7 @@ async function ensureGuidesTable() {
 
 export async function POST(req: NextRequest) {
   // Get API key (from env or DB)
-  const apiKey = await getApiKey();
+  const apiKey = await getAnthropicApiKey();
   if (!apiKey) {
     return NextResponse.json({ error: "Service temporairement indisponible. Clé API non configurée." }, { status: 503 });
   }
@@ -56,8 +45,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Données invalides." }, { status: 400 });
   }
 
+  const sessionEmail = session?.email.toLowerCase();
+
   // Weekly generation limit: 3 per verified account per week (skip for internal calls)
-  if (!isInternalCall && process.env.DATABASE_URL) {
+  if (!isInternalCall && process.env.DATABASE_URL && sessionEmail) {
     try {
       const limitPool = new Pool({ connectionString: process.env.DATABASE_URL, ssl: { rejectUnauthorized: false } });
       await limitPool.query(`CREATE TABLE IF NOT EXISTS guide_limits (email text NOT NULL, week_start date NOT NULL, count int DEFAULT 1, PRIMARY KEY (email, week_start))`);
@@ -68,7 +59,7 @@ export async function POST(req: NextRequest) {
       const ws = weekStart.toISOString().split("T")[0];
       const { rows } = await limitPool.query(
         `SELECT count FROM guide_limits WHERE email = $1 AND week_start = $2`,
-        [session.email.toLowerCase(), ws]
+        [sessionEmail, ws]
       );
       const currentCount = Number(rows[0]?.count ?? 0);
       if (currentCount >= 3) {
@@ -79,7 +70,7 @@ export async function POST(req: NextRequest) {
       }
       await limitPool.query(
         `INSERT INTO guide_limits (email, week_start, count) VALUES ($1, $2, 1) ON CONFLICT (email, week_start) DO UPDATE SET count = guide_limits.count + 1`,
-        [session.email.toLowerCase(), ws]
+        [sessionEmail, ws]
       );
       await limitPool.end();
     } catch { /* non-fatal */ }
@@ -140,17 +131,14 @@ export async function POST(req: NextRequest) {
   // 1. Generate guide content with Claude
   let guideContent: string;
   try {
-    const anthropic = new Anthropic({ apiKey });
+    const anthropic = createAnthropicClient(apiKey);
     const response = await anthropic.messages.create({
-      model: "claude-haiku-4-5-20251001",
+      model: getAnthropicModel(),
       max_tokens: getMaxTokens(input.duration),
       system: buildSystemPrompt(input.language === "en" ? "en" : "fr"),
       messages: [{ role: "user", content: buildUserMessage(input) }],
     });
-    guideContent = response.content
-      .filter((block) => block.type === "text")
-      .map((block) => (block as { type: "text"; text: string }).text)
-      .join("");
+    guideContent = getAnthropicText(response.content);
     if (!guideContent) throw new Error("Claude returned empty content");
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : String(err);
@@ -201,13 +189,13 @@ Réponds en JSON uniquement :
 
 Si tout semble normal, réponds : {"issues": [], "should_pause": false}`;
 
-      const coherenceClient = new Anthropic({ apiKey });
+      const coherenceClient = createAnthropicClient(apiKey);
       const coherenceResp = await coherenceClient.messages.create({
-        model: "claude-haiku-4-5-20251001",
+        model: getAnthropicModel(),
         max_tokens: 300,
         messages: [{ role: "user", content: coherencePrompt }],
       });
-      const coherenceText = (coherenceResp.content.find(b => b.type === "text") as { type: "text"; text: string } | undefined)?.text ?? "";
+      const coherenceText = getAnthropicText(coherenceResp.content);
       const jsonMatch = coherenceText.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
         const parsed = JSON.parse(jsonMatch[0]) as { issues?: string[]; should_pause?: boolean };

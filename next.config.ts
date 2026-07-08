@@ -22,7 +22,6 @@ const nextConfig: NextConfig = {
     return [{ source: "/(.*)", headers: securityHeaders }];
   },
   typescript: { ignoreBuildErrors: true },
-  eslint: { ignoreDuringBuilds: true },
   webpack: (config, { isServer }) => {
     if (isServer) {
       if (Array.isArray(config.externals)) {
