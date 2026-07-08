@@ -46,17 +46,23 @@ export async function POST(req: NextRequest) {
   }
 
   const qdata = order.questionnaire_data ?? {};
-  const email = String(qdata.user_email ?? qdata.email ?? "");
-  const destination = order.destination ?? String(qdata.destination ?? qdata.destination_arrival_city ?? "");
+  const hasData = Object.keys(qdata).length > 0;
 
-  if (!email || !destination) {
-    // No questionnaire data yet — user needs to fill questionnaire
+  if (!hasData) {
     return NextResponse.json({ orderId: order.id, status: "questionnaire_pending" });
   }
 
+  const email = String(qdata.user_email ?? qdata.email ?? "");
+  const destination = String(
+    order.destination ||
+    qdata.destination ||
+    qdata.destination_arrival_city ||
+    "À définir par l'IA"
+  );
+
   // Trigger generation via internal call
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "https://travelguide1.vercel.app";
-  const internalSecret = process.env.INTERNAL_SECRET;
+  const internalSecret = process.env.INTERNAL_SECRET ?? await import("@/lib/app-config").then(m => m.getConfig("INTERNAL_SECRET"));
   if (!internalSecret) {
     return NextResponse.json({ orderId: order.id, status: "no_internal_secret", error: "INTERNAL_SECRET non configuré" }, { status: 503 });
   }
@@ -64,7 +70,7 @@ export async function POST(req: NextRequest) {
   const guidePayload = {
     ...qdata,
     orderId: order.id,
-    email,
+    email: email || "noreply@travelguide.app",
     destination,
     duration: order.plan,
   };

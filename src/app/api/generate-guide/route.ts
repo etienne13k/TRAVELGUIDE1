@@ -80,12 +80,11 @@ export async function POST(req: NextRequest) {
   }
 
   // Basic validation
-  if (!input.email || !input.destination || !input.duration) {
-    return NextResponse.json(
-      { error: "Champs obligatoires manquants : email, destination, duration." },
-      { status: 400 }
-    );
+  if (!input.duration) {
+    return NextResponse.json({ error: "Champ obligatoire manquant : duration." }, { status: 400 });
   }
+  if (!input.email) input.email = "noreply@travelguide.app";
+  if (!input.destination) input.destination = input.destination_arrival_city || "Destination à définir";
 
   // Find and update the matching order for this email or explicit admin order id
   await ensureAdminSchema();
