@@ -10,8 +10,10 @@ export async function GET() {
 
   try {
     const pool = getPool();
-    await pool.query("SELECT 1");
+    const { rows } = await pool.query("SELECT current_database() as db, inet_server_addr()::text as ip");
     result.db_connection = "✅ OK";
+    result.db_name = rows[0].db;
+    result.db_ip = rows[0].ip;
   } catch (e: unknown) {
     result.db_connection = `❌ ERREUR: ${e instanceof Error ? e.message : String(e)}`;
   }
