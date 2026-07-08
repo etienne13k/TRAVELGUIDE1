@@ -7,6 +7,7 @@ export default function AdminShell({ active, children }: { active?: string; chil
     { key: "orders", href: "/admin", label: "📦 Commandes" },
     { key: "users", href: "/admin/users", label: "👥 Utilisateurs" },
     { key: "contacts", href: "/admin/contacts", label: "📬 Messages" },
+    { key: "config", href: "/admin/config", label: "⚙️ Configuration" },
   ];
 
   return (

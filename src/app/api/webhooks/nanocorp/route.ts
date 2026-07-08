@@ -3,6 +3,7 @@ import Stripe from "stripe";
 import { ensureAdminSchema } from "@/lib/admin-db";
 import { getPool } from "@/lib/db";
 import { isManagedPromoCode, normalizePromoCode, recordPromoUsage } from "@/lib/promo";
+import { getConfig } from "@/lib/app-config";
 
 function inferPlan(amountCents: number): string {
   if (amountCents <= 300) return "3j";
@@ -34,12 +35,13 @@ export async function POST(req: NextRequest) {
   try {
     const rawBody = await req.text();
     const sig = req.headers.get("stripe-signature");
-    const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+    const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET ?? await getConfig("STRIPE_WEBHOOK_SECRET");
 
     let event: Stripe.Event;
 
     if (webhookSecret && sig) {
-      const stripe = new Stripe(process.env.STRIPE_SECRET_KEY ?? "");
+      const stripeKey = process.env.STRIPE_SECRET_KEY ?? await getConfig("STRIPE_SECRET_KEY") ?? "";
+      const stripe = new Stripe(stripeKey);
       try {
         event = stripe.webhooks.constructEvent(rawBody, sig, webhookSecret);
       } catch (err) {

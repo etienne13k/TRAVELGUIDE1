@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { createSupabaseServiceRoleClient, type Json } from "@/lib/supabase";
 import { getPool } from "@/lib/db";
+import { getConfig } from "@/lib/app-config";
 
 function metadataValue(metadata: Json | null | undefined, key: string): string | null {
   if (!metadata || typeof metadata !== "object" || Array.isArray(metadata)) return null;
@@ -60,7 +61,7 @@ export async function GET(
     }
 
     // Webhook hasn't fired yet (or isn't configured) — query Stripe directly
-    const stripeKey = process.env.STRIPE_SECRET_KEY;
+    const stripeKey = await getConfig("STRIPE_SECRET_KEY");
     if (!stripeKey) {
       return NextResponse.json({ error: "session not found" }, { status: 404 });
     }
