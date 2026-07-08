@@ -512,19 +512,9 @@ function BusinessQuestionnaireContent() {
         setBusinessCredits(data.redirectUrl ? (businessCredits ?? 1) - 1 : businessCredits);
         router.push(data.redirectUrl ?? "/account");
       } else {
-        // Guide Mission : sauvegarder la commande puis rediriger vers le lien Stripe
-        const res = await fetch("/api/save-pending-order", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ planId: "7j", destination, dates, criteria }),
-        });
-        const data = await res.json() as { orderId?: string; error?: string };
-        if (!res.ok || !data.orderId) {
-          setSubmitError("Erreur lors de la préparation du paiement. Réessayez.");
-          return;
-        }
-        const guideMissionUrl = `https://buy.stripe.com/14A3cvagd1sE37de12?client_reference_id=${data.orderId}${answers.user_email ? `&prefilled_email=${encodeURIComponent(answers.user_email)}` : ""}`;
-        window.location.href = guideMissionUrl;
+        // Guide Mission : redirection directe vers le lien Stripe
+        const email = answers.user_email ? `&prefilled_email=${encodeURIComponent(answers.user_email)}` : "";
+        window.location.href = `https://buy.stripe.com/14A3cvagd1sE37de120Ba05${email}`;
       }
     } catch (err) {
       setSubmitError("Une erreur est survenue. Veuillez réessayer.");
