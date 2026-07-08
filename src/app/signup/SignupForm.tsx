@@ -1,8 +1,8 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import LangToggle from "@/components/LangToggle";
 import { useMode } from "@/lib/mode-theme";
 
@@ -20,6 +20,16 @@ type Step = "form" | "otp";
 
 export default function SignupForm({ turnstileSiteKey }: SignupFormProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const mode = searchParams.get("mode");
+    if (mode === "business" || mode === "personal") {
+      localStorage.setItem("tgai_mode", mode);
+      document.documentElement.dataset.mode = mode;
+    }
+  }, [searchParams]);
+
   const { isBusiness } = useMode();
   const brandName = isBusiness ? "Travel Business" : "TravelGuide";
   const backHref = isBusiness ? "/business" : "/personal";
@@ -468,7 +478,7 @@ export default function SignupForm({ turnstileSiteKey }: SignupFormProps) {
 
           <div className="mt-6 pt-6 text-center text-sm" style={{ borderTop: "1px solid var(--ce)", color: "var(--cm)" }}>
             Déjà un compte ?{" "}
-            <Link href="/login" className="font-semibold" style={{ color: "var(--ca)" }}>
+            <Link href={`/login${isBusiness ? "?mode=business" : "?mode=personal"}`} className="font-semibold" style={{ color: "var(--ca)" }}>
               Se connecter
             </Link>
           </div>
