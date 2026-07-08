@@ -959,7 +959,7 @@ export default function BusinessPage() {
           <div className="grid grid-cols-3 gap-6 mb-14 max-w-2xl mx-auto">
             {tx.social_stats.map((stat, sIdx) => (
               <div
-                key={stat.label}
+                key={sIdx}
                 className={`reveal-scale reveal-scale-d${(sIdx + 1) as 1|2|3} rounded-2xl px-6 py-8 flex flex-col items-center gap-2 transition-all duration-200 hover:scale-105 cursor-default`}
                 style={{ background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.12)" }}
               >
