@@ -512,11 +512,13 @@ function BusinessQuestionnaireContent() {
     try {
       setSubmitting(true);
       setSubmitError(null);
-      const existingItem = existingCart[0];
-      if (existingItem?.id) {
-        updateCartItem(existingItem.id, cartInput);
+      // Business: subscription and guide are separate slots — never overwrite a subscription with a guide
+      const existingGuide = existingCart.find(i => i.planId !== "1mois");
+      const existingSub  = existingCart.find(i => i.planId === "1mois");
+      if (isAbonnement) {
+        existingSub?.id ? updateCartItem(existingSub.id, cartInput) : addCartItem(cartInput);
       } else {
-        addCartItem(cartInput);
+        existingGuide?.id ? updateCartItem(existingGuide.id, cartInput) : addCartItem(cartInput);
       }
       router.push("/cart");
     } catch (err) {

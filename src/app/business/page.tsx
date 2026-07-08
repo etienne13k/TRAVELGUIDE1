@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { addCartItem, CART_UPDATED_EVENT, getCartCount } from "@/lib/cart";
+import RevealObserver from "@/components/RevealObserver";
 
 type Lang = "fr" | "en";
 
@@ -283,7 +284,7 @@ export default function BusinessPage() {
 
       {/* NAV */}
       <nav
-        className="fixed top-12 w-full z-50 backdrop-blur-md"
+        className="fixed top-12 w-full z-50 backdrop-blur-sm"
         style={{ background: `${B.bg}f2`, borderBottom: `1px solid ${B.border}` }}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
@@ -347,6 +348,8 @@ export default function BusinessPage() {
         </div>
       </nav>
 
+      <RevealObserver />
+
       {/* HERO */}
       <section className="relative min-h-screen flex items-center pt-36 overflow-hidden" style={{ background: B.bg }}>
         {/* Decorative rings */}
@@ -360,22 +363,22 @@ export default function BusinessPage() {
         <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-12 lg:gap-20 items-center w-full py-16">
           <div>
             <div
-              className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 mb-8"
+              className="anim-h1 inline-flex items-center gap-2 rounded-full px-4 py-1.5 mb-8"
               style={{ background: B.accentFaint, border: `1px solid ${B.accentBorder}` }}
             >
               <span className="w-2 h-2 rounded-full animate-pulse-dot" style={{ background: B.accent }} />
               <span className="text-xs font-semibold tracking-wide" style={{ color: B.accent }}>{tx.hero_badge_ai}</span>
             </div>
             <h1
-              className="text-4xl sm:text-5xl lg:text-7xl xl:text-8xl font-bold leading-tight sm:leading-none mb-5 sm:mb-6"
+              className="anim-h2 text-4xl sm:text-5xl lg:text-7xl xl:text-8xl font-bold leading-tight sm:leading-none mb-5 sm:mb-6"
               style={{ color: B.text, fontFamily: "var(--font-playfair), Georgia, serif" }}
             >
               {tx.hero_title}
             </h1>
-            <p className="text-base sm:text-xl max-w-lg leading-relaxed mb-8 sm:mb-10 font-medium" style={{ color: B.muted }}>
+            <p className="anim-h3 text-base sm:text-xl max-w-lg leading-relaxed mb-8 sm:mb-10 font-medium" style={{ color: B.muted }}>
               {tx.hero_sub}
             </p>
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
+            <div className="anim-h4 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
               <a
                 href="#mission"
                 className="font-bold px-8 py-4 rounded-full text-base text-white text-center transition-all hover:scale-105 shadow-[0_8px_30px_rgba(59,130,246,0.3)]"
@@ -466,7 +469,7 @@ export default function BusinessPage() {
         <div className="absolute inset-0" style={{ background: "radial-gradient(ellipse at center, transparent 40%, rgba(5,5,30,0.4) 100%)" }} />
 
         <div className="relative z-10 max-w-7xl mx-auto">
-          <div className="text-center mb-18">
+          <div className="reveal text-center mb-18">
             <div className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 mb-6" style={{ background: "rgba(255,255,255,0.10)", border: "1px solid rgba(255,255,255,0.20)" }}>
               <span className="w-1.5 h-1.5 rounded-full" style={{ background: B.accent }} />
               <span className="text-xs font-bold tracking-widest uppercase" style={{ color: B.accent }}>
@@ -483,10 +486,10 @@ export default function BusinessPage() {
           </div>
 
           <div className="grid md:grid-cols-3 gap-5 lg:gap-8 mt-14">
-            {tx.how_steps.map((step) => (
+            {tx.how_steps.map((step, idx) => (
               <div
                 key={step.n}
-                className="group rounded-2xl p-8 text-center transition-all duration-300 hover:scale-[1.03]"
+                className={`reveal reveal-d${(idx + 1) as 1|2|3} group rounded-2xl p-8 text-center transition-all duration-300 hover:scale-[1.03]`}
                 style={{ background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.15)" }}
               >
                 <div
@@ -511,7 +514,7 @@ export default function BusinessPage() {
       {/* TWO FLOWS */}
       <section id="mission" className="py-14 sm:py-20 px-4 sm:px-6" style={{ background: B.cardDeep }}>
         <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-12">
+          <div className="reveal text-center mb-12">
             <div
               className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 mb-4"
               style={{ background: B.border, border: `1px solid ${B.faint}` }}
@@ -530,7 +533,7 @@ export default function BusinessPage() {
           <div className="grid sm:grid-cols-2 gap-6">
             {/* Flow 1 */}
             <div
-              className="rounded-3xl p-8 transition-all duration-300 hover:scale-[1.02]"
+              className="reveal reveal-d1 rounded-3xl p-8 transition-all duration-300 hover:scale-[1.02]"
               style={{ border: `1px solid ${B.border}`, background: B.card }}
             >
               <div
@@ -563,7 +566,7 @@ export default function BusinessPage() {
             </div>
             {/* Flow 2 */}
             <div
-              className="rounded-3xl p-8 transition-all duration-300 hover:scale-[1.02]"
+              className="reveal reveal-d2 rounded-3xl p-8 transition-all duration-300 hover:scale-[1.02]"
               style={{ border: `1px solid ${B.accentBorder}`, background: B.card }}
             >
               <div
@@ -943,6 +946,7 @@ export default function BusinessPage() {
       {/* SOCIAL PROOF */}
       <section className="py-14 sm:py-24 px-4 sm:px-6 text-white" style={{ background: `linear-gradient(135deg, ${B.dark2}, ${B.dark1}, ${B.dark2})` }}>
         <div className="max-w-5xl mx-auto text-center">
+          <div className="reveal">
           <h2
             className="text-2xl sm:text-4xl lg:text-5xl font-bold mb-4"
             style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
@@ -950,12 +954,13 @@ export default function BusinessPage() {
             {tx.social_title}
           </h2>
           <p className="text-base mb-16 max-w-xl mx-auto" style={{ color: "rgba(255,255,255,0.60)" }}>{tx.social_subtitle}</p>
+          </div>
 
           <div className="grid grid-cols-3 gap-6 mb-14 max-w-2xl mx-auto">
-            {tx.social_stats.map((stat) => (
+            {tx.social_stats.map((stat, sIdx) => (
               <div
                 key={stat.label}
-                className="rounded-2xl px-6 py-8 flex flex-col items-center gap-2 transition-all duration-200 hover:scale-105 cursor-default"
+                className={`reveal-scale reveal-scale-d${(sIdx + 1) as 1|2|3} rounded-2xl px-6 py-8 flex flex-col items-center gap-2 transition-all duration-200 hover:scale-105 cursor-default`}
                 style={{ background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.12)" }}
               >
                 <span

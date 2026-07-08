@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { CART_UPDATED_EVENT, getCartCount } from "@/lib/cart";
 import NewsletterPopup from "@/components/NewsletterPopup";
+import RevealObserver from "@/components/RevealObserver";
 
 type Lang = "fr" | "en";
 
@@ -409,7 +410,7 @@ export default function Home() {
       </div>
 
       {/* NAV */}
-      <nav className="fixed top-12 w-full z-50 bg-[#0e1310]/95 backdrop-blur-md border-b border-[#232c20]">
+      <nav className="fixed top-12 w-full z-50 bg-[#0e1310]/97 backdrop-blur-sm border-b border-[#232c20]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
           <Link href="/" className="text-xl font-bold tracking-tight text-[#d8e3d5] transition-colors duration-200 hover:text-[#c9a84c]" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
             TravelGuide
@@ -464,6 +465,8 @@ export default function Home() {
         </div>
       </nav>
 
+      <RevealObserver />
+
       {/* HERO */}
       <section className="hero-bg relative min-h-screen flex items-center pt-36 overflow-hidden">
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
@@ -475,16 +478,16 @@ export default function Home() {
 
         <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-12 lg:gap-20 items-center w-full py-16">
           <div>
-            <div className="inline-flex items-center gap-2 bg-[#C9A84C]/10 border border-[#C9A84C]/30 rounded-full px-4 py-1.5 mb-8">
+            <div className="anim-h1 inline-flex items-center gap-2 bg-[#C9A84C]/10 border border-[#C9A84C]/30 rounded-full px-4 py-1.5 mb-8">
               <span className="w-2 h-2 bg-[#C9A84C] rounded-full animate-pulse-dot" />
               <span className="text-xs font-semibold text-[#C9A84C] tracking-wide">{tx.hero_badge_ai}</span>
             </div>
-            <h1 className="text-4xl sm:text-5xl lg:text-7xl xl:text-8xl font-bold leading-tight sm:leading-none mb-5 sm:mb-6 text-[#d8e3d5]"
+            <h1 className="anim-h2 text-4xl sm:text-5xl lg:text-7xl xl:text-8xl font-bold leading-tight sm:leading-none mb-5 sm:mb-6 text-[#d8e3d5]"
               style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
               {tx.hero_title}
             </h1>
-            <p className="text-base sm:text-xl text-[#7a9076] max-w-lg leading-relaxed mb-8 sm:mb-10 font-medium">{tx.hero_sub}</p>
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
+            <p className="anim-h3 text-base sm:text-xl text-[#7a9076] max-w-lg leading-relaxed mb-8 sm:mb-10 font-medium">{tx.hero_sub}</p>
+            <div className="anim-h4 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
               <a href="#pricing" onClick={() => trackCTA("hero")}
                 className="bg-gradient-to-br from-[#425C47] to-[#2e4133] text-white font-bold px-8 py-4 rounded-full hover:from-[#2e4133] hover:to-[#1f2e22] transition-all hover:scale-105 text-base shadow-[0_8px_30px_rgba(66,92,71,0.35)] text-center">
                 {tx.hero_cta} →
@@ -562,8 +565,8 @@ export default function Home() {
 
         <div className="relative z-10 max-w-7xl mx-auto">
           {/* Header */}
-          <div className="text-center mb-18">
-            <div className="inline-flex items-center gap-2 bg-white/10 border border-white/20 backdrop-blur-sm rounded-full px-4 py-1.5 mb-6">
+          <div className="reveal text-center mb-18">
+            <div className="inline-flex items-center gap-2 bg-white/10 border border-white/20 rounded-full px-4 py-1.5 mb-6">
               <span className="w-1.5 h-1.5 bg-[#C9A84C] rounded-full" />
               <span className="text-xs font-bold text-[#C9A84C] tracking-widest uppercase">
                 {lang === "fr" ? "3 étapes simples" : "3 simple steps"}
@@ -580,10 +583,10 @@ export default function Home() {
 
           {/* Steps grid */}
           <div className="grid md:grid-cols-3 gap-5 lg:gap-8 mt-14">
-            {tx.how_steps.map((step) => (
+            {tx.how_steps.map((step, idx) => (
               <div
                 key={step.n}
-                className="group bg-white/8 hover:bg-white/13 backdrop-blur-sm border border-white/15 hover:border-white/25 rounded-2xl p-8 text-center transition-all duration-300 hover:scale-[1.03]"
+                className={`reveal reveal-d${(idx + 1) as 1 | 2 | 3} group bg-white/8 hover:bg-white/13 border border-white/15 hover:border-white/25 rounded-2xl p-8 text-center transition-all duration-300 hover:scale-[1.03]`}
               >
                 <div className="font-black text-5xl text-[#C9A84C]/70 leading-none mb-6 group-hover:text-[#C9A84C] transition-colors"
                   style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
@@ -606,7 +609,7 @@ export default function Home() {
       {/* TWO FLOWS */}
       <section className="py-14 sm:py-20 px-4 sm:px-6 bg-[#111810]">
         <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-12">
+          <div className="reveal text-center mb-12">
             <div className="inline-flex items-center gap-2 bg-[#232c20] border border-[#2a3527] rounded-full px-4 py-1.5 mb-4">
               <span className="w-1.5 h-1.5 bg-[#C9A84C] rounded-full animate-pulse" />
               <span className="text-xs font-bold text-[#c9a84c] uppercase tracking-widest">
@@ -624,7 +627,7 @@ export default function Home() {
           </div>
           <div className="grid sm:grid-cols-2 gap-6">
             {/* Q1 */}
-            <div className="rounded-3xl border border-[#232c20] bg-[#161c14] p-8 hover:border-[#425C47] transition-all duration-300 hover:scale-[1.02] group">
+            <div className="reveal reveal-d1 rounded-3xl border border-[#232c20] bg-[#161c14] p-8 hover:border-[#425C47] transition-all duration-300 hover:scale-[1.02] group">
               <div className="w-12 h-12 rounded-xl bg-[#232c20] flex items-center justify-center mb-5 group-hover:bg-[#2a3527] transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
               </div>
@@ -648,7 +651,7 @@ export default function Home() {
               </a>
             </div>
             {/* Q2 */}
-            <div className="rounded-3xl border border-[#c9a84c]/20 bg-[#161c14] p-8 hover:border-[#C9A84C]/50 transition-all duration-300 hover:scale-[1.02] group">
+            <div className="reveal reveal-d2 rounded-3xl border border-[#c9a84c]/20 bg-[#161c14] p-8 hover:border-[#C9A84C]/50 transition-all duration-300 hover:scale-[1.02] group">
               <div className="w-12 h-12 rounded-xl bg-[#c9a84c]/10 flex items-center justify-center mb-5 group-hover:bg-[#c9a84c]/20 transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
               </div>
@@ -678,7 +681,7 @@ export default function Home() {
       {/* PRICING */}
       <section className="scroll-mt-28 py-14 sm:py-24 px-4 sm:px-6 bg-pattern-light" id="pricing">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
+          <div className="reveal text-center mb-16">
             <h2
               className="text-2xl sm:text-4xl lg:text-5xl font-bold mb-4 text-[#d8e3d5]"
               style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
@@ -688,7 +691,7 @@ export default function Home() {
             <p className="text-[#7a9076] max-w-2xl mx-auto text-sm leading-relaxed">{tx.pricing_sub}</p>
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            {tx.plans.map((plan) => {
+            {tx.plans.map((plan, pIdx) => {
               const isInverted = plan.popular;
               const isGiftPlan = !phoneStatus.welcomeUsed; // disparaît si déjà utilisé
               const giftUnlocked = phoneStatus.loggedIn && phoneStatus.phoneVerified && !phoneStatus.welcomeUsed;
@@ -696,7 +699,7 @@ export default function Home() {
               return (
                 <div
                   key={plan.name}
-                  className={`relative rounded-2xl p-6 border flex flex-col transition-all duration-300 hover:shadow-2xl hover:-translate-y-1.5 ${
+                  className={`reveal reveal-d${Math.min(pIdx + 1, 4) as 1|2|3|4} relative rounded-2xl p-6 border flex flex-col transition-all duration-300 hover:shadow-2xl hover:-translate-y-1.5 ${
                     isInverted
                       ? "bg-gradient-to-br from-[#1e3324] to-[#162818] text-white border-[#2a4433] shadow-[0_8px_32px_rgba(66,92,71,0.3)]"
                       : "bg-[#161c14] text-[#d8e3d5] border-[#232c20]"
@@ -1034,10 +1037,10 @@ export default function Home() {
           <p className="text-base mb-16 max-w-xl mx-auto" style={{ color: "var(--cm)" }}>{tx.social_subtitle}</p>
 
           <div className="grid grid-cols-3 gap-6 max-w-2xl mx-auto">
-            {tx.social_stats.map((stat) => (
+            {tx.social_stats.map((stat, sIdx) => (
               <div
                 key={stat.label}
-                className="rounded-2xl px-6 py-8 flex flex-col items-center gap-2 transition-all duration-200 hover:scale-105 cursor-default"
+                className={`reveal-scale reveal-scale-d${(sIdx + 1) as 1|2|3} rounded-2xl px-6 py-8 flex flex-col items-center gap-2 transition-all duration-200 hover:scale-105 cursor-default`}
                 style={{ background: "var(--cc)", border: "1px solid var(--ce)" }}
               >
                 <span

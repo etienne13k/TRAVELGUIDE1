@@ -19,6 +19,48 @@ html {
   animation: slide-up 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
 
+/* ── Entrance animations ────────────────────────── */
+@keyframes fade-up-enter {
+  0%   { opacity: 0; transform: translateY(28px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-in-enter {
+  0%   { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@keyframes scale-enter {
+  0%   { opacity: 0; transform: scale(0.90); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+/* Hero staggered (above fold, play immediately) */
+.anim-h1 { animation: fade-up-enter 0.55s cubic-bezier(0.22,1,0.36,1) both; }
+.anim-h2 { animation: fade-up-enter 0.55s cubic-bezier(0.22,1,0.36,1) 120ms both; }
+.anim-h3 { animation: fade-up-enter 0.55s cubic-bezier(0.22,1,0.36,1) 240ms both; }
+.anim-h4 { animation: fade-up-enter 0.55s cubic-bezier(0.22,1,0.36,1) 360ms both; }
+
+/* Scroll-reveal (trigger via IntersectionObserver → add .in-view) */
+.reveal {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity 0.5s cubic-bezier(0.22,1,0.36,1), transform 0.5s cubic-bezier(0.22,1,0.36,1);
+}
+.reveal.in-view { opacity: 1; transform: translateY(0); }
+.reveal-scale {
+  opacity: 0;
+  transform: scale(0.92);
+  transition: opacity 0.45s cubic-bezier(0.22,1,0.36,1), transform 0.45s cubic-bezier(0.22,1,0.36,1);
+}
+.reveal-scale.in-view { opacity: 1; transform: scale(1); }
+
+/* stagger helpers */
+.reveal-d1, .reveal-scale-d1 { transition-delay: 60ms; }
+.reveal-d2, .reveal-scale-d2 { transition-delay: 130ms; }
+.reveal-d3, .reveal-scale-d3 { transition-delay: 200ms; }
+.reveal-d4, .reveal-scale-d4 { transition-delay: 270ms; }
+
 /* ── Mobile touch & readability ──────────────────── */
 * {
   -webkit-tap-highlight-color: transparent;
