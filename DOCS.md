@@ -1365,3 +1365,29 @@ Après configuration, pousser/redéployer puis vérifier `/api/health` : les tro
 - `npx eslint src/app/login/page.tsx src/app/signup/page.tsx src/app/signup/SignupForm.tsx src/components/PhoneVerification.tsx src/lib/sms-provider.ts src/app/api/phone/send-otp/route.ts src/app/api/phone/verify-otp/route.ts src/lib/phone-verification.ts` passe.
 - `npm run build` passe.
 - `npm run lint` global reste bloqué par des erreurs préexistantes hors périmètre (`scripts/seed-admin.js`, `src/app/business/page.tsx`, `src/app/business/questionnaire/page.tsx`, `src/components/DestinationMap.tsx`, `src/lib/mode-theme.ts`, `src/lib/useLang.ts`).
+
+---
+
+## Mise à jour 2026-07-08 — Fix identifiants admin `/admin`
+
+### Exploration persistée
+- Auth admin localisée dans `src/app/api/admin/auth/login/route.ts` : vérification bcrypt de `admin_accounts` en priorité, puis fallback `users` avec `is_admin = true` et `is_suspended = false`.
+- Protection `/admin` localisée dans `src/proxy.ts` et `src/middleware.ts` : redirection vers `/admin/login` sans cookie JWT `tgai_admin_session` valide.
+- `scripts/seed-admin.js` existait déjà avec les identifiants demandés, mais ne mettait à jour que `profiles`/vue `users`; le login consulte d'abord `admin_accounts`.
+- `nanocorp site env list` montrait seulement `DATABASE_URL`; `ADMIN_JWT_SECRET` manquait côté Vercel/NanoCorp, ce qui empêche la création du cookie admin même après un mot de passe valide.
+- La consigne AGENTS demandait de lire `node_modules/next/dist/docs/`, mais le package `next` installé localement ne contient pas ce dossier.
+
+### Changements livrés
+- `scripts/seed-admin.js` met maintenant à jour les deux chemins d'auth admin : table primaire `admin_accounts` et fallback `profiles`/vue `users`.
+- `scripts/seed-admin.js` crée `admin_accounts` si absente, efface les tentatives échouées pour `admin@spiregg.app`, et affiche la bonne URL `https://travel-ia.nanocorp.app/admin/login`.
+- `.env.example` documente `ADMIN_JWT_SECRET` requis et les overrides optionnels `ADMIN_EMAIL` / `ADMIN_PASSWORD` pour le seed.
+- Base de données mise à jour avec `admin@spiregg.app` / `SpireggAdmin2025!` dans `admin_accounts` et `users`, hashes bcrypt vérifiés, `is_admin = true`, `is_suspended = false`.
+- Tentatives admin échouées récentes supprimées pour débloquer immédiatement la connexion.
+- Variable Vercel/NanoCorp `ADMIN_JWT_SECRET` configurée via `nanocorp site env set`.
+
+### Validation
+- Vérification DB locale : le hash bcrypt de `admin_accounts` et celui du fallback `users` matchent `SpireggAdmin2025!`.
+- `npm run build` passe avec `ADMIN_JWT_SECRET` local de test.
+- Test HTTP local : `/admin` non authentifié renvoie `307` vers `/admin/login`, puis `POST /api/admin/auth/login` avec `admin@spiregg.app` / `SpireggAdmin2025!` renvoie `200` et pose `tgai_admin_session`.
+- Test headless `agent-browser` local : connexion réussie et arrivée sur `/admin` avec le dashboard commandes visible.
+- À valider après push/deploy : même test sur `https://travel-ia.nanocorp.app/admin`.

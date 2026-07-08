@@ -6,6 +6,9 @@
  *   DATABASE_URL=<neon-connection-string> node scripts/seed-admin.js
  *
  * The script is idempotent: running it twice on the same email only updates the password hash.
+ * It updates both admin stores used by the login route:
+ *   - admin_accounts (primary admin auth table)
+ *   - profiles/users view (fallback auth path)
  *
  * Required env:
  *   DATABASE_URL   — Neon PostgreSQL connection string (already set in .env.local)
@@ -47,7 +50,24 @@ async function main() {
         FROM profiles
     `);
 
-    // Upsert admin
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS admin_accounts (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        email TEXT UNIQUE NOT NULL,
+        password_hash TEXT NOT NULL,
+        created_at TIMESTAMPTZ DEFAULT NOW()
+      )
+    `);
+
+    await client.query(
+      `INSERT INTO admin_accounts (email, password_hash)
+       VALUES ($1, $2)
+       ON CONFLICT (email) DO UPDATE
+         SET password_hash = EXCLUDED.password_hash`,
+      [adminEmail, passwordHash]
+    );
+
+    // Upsert admin fallback user
     const result = await client.query(
       `INSERT INTO profiles (email, password_hash, is_admin, phone_verified, is_suspended)
        VALUES ($1, $2, true, true, false)
@@ -60,12 +80,20 @@ async function main() {
       [adminEmail, passwordHash]
     );
 
+    await client.query(
+      `DELETE FROM admin_login_attempts
+       WHERE email = $1`,
+      [adminEmail]
+    ).catch(() => undefined);
+
     const row = result.rows[0];
     console.log(`✅  Admin account ready:`);
     console.log(`    ID    : ${row.id}`);
     console.log(`    Email : ${row.email}`);
     console.log(`    Admin : ${row.is_admin}`);
-    console.log(`\n    Login at https://travel-guide.nanocorp.app/admin/login`);
+    console.log(`    Primary admin_accounts row updated: true`);
+    console.log(`    Recent failed attempts for this email cleared: true`);
+    console.log(`\n    Login at https://travel-ia.nanocorp.app/admin/login`);
   } finally {
     await client.end();
   }
