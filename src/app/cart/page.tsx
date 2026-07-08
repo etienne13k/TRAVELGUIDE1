@@ -269,20 +269,27 @@ function CartContent() {
                     </article>
                   );
                 }
+                const isBusinessGuide = isBusiness && item.planId !== "1mois";
                 return (
                 <article
                   key={item.id}
                   className="overflow-hidden rounded-[1.75rem]"
-                  style={{ border: `1px solid ${T.border}`, background: T.card }}
+                  style={{
+                    border: isBusinessGuide ? "1px solid rgba(59,130,246,0.28)" : `1px solid ${T.border}`,
+                    background: T.card,
+                  }}
                 >
                   <div
                     className="px-5 py-4"
-                    style={{ borderBottom: `1px solid ${T.border}`, background: T.cardHeader }}
+                    style={{
+                      borderBottom: isBusinessGuide ? "1px solid rgba(59,130,246,0.15)" : `1px solid ${T.border}`,
+                      background: isBusinessGuide ? "#0d0d1a" : T.cardHeader,
+                    }}
                   >
                     <div className="flex items-start justify-between gap-4">
                       <div>
                         <p className="text-xs font-bold uppercase tracking-[0.18em]" style={{ color: T.accent }}>
-                          Guide #{index + 1}
+                          {isBusinessGuide ? `Guide Pro #${index + 1}` : `Guide #${index + 1}`}
                         </p>
                         <h2
                           className="mt-1 text-xl font-bold"
@@ -304,14 +311,17 @@ function CartContent() {
                     {[
                       { label: "Dates", value: item.dates || "À confirmer" },
                       { label: "Durée", value: item.planLabel },
-                      { label: "Prix", value: formatEuro(item.price) },
+                      { label: isBusinessGuide ? "Lieu" : "Prix", value: isBusinessGuide ? (item.destination || "À confirmer") : formatEuro(item.price) },
                     ].map((cell) => (
                       <div
                         key={cell.label}
                         className="rounded-2xl p-4"
-                        style={{ background: T.cardDeep, border: `1px solid ${T.border}` }}
+                        style={{
+                          background: isBusinessGuide ? "rgba(59,130,246,0.06)" : T.cardDeep,
+                          border: isBusinessGuide ? "1px solid rgba(59,130,246,0.15)" : `1px solid ${T.border}`,
+                        }}
                       >
-                        <p className="text-xs font-bold uppercase tracking-[0.12em]" style={{ color: T.faint }}>{cell.label}</p>
+                        <p className="text-xs font-bold uppercase tracking-[0.12em]" style={{ color: isBusinessGuide ? "rgba(59,130,246,0.5)" : T.faint }}>{cell.label}</p>
                         <p className="mt-1 text-sm font-semibold" style={{ color: T.text }}>{cell.value}</p>
                       </div>
                     ))}
