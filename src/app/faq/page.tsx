@@ -3,6 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useMode } from "@/lib/mode-theme";
+import { useLang } from "@/lib/useLang";
+import LangToggle from "@/components/LangToggle";
 
 type Lang = "fr" | "en";
 
@@ -84,7 +86,7 @@ const FAQ_EN = [
 ];
 
 export default function FAQPage() {
-  const [lang, setLang] = useState<Lang>("fr");
+  const [lang] = useLang();
   const [openItem, setOpenItem] = useState<string | null>(null);
   const { isBusiness } = useMode();
   const data = lang === "fr" ? FAQ_FR : FAQ_EN;
@@ -99,14 +101,7 @@ export default function FAQPage() {
             {lang === "fr" ? "← Retour au site" : "← Back to site"}
           </Link>
           <span className="font-bold" style={{ fontFamily: "var(--font-playfair), Georgia, serif", color: "var(--ct)" }}>{brandName}</span>
-          <div className="flex items-center gap-1 rounded-lg p-0.5" style={{ border: "1px solid var(--ce)" }}>
-            <button onClick={() => setLang("fr")} className={`rounded-md px-2 py-0.5 transition-all ${lang === "fr" ? "" : "opacity-40 hover:opacity-70"}`} style={lang === "fr" ? { background: "var(--ce)" } : {}}>
-              <img src="https://flagcdn.com/w40/fr.png" width="24" height="16" alt="FR" style={{display:"inline",borderRadius:"2px"}} />
-            </button>
-            <button onClick={() => setLang("en")} className={`rounded-md px-2 py-0.5 transition-all ${lang === "en" ? "" : "opacity-40 hover:opacity-70"}`} style={lang === "en" ? { background: "var(--ce)" } : {}}>
-              <img src="https://flagcdn.com/w40/gb.png" width="24" height="16" alt="GB" style={{display:"inline",borderRadius:"2px"}} />
-            </button>
-          </div>
+          <LangToggle />
         </div>
       </header>
 

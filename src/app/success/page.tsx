@@ -2,7 +2,9 @@
 
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect } from "react";
+import { useLang } from "@/lib/useLang";
+import LangToggle from "@/components/LangToggle";
 
 const T = {
   fr: {
@@ -44,7 +46,7 @@ function SuccessContent() {
   const guideId = params.get("id");
   const email = params.get("email");
   const destination = params.get("destination");
-  const [lang, setLang] = useState<"fr" | "en">("fr");
+  const [lang] = useLang();
   const t = T[lang];
 
   const downloadUrl = guideId ? `/api/download-guide/${guideId}` : null;
@@ -60,15 +62,7 @@ function SuccessContent() {
           <Link href="/" className="text-lg font-bold" style={{ fontFamily: "var(--font-playfair), Georgia, serif", color: "var(--ct)" }}>
             Travel IA
           </Link>
-          <div className="flex items-center gap-1 rounded-lg p-1" style={{ background: "var(--cb)", border: "1px solid var(--ce)" }}>
-            {(["fr", "en"] as const).map(l => (
-              <button key={l} onClick={() => setLang(l)}
-                className="rounded-md px-2 py-0.5 text-xs font-bold transition-all"
-                style={lang === l ? { background: "var(--ce)", color: "var(--ct)" } : { color: "var(--cm)", opacity: 0.6 }}>
-                {l === "fr" ? "🇫🇷 FR" : "🇬🇧 EN"}
-              </button>
-            ))}
-          </div>
+          <LangToggle />
         </div>
       </header>
 

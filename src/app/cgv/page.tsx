@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import { useMode } from "@/lib/mode-theme";
+import { useLang } from "@/lib/useLang";
+import LangToggle from "@/components/LangToggle";
 
 const CONTACT = "travel-ia@nanocorp.app";
 const SITE_URL = "https://travel-ia.nanocorp.app";
@@ -425,7 +426,7 @@ function renderSection(body: string, brand = "TravelGuide") {
 }
 
 export default function CGVPage() {
-  const [lang, setLang] = useState<"fr" | "en">("fr");
+  const [lang] = useLang();
   const { isBusiness } = useMode();
   const t = content[lang];
   const brandName = isBusiness ? "Travel Business" : "TravelGuide";
@@ -439,14 +440,7 @@ export default function CGVPage() {
             {t.back}
           </Link>
           <span className="font-bold" style={{ fontFamily: "var(--font-playfair), Georgia, serif", color: "var(--ct)" }}>{brandName}</span>
-          <div className="flex items-center gap-1 rounded-lg p-0.5" style={{ border: "1px solid var(--ce)" }}>
-            <button onClick={() => setLang("fr")} title="Passer en français" className={`rounded-md px-2 py-0.5 transition-all ${lang !== "fr" ? "opacity-40 hover:opacity-70" : ""}`} style={lang === "fr" ? { background: "var(--ce)" } : {}}>
-              <img src="https://flagcdn.com/w40/fr.png" width="24" height="16" alt="FR" style={{display:"inline",borderRadius:"2px"}} />
-            </button>
-            <button onClick={() => setLang("en")} title="Switch to English" className={`rounded-md px-2 py-0.5 transition-all ${lang !== "en" ? "opacity-40 hover:opacity-70" : ""}`} style={lang === "en" ? { background: "var(--ce)" } : {}}>
-              <img src="https://flagcdn.com/w40/gb.png" width="24" height="16" alt="GB" style={{display:"inline",borderRadius:"2px"}} />
-            </button>
-          </div>
+          <LangToggle />
         </div>
       </header>
 

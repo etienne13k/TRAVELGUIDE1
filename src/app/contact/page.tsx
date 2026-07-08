@@ -3,6 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useMode } from "@/lib/mode-theme";
+import { useLang } from "@/lib/useLang";
+import LangToggle from "@/components/LangToggle";
 
 const T = {
   fr: {
@@ -63,7 +65,7 @@ export default function ContactPage() {
   const [form, setForm] = useState({ firstName: "", lastName: "", email: "", message: "" });
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState("");
-  const [lang, setLang] = useState<"fr" | "en">("fr");
+  const [lang] = useLang();
   const { isBusiness } = useMode();
   const brandName = isBusiness ? "Travel Business" : "TravelGuide";
   const backHref = isBusiness ? "/business" : "/personal";
@@ -104,15 +106,7 @@ export default function ContactPage() {
           <Link href={backHref} className="font-bold" style={{ fontFamily: "var(--font-playfair), Georgia, serif", color: "var(--ct)" }}>
             {brandName}
           </Link>
-          <div className="flex items-center gap-1 rounded-lg p-1" style={{ background: "var(--cc)", border: "1px solid var(--ce)" }}>
-            {(["fr", "en"] as const).map(l => (
-              <button key={l} onClick={() => setLang(l)}
-                className="rounded-md px-2 py-0.5 text-xs font-bold transition-all"
-                style={lang === l ? { background: "var(--ce)", color: "var(--ct)" } : { color: "var(--cm)", opacity: 0.6 }}>
-                {l === "fr" ? "🇫🇷 FR" : "🇬🇧 EN"}
-              </button>
-            ))}
-          </div>
+          <LangToggle />
         </div>
       </header>
 
