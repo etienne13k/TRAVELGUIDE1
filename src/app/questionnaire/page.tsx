@@ -616,10 +616,6 @@ function QuestionnaireContent() {
   const [cartNotice, setCartNotice] = useState<string|null>(null);
   const [isEditingCartItem, setIsEditingCartItem] = useState(false);
   const [flowChoice, setFlowChoice] = useState<"choose"|"destination"|"discover">(() => editItemId ? "destination" : "choose");
-  const [discoverDeparture, setDiscoverDeparture] = useState("");
-  const [discoverBudget, setDiscoverBudget] = useState("");
-  const [discoverInterests, setDiscoverInterests] = useState<string[]>([]);
-  const [discoverClimate, setDiscoverClimate] = useState("");
   const [suggestions, setSuggestions] = useState<SuggestionCard[]>([]);
   const [suggestLoading, setSuggestLoading] = useState(false);
   const [suggestError, setSuggestError] = useState<string|null>(null);
@@ -723,9 +719,9 @@ function QuestionnaireContent() {
   async function goNext() {
     if (step===1) {
       const nextErrors: Record<string,string> = {};
-      if (!answers.destination_arrival_city.trim()) nextErrors.destination_arrival_city = "Veuillez indiquer votre ville d'arrivée.";
+      if (flowChoice !== "discover" && !answers.destination_arrival_city.trim()) nextErrors.destination_arrival_city = "Veuillez indiquer votre ville d'arrivée.";
       if (!answers.departure_city.trim()) nextErrors.departure_city = "Veuillez indiquer votre ville de départ.";
-      if (!answers.scope_type) nextErrors.scope_type = "Veuillez choisir comment vous souhaitez explorer.";
+      if (flowChoice !== "discover" && !answers.scope_type) nextErrors.scope_type = "Veuillez choisir comment vous souhaitez explorer.";
       if (!answers.arrival_date) nextErrors.dates = "Veuillez sélectionner au moins une date.";
       if (!answers.dates_flexible) nextErrors.dates_flexible = "Veuillez indiquer si vos dates sont flexibles.";
       if (!answers.traveler_type) nextErrors.traveler_type = "Veuillez indiquer avec qui vous voyagez.";
@@ -741,11 +737,13 @@ function QuestionnaireContent() {
           : answers.departure_city.trim()
           ? [{ name: "departure_city", label: "Ville de départ", value: answers.departure_city }]
           : []),
-        ...(answers.destination_arrival_city.trim() && answers.arrival_city_country
+        ...(flowChoice !== "discover" ? (
+          answers.destination_arrival_city.trim() && answers.arrival_city_country
           ? [{ name: "destination_arrival_city", label: `Ville d'arrivée "${answers.destination_arrival_city}" dans le pays "${answers.arrival_city_country}"`, value: `${answers.destination_arrival_city} (${answers.arrival_city_country})` }]
           : answers.destination_arrival_city.trim()
           ? [{ name: "destination_arrival_city", label: "Ville d'arrivée", value: answers.destination_arrival_city }]
-          : []),
+          : []
+        ) : []),
         ...(answers.nearby_cities.trim() ? [{ name: "nearby_cities", label: "Villes alentour", value: answers.nearby_cities }] : []),
       ];
       const heuristicErrs = heuristicValidate(textFields);
@@ -914,20 +912,23 @@ function QuestionnaireContent() {
     window.scrollTo({top:0,behavior:"smooth"});
   }
 
-  async function handleSuggest() {
+  async function handleSuggestFull() {
+    // Validate step 3 before calling AI
+    const s3: Record<string,string> = {};
+    if (answers.diet.length===0) s3.diet = "Veuillez choisir au moins une option (y compris « Aucune restriction »).";
+    if (!answers.user_email.trim() || !isValidEmail(answers.user_email)) s3.email = "Adresse e-mail invalide. Vérifiez le format (ex. nom@domaine.com).";
+    if (Object.keys(s3).length > 0) { setStep3Errors(s3); scrollToError(`s3-${Object.keys(s3)[0]}`); return; }
+    setStep3Errors({});
+
     setSuggestLoading(true);
     setSuggestError(null);
     setSuggestions([]);
     try {
+      const duration = selectedPlanKey ? `${PLAN_DATE_LIMITS[selectedPlanKey].maxDays} jours` : undefined;
       const res = await fetch("/api/suggest-destinations", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          departure_city: discoverDeparture,
-          budget: discoverBudget,
-          interests: discoverInterests,
-          climate: discoverClimate,
-        }),
+        body: JSON.stringify({ ...answers, duration }),
       });
       const data = await res.json() as { suggestions?: SuggestionCard[]; error?: string };
       if (!res.ok || data.error) {
@@ -948,9 +949,9 @@ function QuestionnaireContent() {
       destination_arrival_city: card.name,
       arrival_city_country: card.country,
       destination: `${card.name}, ${card.country}`,
-      departure_city: discoverDeparture || p.departure_city,
-      budget: discoverBudget || p.budget,
     }));
+    setSuggestions([]);
+    // Switch to destination mode at step 3 so recap + cart button appear
     setFlowChoice("destination");
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
@@ -1038,147 +1039,7 @@ function QuestionnaireContent() {
           </div>
         )}
 
-        {/* ═══ DISCOVER FLOW ═══ */}
-        {flowChoice==="discover"&&(
-          <div className="space-y-5">
-            <div>
-              <button type="button" onClick={()=>{setFlowChoice("choose");setSuggestions([]);setSuggestError(null);}} className="text-xs text-[#5a7856] hover:text-[#c9a84c] transition-colors mb-4 flex items-center gap-1">
-                ← Retour
-              </button>
-              <p className="text-xs font-bold text-[#c9a84c] uppercase tracking-[0.18em] mb-2">Où partir ?</p>
-              <h1 className="text-2xl sm:text-3xl font-bold text-[#d8e3d5] mb-1" style={{fontFamily:"var(--font-playfair),Georgia,serif"}}>
-                Décrivez vos envies
-              </h1>
-              <p className="text-sm text-[#5a7856]">L&apos;IA vous suggère 3 destinations personnalisées.</p>
-            </div>
-
-            {suggestions.length === 0 && (
-              <div className="rounded-2xl border border-[#2a3527] bg-[#131a12] p-6 space-y-4">
-                <div>
-                  <label className="block text-sm font-semibold text-[#9ab896] mb-1.5">Ville de départ</label>
-                  <input
-                    type="text"
-                    value={discoverDeparture}
-                    onChange={e=>setDiscoverDeparture(e.target.value)}
-                    placeholder="ex. Paris, Lyon, Montréal"
-                    className="w-full border border-[#2a3527] rounded-lg px-4 py-3 text-sm bg-[#0e1310] text-[#d8e3d5] placeholder-[#3a5037] focus:outline-none focus:border-[#c9a84c] transition-colors"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-[#9ab896] mb-1.5">Budget</label>
-                  <div className="flex flex-wrap gap-2">
-                    {[{id:"backpacker",label:"Petit budget"},{id:"comfort",label:"Confort"},{id:"luxury",label:"Luxe"}].map(b=>(
-                      <button
-                        key={b.id}
-                        type="button"
-                        onClick={()=>setDiscoverBudget(b.id)}
-                        className={`rounded-full px-4 py-2 text-sm font-semibold border transition-all ${discoverBudget===b.id?"border-[#c9a84c] bg-[#c9a84c]/10 text-[#c9a84c]":"border-[#2a3527] text-[#7a9076] hover:border-[#3a5037]"}`}
-                      >
-                        {b.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-[#9ab896] mb-1.5">Ce qui vous attire</label>
-                  <div className="flex flex-wrap gap-2">
-                    {[
-                      {id:"culture",label:"Culture & Histoire"},
-                      {id:"nature",label:"Nature"},
-                      {id:"beach",label:"Plage"},
-                      {id:"city",label:"Ville"},
-                      {id:"food",label:"Gastronomie"},
-                      {id:"adventure",label:"Aventure"},
-                      {id:"relaxation",label:"Détente"},
-                      {id:"nightlife",label:"Vie nocturne"},
-                    ].map(o=>{
-                      const sel=discoverInterests.includes(o.id);
-                      return (
-                        <button
-                          key={o.id}
-                          type="button"
-                          onClick={()=>setDiscoverInterests(p=>sel?p.filter(v=>v!==o.id):[...p,o.id])}
-                          className={`rounded-full px-3 py-1.5 text-xs font-semibold border transition-all ${sel?"border-[#c9a84c] bg-[#c9a84c]/10 text-[#c9a84c]":"border-[#2a3527] text-[#7a9076] hover:border-[#3a5037]"}`}
-                        >
-                          {o.label}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-[#9ab896] mb-1.5">Climat souhaité</label>
-                  <div className="flex flex-wrap gap-2">
-                    {[{id:"warm",label:"☀️ Chaud"},{id:"mild",label:"🌤 Tempéré"},{id:"cold",label:"❄️ Froid"},{id:"tropical",label:"🌴 Tropical"}].map(c=>(
-                      <button
-                        key={c.id}
-                        type="button"
-                        onClick={()=>setDiscoverClimate(p=>p===c.id?"":c.id)}
-                        className={`rounded-full px-4 py-2 text-sm font-semibold border transition-all ${discoverClimate===c.id?"border-[#c9a84c] bg-[#c9a84c]/10 text-[#c9a84c]":"border-[#2a3527] text-[#7a9076] hover:border-[#3a5037]"}`}
-                      >
-                        {c.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-                {suggestError&&<p className="text-xs font-semibold text-red-400">{suggestError}</p>}
-                <button
-                  type="button"
-                  onClick={handleSuggest}
-                  disabled={suggestLoading||!discoverDeparture.trim()}
-                  className="w-full rounded-xl py-3.5 text-sm font-bold bg-[#c9a84c] text-[#0e1310] hover:bg-[#b8962e] disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-                >
-                  {suggestLoading ? (
-                    <span className="flex items-center justify-center gap-2">
-                      <span className="w-4 h-4 rounded-full border-2 border-t-transparent animate-spin" style={{borderColor:"#0e1310 transparent transparent transparent"}} />
-                      L&apos;IA cherche vos destinations…
-                    </span>
-                  ) : "Trouver ma destination →"}
-                </button>
-              </div>
-            )}
-
-            {suggestions.length > 0 && (
-              <div className="space-y-4">
-                <p className="text-sm text-[#7a9076]">Choisissez une destination — elle sera ajoutée à votre guide.</p>
-                {suggestions.map((card) => (
-                  <button
-                    key={card.name}
-                    type="button"
-                    onClick={()=>pickSuggestion(card)}
-                    className="w-full text-left rounded-2xl border border-[#2a3527] bg-[#131a12] hover:border-[#c9a84c]/60 hover:bg-[#1a2218] transition-all p-5 group"
-                  >
-                    <div className="flex items-start gap-4">
-                      <span className="text-4xl leading-none mt-0.5">{card.flag}</span>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 flex-wrap mb-1">
-                          <span className="font-bold text-[#d8e3d5] text-lg" style={{fontFamily:"var(--font-playfair),Georgia,serif"}}>{card.name}</span>
-                          <span className="text-sm text-[#5a7856]">{card.country}</span>
-                          {card.type==="valeur_sure"&&<span className="text-[10px] font-bold uppercase tracking-wider text-[#c9a84c] border border-[#c9a84c]/30 rounded-full px-2 py-0.5">Valeur sûre</span>}
-                          {card.type==="caractere"&&<span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400 border border-emerald-400/30 rounded-full px-2 py-0.5">Caractère</span>}
-                          {card.type==="coup_de_coeur"&&<span className="text-[10px] font-bold uppercase tracking-wider text-purple-400 border border-purple-400/30 rounded-full px-2 py-0.5">Coup de cœur</span>}
-                        </div>
-                        <p className="text-sm font-semibold text-[#c9a84c] mb-2">{card.tagline}</p>
-                        <p className="text-sm text-[#7a9076] leading-relaxed mb-3">{card.why}</p>
-                        <div className="flex flex-wrap gap-3 text-xs text-[#5a7856]">
-                          {card.weather&&<span>🌤 {card.weather}</span>}
-                          {card.budget_note&&<span>💶 {card.budget_note}</span>}
-                        </div>
-                        {card.downside&&<p className="mt-2 text-xs text-[#4a6447] italic">⚠ {card.downside}</p>}
-                      </div>
-                      <span className="text-[#c9a84c] font-bold text-lg shrink-0 group-hover:translate-x-1 transition-transform">→</span>
-                    </div>
-                  </button>
-                ))}
-                <button type="button" onClick={()=>{setSuggestions([]);setSuggestError(null);}} className="w-full text-center text-xs text-[#5a7856] hover:text-[#c9a84c] py-2 transition-colors">
-                  ↺ Régénérer de nouvelles suggestions
-                </button>
-              </div>
-            )}
-          </div>
-        )}
-
-        {flowChoice==="destination"&&validating&&(
+        {(flowChoice==="destination"||flowChoice==="discover")&&validating&&(
           <div className="rounded-xl border border-[#c9a84c]/30 bg-[#1a2218] px-5 py-3 flex items-center gap-3 text-sm text-[#d8e3d5]">
             <span className="w-4 h-4 rounded-full border-2 border-t-transparent animate-spin flex-shrink-0" style={{ borderColor: "#c9a84c transparent transparent transparent" }} />
             <span>Vérification des informations en cours<span className="inline-flex gap-0.5 ml-1"><span className="animate-bounce" style={{ animationDelay: "0ms" }}>.</span><span className="animate-bounce" style={{ animationDelay: "150ms" }}>.</span><span className="animate-bounce" style={{ animationDelay: "300ms" }}>.</span></span></span>
@@ -1195,21 +1056,30 @@ function QuestionnaireContent() {
           </div>
         )}
 
-        {flowChoice==="destination"&&<PlanSelector selectedPlanKey={selectedPlanKey} onSelect={choosePlan} />}
+        {(flowChoice==="destination"||flowChoice==="discover")&&<PlanSelector selectedPlanKey={selectedPlanKey} onSelect={choosePlan} />}
 
         {/* ═══════════ STEP 1 ═══════════ */}
-        {flowChoice==="destination"&&step===1&&(
+        {(flowChoice==="destination"||flowChoice==="discover")&&step===1&&(
           <>
             <div className="mb-1">
               <p className="text-xs font-bold text-[#c9a84c] uppercase tracking-[0.18em] mb-2">Étape 1 sur 3</p>
               <h1 className="text-2xl sm:text-3xl font-bold text-[#d8e3d5] mb-1" style={{fontFamily:"var(--font-playfair),Georgia,serif"}}>
                 Votre voyage
               </h1>
-              <p className="text-[#5a7856] text-sm">Indiquez votre destination, votre lieu de départ et vos dates.</p>
+              {flowChoice==="discover"
+                ? <p className="text-[#5a7856] text-sm">Indiquez votre ville de départ et vos dates — l&apos;IA trouvera la destination idéale pour vous.</p>
+                : <p className="text-[#5a7856] text-sm">Indiquez votre destination, votre lieu de départ et vos dates.</p>
+              }
             </div>
 
+            {flowChoice==="discover"&&(
+              <div className="rounded-xl border border-[#c9a84c]/20 bg-[#131a12] px-4 py-3 text-sm text-[#9ab896]">
+                Vous ne savez pas encore où aller — l&apos;IA analysera vos réponses et vous proposera 3 destinations sur-mesure à la fin du questionnaire.
+              </div>
+            )}
+
             {/* Départ & arrivée */}
-            <SectionCard title="Départ & arrivée">
+            <SectionCard title={flowChoice==="discover" ? "Ville de départ" : "Départ & arrivée"}>
               <div className="space-y-4">
                 <div id="field-departure_city">
                   <QLabel required>Ville de départ</QLabel>
@@ -1233,7 +1103,7 @@ function QuestionnaireContent() {
                   <p className="text-xs text-[#3a5037] mt-1.5">La ville et le pays depuis lesquels vous partez.</p>
                   <FieldError msg={errors.departure_city} />
                 </div>
-                <div id="field-destination_arrival_city">
+                {flowChoice!=="discover"&&<div id="field-destination_arrival_city">
                   <QLabel>Ville d&apos;arrivée</QLabel>
                   <div className="flex flex-col sm:flex-row gap-2">
                     <input
@@ -1261,12 +1131,12 @@ function QuestionnaireContent() {
                   </div>
                   <p className="text-xs text-[#3a5037] mt-1.5">La ville et le pays par lesquels vous arrivez (aéroport principal, capitale...).</p>
                   <FieldError msg={errors.destination_arrival_city} />
-                </div>
+                </div>}
               </div>
             </SectionCard>
 
-            {/* Type de séjour */}
-            <SectionCard title="Type de séjour">
+            {/* Type de séjour — masqué en mode discover */}
+            {flowChoice!=="discover"&&<SectionCard title="Type de séjour">
               <div className="space-y-4">
                 <div>
                   <QLabel>Comment souhaitez-vous explorer ?</QLabel>
@@ -1307,7 +1177,7 @@ function QuestionnaireContent() {
                   </div>
                 )}
               </div>
-            </SectionCard>
+            </SectionCard>}
 
             {/* Dates */}
             <div id="field-dates">
@@ -1397,7 +1267,7 @@ function QuestionnaireContent() {
         )}
 
         {/* ═══════════ STEP 2 ═══════════ */}
-        {flowChoice==="destination"&&step===2&&(
+        {(flowChoice==="destination"||flowChoice==="discover")&&step===2&&(
           <>
             <div className="mb-1">
               <p className="text-xs font-bold text-[#c9a84c] uppercase tracking-[0.18em] mb-2">Étape 2 sur 3</p>
@@ -1623,14 +1493,18 @@ function QuestionnaireContent() {
         )}
 
         {/* ═══════════ STEP 3 ═══════════ */}
-        {flowChoice==="destination"&&step===3&&(
+        {(flowChoice==="destination"||flowChoice==="discover")&&step===3&&(
           <>
             <div className="mb-1">
               <p className="text-xs font-bold text-[#c9a84c] uppercase tracking-[0.18em] mb-2">Étape 3 sur 3</p>
               <h1 className="text-2xl sm:text-3xl font-bold text-[#d8e3d5] mb-1" style={{fontFamily:"var(--font-playfair),Georgia,serif"}}>
-                Finaliser votre guide
+                {flowChoice==="discover" ? "Dernières infos" : "Finaliser votre guide"}
               </h1>
-              <p className="text-[#5a7856] text-sm">Quelques dernières informations avant le paiement.</p>
+              <p className="text-[#5a7856] text-sm">
+                {flowChoice==="discover"
+                  ? "Quelques dernières questions pour affiner les suggestions de l'IA."
+                  : "Quelques dernières informations avant le paiement."}
+              </p>
             </div>
 
             <SectionCard title="Informations pratiques">
@@ -1686,8 +1560,62 @@ function QuestionnaireContent() {
               </div>
             </SectionCard>
 
-            {/* RECAP */}
-            <div className="bg-[#111c0e] border border-[#1e2e1a] text-[#d8e3d5] rounded-xl p-6">
+            {/* DISCOVER — bouton "Trouver ma destination" + résultats */}
+            {flowChoice==="discover"&&(
+              <div className="space-y-4">
+                {suggestError&&<p className="text-xs font-semibold text-red-400 text-center">{suggestError}</p>}
+
+                {suggestions.length===0&&(
+                  <button type="button" onClick={handleSuggestFull} disabled={suggestLoading}
+                    className="w-full bg-[#c9a84c] hover:bg-[#b8962e] disabled:opacity-50 disabled:cursor-not-allowed text-[#0e1310] font-bold py-4 rounded-xl transition-all text-sm shadow-[0_4px_20px_rgba(201,168,76,0.25)]">
+                    {suggestLoading?(
+                      <span className="flex items-center justify-center gap-2">
+                        <span className="w-4 h-4 border-2 border-[#0e1310] border-t-transparent rounded-full animate-spin"/>
+                        L&apos;IA analyse vos envies…
+                      </span>
+                    ):"Trouver ma destination →"}
+                  </button>
+                )}
+
+                {suggestions.length>0&&(
+                  <div className="space-y-4">
+                    <p className="text-sm font-semibold text-[#9ab896]">Choisissez votre destination — l&apos;IA l&apos;a sélectionnée pour vous :</p>
+                    {suggestions.map((card)=>(
+                      <button key={card.name} type="button" onClick={()=>pickSuggestion(card)}
+                        className="w-full text-left rounded-2xl border border-[#2a3527] bg-[#131a12] hover:border-[#c9a84c]/60 hover:bg-[#1a2218] transition-all p-5 group">
+                        <div className="flex items-start gap-4">
+                          <span className="text-4xl leading-none mt-0.5">{card.flag}</span>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 flex-wrap mb-1">
+                              <span className="font-bold text-[#d8e3d5] text-lg" style={{fontFamily:"var(--font-playfair),Georgia,serif"}}>{card.name}</span>
+                              <span className="text-sm text-[#5a7856]">{card.country}</span>
+                              {card.type==="valeur_sure"&&<span className="text-[10px] font-bold uppercase tracking-wider text-[#c9a84c] border border-[#c9a84c]/30 rounded-full px-2 py-0.5">Valeur sûre</span>}
+                              {card.type==="caractere"&&<span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400 border border-emerald-400/30 rounded-full px-2 py-0.5">Caractère</span>}
+                              {card.type==="coup_de_coeur"&&<span className="text-[10px] font-bold uppercase tracking-wider text-purple-400 border border-purple-400/30 rounded-full px-2 py-0.5">Coup de cœur</span>}
+                            </div>
+                            <p className="text-sm font-semibold text-[#c9a84c] mb-2">{card.tagline}</p>
+                            <p className="text-sm text-[#7a9076] leading-relaxed mb-3">{card.why}</p>
+                            <div className="flex flex-wrap gap-3 text-xs text-[#5a7856]">
+                              {card.weather&&<span>🌤 {card.weather}</span>}
+                              {card.budget_note&&<span>💶 {card.budget_note}</span>}
+                            </div>
+                            {card.downside&&<p className="mt-2 text-xs text-[#4a6447] italic">⚠ {card.downside}</p>}
+                          </div>
+                          <span className="text-[#c9a84c] font-bold text-lg shrink-0 group-hover:translate-x-1 transition-transform">→</span>
+                        </div>
+                      </button>
+                    ))}
+                    <button type="button" onClick={()=>{setSuggestions([]);setSuggestError(null);}}
+                      className="w-full text-center text-xs text-[#5a7856] hover:text-[#c9a84c] py-2 transition-colors">
+                      ↺ Régénérer de nouvelles suggestions
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* RECAP (destination mode uniquement) */}
+            {flowChoice==="destination"&&<div className="bg-[#111c0e] border border-[#1e2e1a] text-[#d8e3d5] rounded-xl p-6">
               <h3 className="font-bold text-[#c9a84c] text-xs uppercase tracking-[0.18em] mb-5">
                 {isEditingCartItem ? "Mise à jour du guide" : "Récapitulatif de votre commande"}
               </h3>
@@ -1769,7 +1697,7 @@ function QuestionnaireContent() {
                 </button>
               </div>
               {submitError&&<p className="text-red-400 text-xs mt-3 text-center">{submitError}</p>}
-            </div>
+            </div>}
           </>
         )}
 
