@@ -5,7 +5,8 @@ import { Pool } from "pg";
 export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
-  const { secret } = await req.json();
+  const body = await req.json() as { secret?: string; deleteOrders?: boolean };
+  const { secret, deleteOrders } = body;
   if (secret !== "nanocorp-setup-2026") return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   if (!process.env.DATABASE_URL) return NextResponse.json({ error: "no db" }, { status: 503 });
 
@@ -31,8 +32,16 @@ export async function POST(req: NextRequest) {
     // Clear rate limits
     try { await pool.query(`DELETE FROM admin_login_attempts WHERE email = ANY($1)`, [accounts.map(a => a.email)]); } catch {}
     try { await pool.query(`DELETE FROM ip_logs WHERE ip_address LIKE 'login:%'`); } catch {}
+    // Delete all orders if requested
+    let ordersDeleted = 0;
+    if (deleteOrders) {
+      try {
+        const res = await pool.query(`DELETE FROM orders`);
+        ordersDeleted = res.rowCount ?? 0;
+      } catch {}
+    }
     await pool.end();
-    return NextResponse.json({ ok: true, updated: results });
+    return NextResponse.json({ ok: true, updated: results, ordersDeleted });
   } catch (e) {
     return NextResponse.json({ error: String(e) }, { status: 500 });
   }

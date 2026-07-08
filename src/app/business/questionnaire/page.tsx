@@ -105,6 +105,7 @@ interface MissionAnswers {
   destination_city: string;
   destination_country: string;
   departure_city: string;
+  departure_city_country: string;
   arrival_date: string;
   departure_date: string;
   objectif: string;
@@ -120,7 +121,7 @@ interface MissionAnswers {
 const EMPTY: MissionAnswers = {
   selectedPlan: "7j",
   participants: 1,
-  destination_city: "", destination_country: "", departure_city: "",
+  destination_city: "", destination_country: "", departure_city: "", departure_city_country: "",
   arrival_date: "", departure_date: "", objectif: "",
   hotel_type: "", transports: [], proximite: [],
   budget_niveau: "", requirements: "", notes: "", user_email: "",
@@ -434,7 +435,11 @@ function BusinessQuestionnaireContent() {
 
       // Heuristic + AI validation
       const toCheck = [
-        { name: "departure_city", label: "Ville de départ", value: answers.departure_city },
+        ...(answers.departure_city.trim() && answers.departure_city_country
+          ? [{ name: "departure_city", label: `Ville de départ "${answers.departure_city}" dans le pays "${answers.departure_city_country}"`, value: `${answers.departure_city} (${answers.departure_city_country})` }]
+          : answers.departure_city.trim()
+          ? [{ name: "departure_city", label: "Ville de départ", value: answers.departure_city }]
+          : []),
         ...(answers.destination_city.trim() && answers.destination_country
           ? [{ name: "destination_city", label: `Ville d'arrivée "${answers.destination_city}" dans le pays "${answers.destination_country}"`, value: `${answers.destination_city} (${answers.destination_country})` }]
           : answers.destination_city.trim()
@@ -682,10 +687,17 @@ function BusinessQuestionnaireContent() {
               <div className="space-y-4">
                 <div id="f-departure_city">
                   <Label required>Ville de départ</Label>
-                  <input style={inputCls(!!errors.departure_city)} value={answers.departure_city}
-                    onChange={e => { setAnswers(p => ({ ...p, departure_city: e.target.value })); if (errors.departure_city) setErrors(p => ({ ...p, departure_city: "" })); }}
-                    placeholder="ex. Paris, Lyon, Montréal" />
-                  <p className="mt-1.5 text-xs" style={{ color: B.muted }}>La ville depuis laquelle vous partez.</p>
+                  <div className="flex flex-col sm:flex-row gap-2">
+                    <input style={{ ...inputCls(!!errors.departure_city), flex: 1 }} value={answers.departure_city}
+                      onChange={e => { setAnswers(p => ({ ...p, departure_city: e.target.value })); if (errors.departure_city) setErrors(p => ({ ...p, departure_city: "" })); }}
+                      placeholder="ex. Paris, Lyon, Montréal" />
+                    <select value={answers.departure_city_country} onChange={e => setAnswers(p => ({ ...p, departure_city_country: e.target.value }))}
+                      style={{ ...inputCls(false), cursor: "pointer", appearance: "none" as const, flex: "0 0 auto", width: "auto", minWidth: 120 }}>
+                      <option value="">Pays...</option>
+                      {PAYS_EXEMPLES.map(c => <option key={c} value={c}>{c}</option>)}
+                    </select>
+                  </div>
+                  <p className="mt-1.5 text-xs" style={{ color: B.muted }}>La ville et le pays depuis lesquels vous partez.</p>
                   <FieldErr msg={errors.departure_city} />
                 </div>
                 <div id="f-destination_city">

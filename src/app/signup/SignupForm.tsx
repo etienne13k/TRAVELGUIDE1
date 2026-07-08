@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import LangToggle from "@/components/LangToggle";
 import { useMode } from "@/lib/mode-theme";
+import { ANTI_BOT_QUESTIONS } from "@/lib/signup-anti-abuse";
 
 type SignupFormProps = {
   turnstileSiteKey: string;
@@ -26,6 +27,8 @@ export default function SignupForm({ turnstileSiteKey }: SignupFormProps) {
       localStorage.setItem("tgai_mode", mode);
       document.documentElement.dataset.mode = mode;
     }
+    const idx = Math.floor(Math.random() * ANTI_BOT_QUESTIONS.length);
+    setAntiBotQuestion(ANTI_BOT_QUESTIONS[idx]);
   }, [searchParams]);
 
   const { isBusiness } = useMode();
@@ -37,6 +40,7 @@ export default function SignupForm({ turnstileSiteKey }: SignupFormProps) {
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [antiBotAnswer, setAntiBotAnswer] = useState("");
+  const [antiBotQuestion, setAntiBotQuestion] = useState(ANTI_BOT_QUESTIONS[0]);
   const [companyWebsite, setCompanyWebsite] = useState("");
 
   // UI state
@@ -69,6 +73,7 @@ export default function SignupForm({ turnstileSiteKey }: SignupFormProps) {
           password,
           turnstileToken,
           antiBotAnswer,
+          antiBotQuestionId: antiBotQuestion.id,
           companyWebsite,
         }),
       });
@@ -189,7 +194,7 @@ export default function SignupForm({ turnstileSiteKey }: SignupFormProps) {
             ) : (
               <div className="rounded-xl p-4" style={{ border: "1px solid var(--ce)", background: "var(--cd)" }}>
                 <label className="block text-sm font-medium mb-1" style={{ color: "var(--cs)" }}>
-                  Vérification anti-robot : combien font 3 + 4 ?
+                  Vérification anti-robot : {antiBotQuestion.question}
                 </label>
                 <input
                   type="text"

@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
     const client = new Anthropic({ apiKey });
 
     const message = await client.messages.create({
-      model: "claude-haiku-4-5",
+      model: "claude-haiku-4-5-20251001",
       max_tokens: 512,
       system: `Tu es un validateur de formulaire de questionnaire voyage.
 Tu reçois des champs de formulaire et tu dois vérifier si les valeurs saisies sont cohérentes et réelles.

@@ -50,7 +50,7 @@ export async function POST(req: NextRequest) {
     );
     const captchaPassed = turnstileConfigured
       ? await verifyTurnstileToken({ token: body.turnstileToken, ipAddress: clientIp })
-      : isFallbackAntiBotValid(body.antiBotAnswer, body.companyWebsite);
+      : isFallbackAntiBotValid(body.antiBotAnswer, body.companyWebsite, body.antiBotQuestionId);
 
     if (!captchaPassed) {
       return NextResponse.json(

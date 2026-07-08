@@ -261,6 +261,7 @@ interface Answers {
   nearby_cities: string;
   // Location fields
   departure_city: string;
+  departure_city_country: string;
   destination_arrival_city: string;
   arrival_city_country: string;
   // Dates
@@ -321,7 +322,7 @@ interface SuggestionCard {
 
 const EMPTY: Answers = {
   destination: "", scope_type: "", country_zones: [], nearby_cities: "",
-  departure_city: "", destination_arrival_city: "", arrival_city_country: "",
+  departure_city: "", departure_city_country: "", destination_arrival_city: "", arrival_city_country: "",
   arrival_date: "", departure_date: "", travel_dates: "", dates_flexible: "",
   traveler_type: "", traveler_adults: 1, traveler_children: 0, children_ages: [],
   budget: "", budget_amount: "", budget_currency: "€", budget_scope: "",
@@ -735,7 +736,11 @@ function QuestionnaireContent() {
       }
       // Client-side heuristic check first (no API key needed)
       const textFields = [
-        { name: "departure_city", label: "Ville de départ", value: answers.departure_city },
+        ...(answers.departure_city.trim() && answers.departure_city_country
+          ? [{ name: "departure_city", label: `Ville de départ "${answers.departure_city}" dans le pays "${answers.departure_city_country}"`, value: `${answers.departure_city} (${answers.departure_city_country})` }]
+          : answers.departure_city.trim()
+          ? [{ name: "departure_city", label: "Ville de départ", value: answers.departure_city }]
+          : []),
         ...(answers.destination_arrival_city.trim() && answers.arrival_city_country
           ? [{ name: "destination_arrival_city", label: `Ville d'arrivée "${answers.destination_arrival_city}" dans le pays "${answers.arrival_city_country}"`, value: `${answers.destination_arrival_city} (${answers.arrival_city_country})` }]
           : answers.destination_arrival_city.trim()
@@ -1208,14 +1213,24 @@ function QuestionnaireContent() {
               <div className="space-y-4">
                 <div id="field-departure_city">
                   <QLabel required>Ville de départ</QLabel>
-                  <input
-                    type="text"
-                    value={answers.departure_city}
-                    onChange={e=>{setAnswers(p=>({...p,departure_city:e.target.value}));if(errors.departure_city)setErrors(p=>({...p,departure_city:""}));}}
-                    placeholder="ex. Paris, Lyon, Montréal"
-                    className={inputCls("departure_city")}
-                  />
-                  <p className="text-xs text-[#3a5037] mt-1.5">La ville depuis laquelle vous partez.</p>
+                  <div className="flex flex-col sm:flex-row gap-2">
+                    <input
+                      type="text"
+                      value={answers.departure_city}
+                      onChange={e=>{setAnswers(p=>({...p,departure_city:e.target.value}));if(errors.departure_city)setErrors(p=>({...p,departure_city:""}));}}
+                      placeholder="ex. Paris, Lyon, Montréal"
+                      className={`flex-1 border rounded-lg px-4 py-3 text-sm focus:outline-none bg-[#0e1310] text-[#d8e3d5] placeholder-[#3a5037] transition-colors ${errors.departure_city?"border-red-700 focus:border-red-500":"border-[#2a3527] focus:border-[#c9a84c]"}`}
+                    />
+                    <select
+                      value={answers.departure_city_country}
+                      onChange={e=>setAnswers(p=>({...p,departure_city_country:e.target.value}))}
+                      className="sm:w-48 border border-[#2a3527] rounded-lg px-3 py-3 text-sm focus:outline-none focus:border-[#c9a84c] bg-[#0e1310] text-[#d8e3d5] transition-colors appearance-none cursor-pointer"
+                    >
+                      <option value="">Pays...</option>
+                      {COUNTRIES.map(c=><option key={c} value={c}>{c}</option>)}
+                    </select>
+                  </div>
+                  <p className="text-xs text-[#3a5037] mt-1.5">La ville et le pays depuis lesquels vous partez.</p>
                   <FieldError msg={errors.departure_city} />
                 </div>
                 <div id="field-destination_arrival_city">
