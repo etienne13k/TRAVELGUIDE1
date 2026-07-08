@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import LangToggle from "@/components/LangToggle";
 import { useMode } from "@/lib/mode-theme";
-import { ANTI_BOT_QUESTIONS } from "@/lib/signup-anti-abuse";
+import { ANTI_BOT_QUESTIONS } from "@/lib/anti-bot-questions";
 
 type SignupFormProps = {
   turnstileSiteKey: string;
