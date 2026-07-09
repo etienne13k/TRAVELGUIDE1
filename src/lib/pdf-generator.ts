@@ -1,5 +1,4 @@
-﻿import PDFDocument from "pdfkit";
-import type { GuideInput } from "./guide-prompt";
+﻿import type { GuideInput } from "./guide-prompt";
 
 const NAVY = "#425C47";
 const GOLD = "#C9A84C";
@@ -59,6 +58,7 @@ export async function generateGuidePDF(
   input: GuideInput,
   aiContent: string
 ): Promise<Buffer> {
+  const { default: PDFDocument } = await import("pdfkit");
   return new Promise((resolve, reject) => {
     const language = getGuideLanguage(input);
     const isEnglish = language === "en";
