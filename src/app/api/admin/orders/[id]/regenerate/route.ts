@@ -11,6 +11,7 @@ import { createAnthropicClient, getAnthropicApiKey, getAnthropicModel, getAnthro
 import crypto from "crypto";
 
 export const maxDuration = 60;
+export const runtime = "nodejs";
 
 type QuestionnaireData = Record<string, unknown>;
 
@@ -20,6 +21,15 @@ function asString(value: unknown): string {
 }
 
 export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  try {
+    return await handleRegenerate(req, params);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    return NextResponse.json({ error: `Erreur inattendue: ${message}` }, { status: 500 });
+  }
+}
+
+async function handleRegenerate(req: NextRequest, params: Promise<{ id: string }>) {
   const admin = await getAdminSession();
   if (!admin || admin.role !== "admin") return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
 
