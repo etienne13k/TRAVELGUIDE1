@@ -5,21 +5,21 @@ export const maxDuration = 60;
 export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
-  let body: { stripeSessionId?: string };
+  let body: { stripeSessionId?: string; orderId?: string };
   try {
     body = await req.json();
   } catch {
     return NextResponse.json({ error: "Corps invalide" }, { status: 400 });
   }
 
-  const { stripeSessionId } = body;
-  if (!stripeSessionId) {
-    return NextResponse.json({ error: "stripeSessionId requis" }, { status: 400 });
+  const { stripeSessionId, orderId: directOrderId } = body;
+  if (!stripeSessionId && !directOrderId) {
+    return NextResponse.json({ error: "stripeSessionId ou orderId requis" }, { status: 400 });
   }
 
   const pool = getPool();
 
-  // Find the order linked to this Stripe session
+  // Find the order: prefer direct orderId lookup, fall back to stripe_session_id
   const { rows } = await pool.query<{
     id: string;
     plan: string;
@@ -27,13 +27,23 @@ export async function POST(req: NextRequest) {
     questionnaire_data: Record<string, unknown> | null;
     destination: string | null;
   }>(
-    `SELECT id, plan, status, questionnaire_data, destination
-     FROM orders
-     WHERE stripe_session_id = $1
-     ORDER BY created_at DESC
-     LIMIT 1`,
-    [stripeSessionId]
+    directOrderId
+      ? `SELECT id, plan, status, questionnaire_data, destination
+         FROM orders
+         WHERE id = $1
+         LIMIT 1`
+      : `SELECT id, plan, status, questionnaire_data, destination
+         FROM orders
+         WHERE stripe_session_id = $1
+         ORDER BY created_at DESC
+         LIMIT 1`,
+    [directOrderId ?? stripeSessionId]
   );
+
+  // Link the stripe session to the order if we found it by orderId
+  if (directOrderId && stripeSessionId && rows[0]) {
+    pool.query(`UPDATE orders SET stripe_session_id = $1 WHERE id = $2 AND stripe_session_id IS NULL`, [stripeSessionId, directOrderId]).catch(() => undefined);
+  }
 
   const order = rows[0];
   if (!order) {

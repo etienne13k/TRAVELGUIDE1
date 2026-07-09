@@ -140,6 +140,11 @@ function CartContent() {
       const pendingData = pendingRes.ok ? await pendingRes.json() : null;
       const orderId: string | null = pendingData?.orderId ?? null;
 
+      // Store orderId locally so success page can find the order without Stripe API
+      if (orderId) {
+        try { localStorage.setItem("tgai_pending_order_id", orderId); } catch { /* ignore */ }
+      }
+
       const params = new URLSearchParams();
       if (orderId) params.set("client_reference_id", orderId);
       if (normalizedPromoCode) params.set("prefilled_promo_code", normalizedPromoCode);

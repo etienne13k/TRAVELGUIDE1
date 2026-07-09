@@ -56,11 +56,13 @@ function SuccessContent() {
     if (!sessionId || triggered.current) return;
     triggered.current = true;
 
+    const storedOrderId = (() => { try { return localStorage.getItem("tgai_pending_order_id"); } catch { return null; } })();
     clearCart();
     localStorage.removeItem("tgai_promo");
+    localStorage.removeItem("tgai_pending_order_id");
 
     async function run() {
-      // Step 1: fetch session summary
+      // Step 1: fetch session summary (try Stripe session first, fall back to order lookup)
       setState("fetching_session");
       await new Promise(r => setTimeout(r, 1500));
 
@@ -73,13 +75,16 @@ function SuccessContent() {
         }
       } catch { /* non-fatal */ }
 
-      // Step 2: trigger auto-generation
+      // Step 2: trigger auto-generation — use stored orderId if session lookup failed
       setState("generating");
       try {
+        const body = storedOrderId
+          ? { stripeSessionId: sessionId, orderId: storedOrderId }
+          : { stripeSessionId: sessionId };
         const genRes = await fetch("/api/auto-generate", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ stripeSessionId: sessionId }),
+          body: JSON.stringify(body),
         });
         const genData = await genRes.json() as { orderId?: string; status?: string; error?: string };
 
