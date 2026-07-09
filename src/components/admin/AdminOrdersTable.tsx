@@ -92,7 +92,11 @@ export default function AdminOrdersTable({ orders }: { orders: AdminOrder[] }) {
   async function runAction(order: AdminOrder, action: "regenerate" | "resend") {
     setBusyId(`${order.id}:${action}`);
     try {
-      const response = await fetch(`/api/admin/orders/${order.id}/${action}`, { method: "POST" });
+      const url = action === "regenerate" ? "/api/regen" : `/api/admin/orders/${order.id}/resend`;
+      const opts: RequestInit = action === "regenerate"
+        ? { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ orderId: order.id }) }
+        : { method: "POST" };
+      const response = await fetch(url, opts);
       if (!response.ok) {
         let errorMsg = `Erreur HTTP ${response.status}`;
         try {
@@ -101,6 +105,8 @@ export default function AdminOrdersTable({ orders }: { orders: AdminOrder[] }) {
           catch { errorMsg = text.slice(0, 300) || errorMsg; }
         } catch { /* ignore */ }
         alert(errorMsg);
+      } else {
+        alert("Guide généré avec succès !");
       }
       router.refresh();
     } finally {
