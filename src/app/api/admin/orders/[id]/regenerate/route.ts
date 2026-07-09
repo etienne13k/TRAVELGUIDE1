@@ -73,7 +73,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   try {
     const anthropic = createAnthropicClient(apiKey);
     const response = await anthropic.messages.create({
-      model: getAnthropicModel(),
+      model: "claude-haiku-4-5-20251001",
       max_tokens: getMaxTokens(order.plan),
       system: buildSystemPrompt(input),
       messages: [{ role: "user", content: buildUserMessage(input) }],
