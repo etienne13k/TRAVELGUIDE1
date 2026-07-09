@@ -94,8 +94,13 @@ export default function AdminOrdersTable({ orders }: { orders: AdminOrder[] }) {
     try {
       const response = await fetch(`/api/admin/orders/${order.id}/${action}`, { method: "POST" });
       if (!response.ok) {
-        const data = await response.json().catch(() => ({}));
-        alert(data.error || "Action impossible");
+        let errorMsg = `Erreur HTTP ${response.status}`;
+        try {
+          const text = await response.text();
+          try { const data = JSON.parse(text); errorMsg = data.error || errorMsg; }
+          catch { errorMsg = text.slice(0, 300) || errorMsg; }
+        } catch { /* ignore */ }
+        alert(errorMsg);
       }
       router.refresh();
     } finally {
